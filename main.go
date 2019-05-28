@@ -23,29 +23,27 @@ import (
 )
 
 const (
-	SaveUserInfo  = true
-	SaveColumInfo = true
+	SaveUserInfo  = false
+	SaveColumInfo = false
 )
 
 var db *gorm.DB
 var client *http.Client
 
 func main() {
-	var err error
-	db, err = gorm.Open("mysql", "root:qunsi003@/meitu?charset=utf8&parseTime=True&loc=Local") //?charset=utf8&parseTime=True&loc=Local
-	if err != nil {
-		panic(err)
-	}
-	db.DB().SetMaxIdleConns(10)
-	db.DB().SetMaxOpenConns(100)
+	//var err error
+	//db, err = gorm.Open("mysql", "root:qunsi003@/meitu?charset=utf8&parseTime=True&loc=Local") //?charset=utf8&parseTime=True&loc=Local
+	//if err != nil {
+	//	panic(err)
+	//}
+	//db.DB().SetMaxIdleConns(10)
+	//db.DB().SetMaxOpenConns(100)
 
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
 
-	//client := http.DefaultClient
-	//client.Timeout = 5 * time.Second
 	//downloadUrl(client,"27270",1)
-	downloadUserColums([]int{455, 922, 918, 435, 4780,})
+	downloadUserColums([]int{101,298,288,})
 	//downloadColums(455,[]int{26738,})
 	//getUserColums("")
 }
