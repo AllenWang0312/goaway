@@ -1,4 +1,4 @@
-package data
+package dao
 
 import (
 	"github.com/PuerkitoBio/goquery"
@@ -14,7 +14,7 @@ import (
 	"net/url"
 	"strings"
 	"github.com/jinzhu/gorm"
-	"../dao"
+	"./"
 	//"fmt"
 	//"database/sql"
 	"log"
