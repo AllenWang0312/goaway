@@ -8,42 +8,44 @@ import (
 	"math"
 	"strconv"
 	"path"
-	"log"
 	"net/http"
 	"time"
-	"bufio"
 	"os"
-	"io"
 	"net/url"
 	"strings"
 	"github.com/jinzhu/gorm"
 	"./dao"
 	//"fmt"
 	//"database/sql"
+	"log"
+	"bufio"
+	"io"
 )
 
 const (
-	SaveUserInfo  = false
-	SaveColumInfo = false
+	SaveUserInfo  = true
+	SaveColumInfo = true
 )
 
 var db *gorm.DB
 var client *http.Client
 
 func main() {
-	//var err error
-	//db, err = gorm.Open("mysql", "root:qunsi003@/meitu?charset=utf8&parseTime=True&loc=Local") //?charset=utf8&parseTime=True&loc=Local
-	//if err != nil {
-	//	panic(err)
-	//}
-	//db.DB().SetMaxIdleConns(10)
-	//db.DB().SetMaxOpenConns(100)
-
+	var err error
+	db, err = gorm.Open("mysql", "root:Qunsi003@tcp(rm-wz952p7325m8jbe3x9o.mysql.rds.aliyuncs.com:3306)/meitu?charset=utf8&parseTime=True&loc=Local") //?charset=utf8&parseTime=True&loc=Local
+	if err != nil {
+		panic(err)
+	}
+	db.DB().SetMaxIdleConns(10)
+	db.DB().SetMaxOpenConns(100)
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
 
-	//downloadUrl(client,"27270",1)
-	downloadUserColums([]int{101,298,288,})
+	//client := http.DefaultClient
+	//client.Timeout = 5 * time.Second
+	//downloadItem(client,"27270",1)
+	//
+	downloadUserColums([]int{1246,})//101,288,298,918,285,2008,285,628,//190,
 	//downloadColums(455,[]int{26738,})
 	//getUserColums("")
 }
@@ -95,8 +97,8 @@ func analyzeHtml(client *http.Client, userId int, i int) int {
 		saveUserInfo(userId, doc)
 	}
 	println(doc.Url.String())
-	hezi:=doc.Find("div.hezi")
-	if hezi!=nil{
+	hezi := doc.Find("div.hezi")
+	if hezi != nil {
 		hezi.Find("ul").Find("li").Each(func(i int, s *goquery.Selection) {
 			path, _ := s.Find("a").Attr("href")
 			paths := strings.Split(path, "/")
@@ -108,7 +110,7 @@ func analyzeHtml(client *http.Client, userId int, i int) int {
 				//continue
 			}
 		})
-	}else {
+	} else {
 		return -1
 	}
 
@@ -159,45 +161,42 @@ func downloadSingleColum(userId int, colum int) {
 		}
 		saveColumInfo(colum, userId, doc)
 	}
-	os.Chdir("./data/t")
-	os.MkdirAll("./"+strconv.Itoa(userId), os.ModePerm)
-	os.Chdir("./" + strconv.Itoa(userId))
-	defer os.Chdir("../../../")
-
-	path := "./" + strconv.Itoa(colum)
-	os.MkdirAll(path, os.ModePerm)
-	os.Chdir(path)
+	os.MkdirAll("./data/t/"+strconv.Itoa(userId)+"/"+strconv.Itoa(colum), os.ModePerm)
 	for i := 1; i < 100; i++ {
-		err := downloadUrl(colum, i)
+
+		err := downloadItem(userId, colum, i)
 		if (err == -1) {
 			continue
 		} else if err == -2 {
 			break
 		}
 	}
-	os.Chdir("../")
 }
-func saveColumInfo(colum int, userId int, doc *goquery.Document)int {
-	weizhi:=doc.Find("div.weizhi")
-	if weizhi!=nil{
+func saveColumInfo(colum int, userId int, doc *goquery.Document) int {
+	tuji := doc.Find("div.tuji")
+	html, _ := tuji.Html()
+	weizhi := tuji.Find("div.weizhi")
+	if weizhi != nil {
 		title := weizhi.Find("h1").Text()
 		subs := doc.Find("div.shuoming").Find("p").Text()
 		println(title + subs)
-
 		c := dao.Colums{
 			ID:     colum,
 			Userid: userId,
 			Title:  title,
 			Subs:   subs,
+			Html:   html,
 		}
 		db.Create(c)
 		//if db.NewRecord(c) {
-		//	println("colum("+strconv.Itoa(colum)+") info insert")
-		//}else {
+		//	db.Create(c)
+		//	println("colum(" + strconv.Itoa(colum) + ") info insert")
+		//} else {
+		//	db.Update(c)
 		//	println("colum info updata")
 		//}
 		return 0
-	}else {
+	} else {
 		return -1
 	}
 
@@ -212,16 +211,20 @@ func saveColumRelation(userId int, colum int) {
 		println(err.Error())
 	}
 }
-func downloadUrl(colum int, i int) int {
+func downloadItem(userId int, colum int, i int) int {
 	durl := "https://ii.hywly.com/a/1/" + strconv.Itoa(colum) + "/" + strconv.Itoa(i) + ".jpg"
 	uri, err := url.ParseRequestURI(durl)
 	if err != nil {
 		//panic("url err")
 		println(err.Error())
+		return -2
 	}
 	filename := path.Base(uri.Path)
-	log.Println("filename " + filename)
-	e, _ := PathExists("./" + filename)
+	return downloadFile(durl, "./data/t/"+strconv.Itoa(userId)+"/"+strconv.Itoa(colum)+"/", filename)
+}
+func downloadFile(durl string, path string, name string) int {
+	log.Println( path + name)
+	e, _ := PathExists(path + name)
 	if e {
 		return -1
 	}
@@ -242,7 +245,7 @@ func downloadUrl(colum int, i int) int {
 	defer raw.Close()
 	reader := bufio.NewReaderSize(raw, 1024*32)
 
-	file, err := os.Create(filename)
+	file, err := os.Create(path + name)
 	if err != nil {
 		//panic(err)
 		println(err.Error())

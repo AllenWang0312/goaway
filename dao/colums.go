@@ -10,4 +10,5 @@ type Colums struct {
 	No     int    `gorm:"index:title"`
 	Nums   int    `gorm:"index:title"`
 	Time   string `gorm:"type:varchar(30);index:title"`
+	Html string `gorm:"type:varchar(255);index:html"`
 }
