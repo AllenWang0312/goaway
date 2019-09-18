@@ -4,8 +4,11 @@ import (
 	model "../../../model/mm131"
 	"../../../util"
 	"github.com/PuerkitoBio/goquery"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
+	//_ "github.com/jinzhu/gorm/dialects/mysql"
+	_ "github.com/go-sql-driver/mysql"
+	"strings"
 
+	"../orm"
 	"fmt"
 	"github.com/axgle/mahonia"
 	"io"
@@ -14,7 +17,6 @@ import (
 	"strconv"
 	"sync"
 	"time"
-	"../orm"
 )
 
 var h5_host = "https://www.mm131.net"
@@ -29,18 +31,22 @@ func main() {
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
 	//fenxi(5137, "xinggan")
-	paqufenlei("xinggan", 4001, 5000)
+	paqufenlei("qingchun", 0, 1000)
 	wg.Wait()
 }
 
 func paqufenlei(fenlei string, from int, to int) {
 	for i := from; i <= to; i++ {
-		fenxi(i, fenlei)
+		url := h5_host + "/" + fenlei + "/" + strconv.Itoa(i) + ".html"
+		fenxi(i, fenlei,url)
+		if(i!=1){
+			old_url := h5_host + "/" + fenlei + "/1_" + strconv.Itoa(i) + ".html"
+			fenxi(i, fenlei,old_url)
+		}
 	}
 }
 
-func fenxi(columId int, fenlei string) int {
-	url := h5_host + "/" + fenlei + "/" + strconv.Itoa(columId) + ".html"
+func fenxi(columId int, fenlei string,url string) int {
 	resp, err := client.Get(url)
 	defer resp.Body.Close()
 	if resp.StatusCode > 400 {
@@ -61,21 +67,21 @@ func fenxi(columId int, fenlei string) int {
 	fmt.Println(title)
 	gbk_msg := content.Find("div.content-msg").Text()
 	msg := dec.ConvertString(gbk_msg)
+	time := strings.Split(strings.Split(msg, "间：")[1], " M")[0]
 	fmt.Println(msg)
-
 	colum := model.Colums{
-		ID:     columId,
-		Title:  title,
-		Time:   msg,
-		Fenlei: fenlei,
+		ID:    columId,
+		Title: title,
+		Time:  time,
 	}
-	orm.SaveColum(&colum,"colums")
+	orm.SaveColum(&colum, "colums_"+fenlei)
+	//orm.UpdateColumTime(&colum, "colums_"+fenlei)
 	if downloadimg {
-		downloadColum(columId)
+		downloadColum(columId,fenlei)
 	}
 	return 0
 }
-func downloadColum(columId int) {
+func downloadColum(columId int, fenlei string) {
 	for i := 1; true; i++ {
 		durl := host + "/pic/" + strconv.Itoa(columId) + "/" + strconv.Itoa(i) + ".jpg"
 		//resp, err := url.ParseRequestURI(durl)
@@ -85,7 +91,7 @@ func downloadColum(columId int) {
 		//	return -2
 		//}
 		filename := strconv.Itoa(i) + ".jpg"
-		path := "../pic/" + strconv.Itoa(columId) + "/"
+		path := "../mm131/" + fenlei+"/"+ strconv.Itoa(columId) + "/"
 		//downloadFile(durl,path,filename)
 		e, _ := util.PathExists(path + filename)
 		if e {

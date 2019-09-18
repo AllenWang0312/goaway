@@ -24,7 +24,7 @@ func main() {
 	gorm.InitDB()
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
-	getColums(2001, 3000)
+	getColums(4001, 10000)//193336
 	//downloadColum(192173)
 	wg.Wait()
 }
@@ -35,7 +35,6 @@ func getColums(from int, to int) {
 }
 
 func downloadColum(columId int) {
-
 	for j := 1; ; j++ {
 		var h5_url string
 		if (j == 1) {
@@ -63,7 +62,6 @@ func downloadColum(columId int) {
 					fmt.Println(time)
 				}
 			})
-			tags := ""
 			content.Find("div.main-tags").Find("a").Each(func(i int, selection *goquery.Selection) {
 				tag_url, _ := selection.Attr("href")
 				url1 := tag_url[0 : len(tag_url)-1]
@@ -74,18 +72,22 @@ func downloadColum(columId int) {
 					Ename: ename,
 					Cname: cname,
 				}
-				id := gorm.SaveTags(ename,&tag)
-				tags += strconv.Itoa(id) + "|" + cname + "|" + ename + ","
+				id := gorm.SaveTags(ename, &tag)
+				relation := model.Columtags{
+					Columid: columId,
+					Tagid:   id,
+					Lock:    strconv.Itoa(columId) + "_" + strconv.Itoa(id),
+				}
+				gorm.SaveTagRelation(&relation)
 			})
 			colum := model.Colums{
 				ID:    columId,
 				Title: title,
 				Time:  time,
-				Tags:  tags,
 			}
 			gorm.SaveColum(&colum)
 		}
-
+		//break//只更新表结构不下载
 		durl, _ := content.Find("div.main-image").Find("p").Find("a").Find("img").Attr("src")
 
 		//downloadImage(h5_url, columId)

@@ -25,6 +25,17 @@ func SaveColum(c *model.Colums) {
 		println(err.Error())
 	}
 }
+func SaveTagRelation(r *model.Columtags)int{
+	var tag model.Columtags
+	db.Where("lock = ?", r.Lock).First(&tag)
+	if(tag.Relationid>0){
+		println("record exit:"+strconv.Itoa(tag.Relationid))
+		return tag.Relationid
+	}else {
+		db.Create(r)
+		return r.Relationid
+	}
+}
 func SaveTags(ename string,c *model.Tags) int {
 	var tag model.Tags
 	db.Where("ename = ?", ename).First(&tag)
