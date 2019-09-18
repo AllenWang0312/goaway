@@ -1,25 +1,24 @@
-package dao
+package z_main
 
 import (
 	"github.com/PuerkitoBio/goquery"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/jinzhu/gorm"
 	//
 	//"github.com/gin-gonic/gin"
 	"math"
-	"strconv"
-	"path"
 	"net/http"
-	"time"
-	"os"
 	"net/url"
+	"os"
+	"path"
+	"strconv"
 	"strings"
-	"github.com/jinzhu/gorm"
-	"./"
+	"time"
+	"bufio"
+	"io"
 	//"fmt"
 	//"database/sql"
 	"log"
-	"bufio"
-	"io"
 )
 
 const (
