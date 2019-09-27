@@ -31,7 +31,7 @@ func main() {
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
 	//fenxi(5137, "xinggan")
-	paqufenlei("qingchun", 0, 1000)
+	paqufenlei("xiaohua", 2000, 20000)
 	wg.Wait()
 }
 
@@ -48,9 +48,13 @@ func paqufenlei(fenlei string, from int, to int) {
 
 func fenxi(columId int, fenlei string,url string) int {
 	resp, err := client.Get(url)
+	if(err!=nil){
+		fmt.Println(err.Error())
+		return -1
+	}
 	defer resp.Body.Close()
 	if resp.StatusCode > 400 {
-		fmt.Println(resp.StatusCode)
+		//fmt.Println(resp.StatusCode)
 		return -1
 	}
 	doc, err := goquery.NewDocument(url)
@@ -111,11 +115,11 @@ func downloadColum(columId int, fenlei string) {
 		http.DefaultClient.Timeout = 20 * time.Second;
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			fmt.Println("request error: " + err.Error())
+			fmt.Println(durl+" request error: " + err.Error())
 			break
 		}
 		if resp.StatusCode != http.StatusOK {
-			fmt.Println("response status: " + strconv.Itoa(resp.StatusCode))
+			fmt.Println(durl+" response status: " + strconv.Itoa(resp.StatusCode))
 			break
 		}
 		wg.Add(1)
