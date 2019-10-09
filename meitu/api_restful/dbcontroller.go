@@ -13,6 +13,7 @@ func InitApiDB() {
 	if err != nil {
 		panic(err)
 	}
+
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(100)
 }

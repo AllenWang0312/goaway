@@ -32,7 +32,7 @@ func GetModelList(c *gin.Context) {
 }
 
 func tokenEnable(c *gin.Context) bool {
-	token := c.PostForm("token")
+	token := c.GetHeader("token")
 	if !checkTokenEnable(token) {
 		c.JSON(401, gin.H{"status": -1, "msg": "token已失效"})
 		return false
@@ -40,20 +40,44 @@ func tokenEnable(c *gin.Context) bool {
 		return true
 	}
 }
+
+func GetHotTag(c *gin.Context) {
+	var tags = []model.Tags{}
+	db.Select("id,shortname,des,hot").Order("hot desc").Limit(10).Find(&tags) //.Order("created_at desc")
+	//c.String(200,)
+	c.JSON(200, gin.H{"data": tags})
+}
+func GetAllTag(c *gin.Context) {
+	var tags = []model.Tags{}
+	db.Select("id,shortname,des,hot").Find(&tags) //.Order("created_at desc")
+	//c.String(200,)
+	c.JSON(200, gin.H{"data": tags})
+}
+
 func GetColumsList(c *gin.Context) {
+	tag, err0 := strconv.Atoi(c.Query("tag"))
+
 	pageNo, err1 := strconv.Atoi(c.PostForm("pageNo"))
 	pageSize, err2 := strconv.Atoi(c.PostForm("pageSize"))
-	if nil == err1 && nil == err2 {
-		var colums = []model.Colums{}
-		//if len(search) == 0 {
-		//} else {
-		//}
-		db.Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&colums) //.Order("created_at desc")
+	var colums = []model.Colums{}
+
+	if err0 == nil {
+		db.Where("tags LIKE ?", tag).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&colums) //.Order("created_at desc")
 		//c.String(200,)
 		c.JSON(200, gin.H{"data": colums})
 	} else {
-		c.JSON(404, gin.H{"status": 0, "msg": "缺少参数"})
+		if nil == err1 && nil == err2 {
+			//if len(search) == 0 {
+			//} else {
+			//}
+			db.Limit(pageSize).Offset((pageNo - 1) * pageSize).Order("id desc").Find(&colums) //.Order("created_at desc")
+			//c.String(200,)
+			c.JSON(200, gin.H{"data": colums})
+		} else {
+			c.JSON(404, gin.H{"status": 0, "msg": "缺少参数"})
+		}
 	}
+
 }
 
 func resetPass(c *gin.Context) {

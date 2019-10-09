@@ -36,14 +36,20 @@ func main() {
 	r.GET("/hello", func(c *gin.Context) {
 		c.JSON(200, gin.H{"code": 1, "message": "hello"})
 	})
-	v1:=r.Group("/v1")
+	v1 := r.Group("/v1")
 	api := v1.Group("/api")
 	{
 		//todo resources
 		api.POST("/models", api_restful.GetModelList)
 		api.POST("/colums", api_restful.GetColumsList)
+
+		tags := api.Group("/tags")
+		{
+			tags.GET("/hot", api_restful.GetHotTag)
+		}
+
 		//todo account
-		account:=api.Group("/account")
+		account := api.Group("/account")
 		{
 			account.PUT("/", api_restful.RegistAccount)
 			account.POST("/login", api_restful.Login)

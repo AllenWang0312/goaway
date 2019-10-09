@@ -32,7 +32,7 @@ func main() {
 	//client.Timeout = 5 * time.Second
 	//downloadItem(client,"27270",1)
 	//downloadSingleColum(0,27600)
-	downloadModelColumsRange(6000, 7000)
+	downloadModelColumsRange(7000, 8000)
 	//downloadModelColums([]int{5175,5174,5173,5142,5141,5140,5166}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
 	//downloadColums(0,[]int{1374,})
 	//getModelColums("")
@@ -112,10 +112,10 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
 	var no string
 	var t string
 	tuji.Find("p").Each(func(i int, s *goquery.Selection) {
-		if (strings.Contains(s.Text(), "编号")) {
+		if strings.Contains(s.Text(), "编号") {
 			no = strings.Split(s.Text(), "：")[1]
 		}
-		if (strings.Contains(s.Text(), "日期")) {
+		if strings.Contains(s.Text(), "日期") {
 			t = strings.Split(s.Text(), "：")[1]
 		}
 		//fmt.Println(s.Text())
@@ -176,7 +176,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
 							//fmt.Println("request create faild: " + err.Error())
 							break
 						}
-						http.DefaultClient.Timeout = 20 * time.Second;
+						http.DefaultClient.Timeout = 20 * time.Second
 						resp, err := http.DefaultClient.Do(req)
 						if err != nil {
 							//fmt.Println("request error: " + err.Error())
@@ -246,7 +246,7 @@ func downloadColumCover(modelId int, columId int) {
 		//fmt.Println("request create faild: " + err.Error())
 		return
 	}
-	http.DefaultClient.Timeout = 20 * time.Second;
+	http.DefaultClient.Timeout = 20 * time.Second
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		//fmt.Println("request error: " + err.Error())

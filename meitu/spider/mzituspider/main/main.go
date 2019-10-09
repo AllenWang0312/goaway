@@ -24,7 +24,7 @@ func main() {
 	gorm.InitDB()
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
-	getColums(4001, 10000)//193336
+	getColums(14895, 194000) //193336
 	//downloadColum(192173)
 	wg.Wait()
 }
@@ -37,7 +37,7 @@ func getColums(from int, to int) {
 func downloadColum(columId int) {
 	for j := 1; ; j++ {
 		var h5_url string
-		if (j == 1) {
+		if j == 1 {
 			h5_url = host + strconv.Itoa(columId)
 		} else {
 			h5_url = host + strconv.Itoa(columId) + "/" + strconv.Itoa(j)
@@ -52,11 +52,11 @@ func downloadColum(columId int) {
 			break
 		}
 		content := doc.Find("div.content")
-		if (j == 1) {
+		if j == 1 {
 			title := content.Find("h2.main-title").Text()
 			var time string
 			content.Find("div.main-meta").Find("span").Each(func(i int, selection *goquery.Selection) {
-				if (i == 1) {
+				if i == 1 {
 					timetag := selection.Text()
 					time = string(timetag[10:len(timetag)])
 					fmt.Println(time)
@@ -115,7 +115,7 @@ func downloadColum(columId int) {
 			fmt.Println("request create faild: " + durl + err.Error())
 			break
 		}
-		http.DefaultClient.Timeout = 20 * time.Second;
+		http.DefaultClient.Timeout = 20 * time.Second
 		resp2, err := http.DefaultClient.Do(req)
 		if err != nil {
 			fmt.Println("request error: " + durl + err.Error())
