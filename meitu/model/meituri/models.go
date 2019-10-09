@@ -10,10 +10,10 @@ type Models struct {
 	Height        string `gorm:"type:varchar(10);index:height" json:"height"`
 	Weight        string `gorm:"type:varchar(10);index:weight" json:"weight"`
 	Dimensions    string `gorm:"type:varchar(30);index:dimensions" json:"dimensions"`
-	Cup           string `gorm:"type:varchar(5);index:cup" json:"cup"`
 	Address       string `gorm:"type:varchar(100);index:address" json:"address"`
 	Jobs          string `gorm:"type:varchar(100);index:jobs" json:"jobs"`
 	Interest      string `gorm:"type:varchar(200);index:interest" json:"interest"`
 	More          string `gorm:"type:varchar(255);index:more" json:"more"`
 	Tags          string `gorm:"type:varchar(255);index:tags" json:"tags"`
+	Hot           int    `gorm:"index:hot" json:"hot"`
 }

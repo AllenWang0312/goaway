@@ -4,32 +4,8 @@ import (
 	model "../model/meituri"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"strconv"
 	"strings"
 )
-
-func checkTokenEnable(token string) bool {
-	return strings.EqualFold(token, "token")
-}
-
-func GetModelList(c *gin.Context) {
-	//search := c.PostForm("search")
-	if tokenEnable(c) {
-		pageNo, err1 := strconv.Atoi(c.PostForm("pageNo"))
-		pageSize, err2 := strconv.Atoi(c.PostForm("pageSize"))
-		if nil == err1 && nil == err2 {
-			var models = []model.Models{}
-			//if len(search) == 0 {
-			//} else {
-			//}
-			db.Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models) //.Order("created_at desc")
-			//c.String(200,)
-			c.JSON(200, gin.H{"data": models})
-		} else {
-			c.JSON(404, gin.H{"status": 0, "msg": "缺少参数"})
-		}
-	}
-}
 
 func tokenEnable(c *gin.Context) bool {
 	token := c.GetHeader("token")
@@ -40,44 +16,8 @@ func tokenEnable(c *gin.Context) bool {
 		return true
 	}
 }
-
-func GetHotTag(c *gin.Context) {
-	var tags = []model.Tags{}
-	db.Select("id,shortname,des,hot").Order("hot desc").Limit(10).Find(&tags) //.Order("created_at desc")
-	//c.String(200,)
-	c.JSON(200, gin.H{"data": tags})
-}
-func GetAllTag(c *gin.Context) {
-	var tags = []model.Tags{}
-	db.Select("id,shortname,des,hot").Find(&tags) //.Order("created_at desc")
-	//c.String(200,)
-	c.JSON(200, gin.H{"data": tags})
-}
-
-func GetColumsList(c *gin.Context) {
-	tag, err0 := strconv.Atoi(c.Query("tag"))
-
-	pageNo, err1 := strconv.Atoi(c.PostForm("pageNo"))
-	pageSize, err2 := strconv.Atoi(c.PostForm("pageSize"))
-	var colums = []model.Colums{}
-
-	if err0 == nil {
-		db.Where("tags LIKE ?", tag).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&colums) //.Order("created_at desc")
-		//c.String(200,)
-		c.JSON(200, gin.H{"data": colums})
-	} else {
-		if nil == err1 && nil == err2 {
-			//if len(search) == 0 {
-			//} else {
-			//}
-			db.Limit(pageSize).Offset((pageNo - 1) * pageSize).Order("id desc").Find(&colums) //.Order("created_at desc")
-			//c.String(200,)
-			c.JSON(200, gin.H{"data": colums})
-		} else {
-			c.JSON(404, gin.H{"status": 0, "msg": "缺少参数"})
-		}
-	}
-
+func checkTokenEnable(token string) bool {
+	return strings.EqualFold(token, "token")
 }
 
 func resetPass(c *gin.Context) {
@@ -108,6 +48,7 @@ func Login(c *gin.Context) {
 		c.JSON(200, gin.H{"msg": "用户不存在"})
 	}
 }
+
 func RegistAccount(c *gin.Context) {
 	//c.Header("tel","")
 	tel := c.PostForm("tel")

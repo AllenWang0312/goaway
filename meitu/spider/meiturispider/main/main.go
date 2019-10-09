@@ -27,18 +27,10 @@ func main() {
 	client.Timeout = 20 * time.Second
 
 	runtime.GOMAXPROCS(100)
+	//wg.Add(1)
+	downloadModelColums([]int{4072}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
+	//getModelColums()
 
-	//client := http.DefaultClient
-	//client.Timeout = 5 * time.Second
-	//downloadItem(client,"27270",1)
-	//downloadSingleColum(0,27600)
-	downloadModelColumsRange(7000, 8000)
-	//downloadModelColums([]int{5175,5174,5173,5142,5141,5140,5166}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
-	//downloadColums(0,[]int{1374,})
-	//getModelColums("")
-	//getCompanysColums(59)
-	//getCompanysColums(59)
-	//downloadSingleColum(2872, 28876)
 	wg.Wait()
 }
 
@@ -49,7 +41,8 @@ func main() {
 //}
 func downloadModelColumsRange(from int, to int) {
 	for i := from; i <= to; i++ {
-		getModelColums(i)
+		//getModelColums(i)
+		getModelInfo(i)
 	}
 }
 func downloadModelColums(modelIds []int) int {
@@ -79,6 +72,10 @@ func getModelColums(modelId int) int {
 		}
 	}
 	return 0
+}
+func getModelInfo(modelId int) {
+	url := meitu.Host + "/t/" + strconv.Itoa(modelId) + "/"
+	AnalyzeModelInfoHtml(client, url, modelId)
 }
 func getCompanysColums(compId int) int {
 	for i := 1; i < meitu.CompanysColumsPageMaxSize; i++ {
@@ -152,7 +149,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
 			gorm.SaveColumInfo(columId, colum)
 
 			if meitu.DownloadImages {
-				_ = os.MkdirAll("../images/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
+				_ = os.MkdirAll("../meituri/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
 				if meitu.AsyTaskDownload {
 					for i := 1; true; i++ {
 						durl := meitu.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + strconv.Itoa(i) + ".jpg"
@@ -163,7 +160,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
 						//	return -2
 						//}
 						filename := strconv.Itoa(i) + ".jpg"
-						path := "../images/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+						path := "../meituri/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
 						//downloadFile(durl,path,filename)
 						e, _ := util.PathExists(path + filename)
 						if e {
@@ -199,7 +196,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
 					//	//	return -2
 					//	//}
 					//	filename := path.Base(uri.Path)
-					//	path := "../images/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+					//	path := "../meituri/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
 					//	e, _ := util.PathExists(path + filename)
 					//	if e {
 					//		fmt.Println("file has exist" + path + filename)
@@ -233,7 +230,7 @@ func downloadColumCover(modelId int, columId int) {
 	//	println(err.Error())
 	//	return -2
 	//}
-	path := "../images/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+	path := "../meituri/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
 	//downloadFile(durl,path,filename)
 	e, _ := util.PathExists(path + filename)
 	if e {
@@ -294,71 +291,90 @@ func AnalyzeModelHomePageHtml(client *http.Client, url string, modelId int, i in
 	fmt.Println(url)
 
 	if err != nil {
+		fmt.Println("analysis html faild")
 		return meitu.AnalysisHtmlFaild
 	}
 	if resp.StatusCode > 400 {
+		fmt.Println("resp.StatusCode > 400")
 		return meitu.UrlInvalid
 	}
 	defer resp.Body.Close()
 	doc, err := goquery.NewDocument(url)
-	if nil != err {
+	if nil == err {
 		if i == 1 && meitu.SaveUserInfo {
-			cover, _ := doc.Find("div.left").Find("img").Attr("src")
-			right := doc.Find("div.right")
-
-			var map1 = make(map[string]string)
-			right.Find("p").Each(func(i int, s *goquery.Selection) {
-				html, _ := s.Html()
-				text := strings.Replace(strings.Replace(html, "<span>", ";", -1), "</span>", "", -1)
-				texts := strings.Split(text, ";")
-				for _, t := range texts {
-
-					len := len(strings.Trim(t, ""))
-					//fmt.Println(t + "/" + strconv.Itoa(len))
-					if len == 0 {
-
-					} else {
-						if strings.Contains(t, "：") {
-							kv := strings.Split(t, "：")
-							map1[kv[0]] = kv[1]
-						} else if strings.Contains(t, ":") {
-							kv := strings.Split(t, ":")
-							map1[kv[0]] = kv[1]
-						}
-						//fmt.Println(kv[0])
-					}
-				}
-				//fmt.Print(texts)
-				//fmt.Println(strconv.Itoa(len(texts)))
-				//texts:=strings.Split(text,"<span>")
-			})
-
-			nicknames := right.Find("h1").Text()
-			shuoming := doc.Find("div.shuoming")
-			more := shuoming.Text()
-			tags := shuoming.Find("p").Text()
-
-			model := model.Models{
-				ID:            modelId,
-				Cover:         cover,
-				Name:          strings.Split(nicknames, "、")[0],
-				Nicknames:     nicknames,
-				More:          more,
-				Tags:          tags,
-				Birthday:      map1["生日"],
-				Constellation: map1["星座"],
-				Height:        map1["身高"],
-				Weight:        map1["体重"],
-				Dimensions:    map1["罩杯"],
-				Address:       map1["来自"],
-				Jobs:          map1["职业"],
-				Interest:      map1["兴趣"],
-			}
-			gorm.SaveModelInfo(&model)
+			saveUseInfo(modelId, doc)
 		}
 	}
-
 	return AnalyzeModelColumPage(modelId, doc)
+}
+func AnalyzeModelInfoHtml(client *http.Client, url string, modelId int) {
+	resp, err := client.Get(url)
+	fmt.Println(url)
+
+	if err != nil {
+		fmt.Println("analysis html faild")
+	}
+	if resp.StatusCode > 400 {
+		fmt.Println("resp.StatusCode > 400")
+	}
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocument(url)
+	if nil == err {
+		saveUseInfo(modelId, doc)
+	}
+}
+func saveUseInfo(modelId int, doc *goquery.Document) {
+	cover, _ := doc.Find("div.left").Find("img").Attr("src")
+	right := doc.Find("div.right")
+	fmt.Println(right.Text())
+	var map1 = make(map[string]string)
+	right.Find("p").Each(func(i int, s *goquery.Selection) {
+		html, _ := s.Html()
+		text := strings.Replace(strings.Replace(html, "<span>", ";", -1), "</span>", "", -1)
+		texts := strings.Split(text, ";")
+		for _, t := range texts {
+			len := len(strings.Trim(t, ""))
+			//fmt.Println(t + "/" + strconv.Itoa(len))
+			if len == 0 {
+
+			} else {
+				if strings.Contains(t, "：") {
+					kv := strings.Split(t, "：")
+					map1[kv[0]] = kv[1]
+				} else if strings.Contains(t, ":") {
+					kv := strings.Split(t, ":")
+					map1[kv[0]] = kv[1]
+				}
+				//fmt.Println(kv[0])
+			}
+		}
+		//fmt.Print(texts)
+		//fmt.Println(strconv.Itoa(len(texts)))
+		//texts:=strings.Split(text,"<span>")
+	})
+
+	nicknames := right.Find("h1").Text()
+	shuoming := doc.Find("div.shuoming")
+	more := shuoming.Text()
+	tags := shuoming.Find("p").Text()
+	fmt.Println(nicknames, modelId)
+	model := model.Models{
+		ID:            modelId,
+		Cover:         cover,
+		Name:          strings.Split(nicknames, "、")[0],
+		Nicknames:     nicknames,
+		More:          more,
+		Tags:          tags,
+		Birthday:      map1["生日"],
+		Constellation: map1["星座"],
+		Height:        map1["身高"],
+		Weight:        map1["体重"],
+		Dimensions:    map1["罩杯"],
+		Address:       map1["来自"],
+		Jobs:          map1["职业"],
+		Interest:      map1["兴趣"],
+	}
+	gorm.SaveModelInfo(&model)
 }
 
 func AnalyzeCompanyHomePageHtml(client *http.Client, url string, companyId int, i int) int {

@@ -54,16 +54,17 @@ func SaveTagInfo(tag model.Tags) int {
 
 //个人介绍页 获取资料
 func SaveModelInfo(m *model.Models) {
-	createSuccess := db.NewRecord(m)
-	if createSuccess {
-		fmt.Println("createSuccess")
-		err1 := db.Create(m).Error
-		if err1 != nil {
-			println(err1.Error())
-		} else {
+	err1 := db.Create(m).Error
+	if err1 != nil {
+		fmt.Println(err1.Error())
+	} else {
 
-		}
 	}
+	//createSuccess := db.NewRecord(m)
+	//if createSuccess {
+	//	fmt.Println("createSuccess")
+	//
+	//}
 }
 func addColumToFavourite(token string, columId int) {
 
@@ -81,7 +82,6 @@ func SaveColumInfo(columId int, c *model.Colums) int {
 			updateTag(id, vk[0])
 		}
 	}
-
 	if err := db.Create(c).Error; err != nil {
 		//return -3
 		println(err.Error())
