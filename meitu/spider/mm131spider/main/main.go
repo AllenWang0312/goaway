@@ -31,26 +31,30 @@ func main() {
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
 	//fenxi(5137, "xinggan")
-	paqufenlei("qingchun", 0, 1000)
+	paqufenlei("chemo", 1, 20000)
 	wg.Wait()
 }
 
 func paqufenlei(fenlei string, from int, to int) {
 	for i := from; i <= to; i++ {
 		url := h5_host + "/" + fenlei + "/" + strconv.Itoa(i) + ".html"
-		fenxi(i, fenlei,url)
-		if(i!=1){
+		fenxi(i, fenlei, url)
+		if i != 1 {
 			old_url := h5_host + "/" + fenlei + "/1_" + strconv.Itoa(i) + ".html"
-			fenxi(i, fenlei,old_url)
+			fenxi(i, fenlei, old_url)
 		}
 	}
 }
 
-func fenxi(columId int, fenlei string,url string) int {
+func fenxi(columId int, fenlei string, url string) int {
 	resp, err := client.Get(url)
+	if err != nil {
+		fmt.Println(err.Error())
+		return -1
+	}
 	defer resp.Body.Close()
 	if resp.StatusCode > 400 {
-		fmt.Println(resp.StatusCode)
+		//fmt.Println(resp.StatusCode)
 		return -1
 	}
 	doc, err := goquery.NewDocument(url)
@@ -77,10 +81,11 @@ func fenxi(columId int, fenlei string,url string) int {
 	orm.SaveColum(&colum, "colums_"+fenlei)
 	//orm.UpdateColumTime(&colum, "colums_"+fenlei)
 	if downloadimg {
-		downloadColum(columId,fenlei)
+		downloadColum(columId, fenlei)
 	}
 	return 0
 }
+
 func downloadColum(columId int, fenlei string) {
 	for i := 1; true; i++ {
 		durl := host + "/pic/" + strconv.Itoa(columId) + "/" + strconv.Itoa(i) + ".jpg"
@@ -91,7 +96,7 @@ func downloadColum(columId int, fenlei string) {
 		//	return -2
 		//}
 		filename := strconv.Itoa(i) + ".jpg"
-		path := "../mm131/" + fenlei+"/"+ strconv.Itoa(columId) + "/"
+		path := "../mm131/" + fenlei + "/" + strconv.Itoa(columId) + "/"
 		//downloadFile(durl,path,filename)
 		e, _ := util.PathExists(path + filename)
 		if e {
@@ -108,14 +113,14 @@ func downloadColum(columId int, fenlei string) {
 			fmt.Println("request create faild: " + err.Error())
 			break
 		}
-		http.DefaultClient.Timeout = 20 * time.Second;
+		http.DefaultClient.Timeout = 20 * time.Second
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
-			fmt.Println("request error: " + err.Error())
+			fmt.Println(durl + " request error: " + err.Error())
 			break
 		}
 		if resp.StatusCode != http.StatusOK {
-			fmt.Println("response status: " + strconv.Itoa(resp.StatusCode))
+			fmt.Println(durl + " response status: " + strconv.Itoa(resp.StatusCode))
 			break
 		}
 		wg.Add(1)
