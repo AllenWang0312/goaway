@@ -2,12 +2,14 @@ package main
 
 import (
 	model "../../../model/doubanmovie"
+	"github.com/PuerkitoBio/goquery"
+	_ "github.com/go-sql-driver/mysql"
+
 	"../../../util"
 	"../gorm"
 	"encoding/json"
 	"fmt"
-	"github.com/PuerkitoBio/goquery"
-	_ "github.com/go-sql-driver/mysql"
+
 	"io"
 	"net/http"
 	"os"
@@ -50,8 +52,8 @@ func main() {
 		defer wg.Done()
 		for {
 			<-t.C
-			//paquMovie(26709318 + offset)
-			paquMovie(26709197 - offset)
+			paquMovie(26709806 + offset)
+			//paquMovie(26709197 - offset)
 			offset++
 			fmt.Println("get ticker1", time.Now().Format("2006-01-02 15:04:05"))
 		}
@@ -77,9 +79,9 @@ func paquMovie(movieId int) int {
 	if err != nil {
 		fmt.Println("request create faild: " + url + err.Error())
 	}
-	http.DefaultClient.Timeout = 20 * time.Second;
+	http.DefaultClient.Timeout = 20 * time.Second
 	resp, err := http.DefaultClient.Do(req)
-	if (err != nil) {
+	if err != nil {
 		println(err.Error())
 		return -1
 	}
@@ -88,6 +90,9 @@ func paquMovie(movieId int) int {
 	if resp.StatusCode > 400 {
 		fmt.Println(resp.StatusCode)
 		return -1
+	}
+	if resp.StatusCode == 403 {
+		panic(resp.StatusCode)
 	}
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
@@ -115,7 +120,7 @@ func paquMovie(movieId int) int {
 	fmt.Println(spans.Size())
 	spans.Each(func(i int, selection *goquery.Selection) {
 		fmt.Println(strconv.Itoa(i) + " " + selection.Text())
-		if (i == 0 || i == 3 || i == 6) {
+		if i == 0 || i == 3 || i == 6 {
 			selection.Find("span.attrs").Find("a").Each(func(j int, selection2 *goquery.Selection) {
 				url, _ := selection2.Attr("href")
 				id := util.GetIdFromUri(url)
@@ -123,11 +128,11 @@ func paquMovie(movieId int) int {
 					ID:   id,
 					Name: selection2.Text(),
 				}
-				if (i == 0) {
+				if i == 0 {
 					drcs = append(drcs, act)
-				} else if (i == 3) {
+				} else if i == 3 {
 					sws = append(sws, act)
-				} else if (i == 6) {
+				} else if i == 6 {
 					acts = append(acts, act)
 				}
 			})
@@ -208,6 +213,7 @@ func downloadfile(durl string, path string, filename string) {
 	wg.Add(1)
 	go downloadImage(resp2, path, filename)
 }
+
 func downloadImage(resp *http.Response, path string, fileName string) {
 	//fileName := getNameFromUrl(url)
 	defer func() {
