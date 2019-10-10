@@ -2,6 +2,7 @@ package api_restful
 
 import (
 	model "../model/meituri"
+	"crypto/aes"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strings"
@@ -17,6 +18,7 @@ func tokenEnable(c *gin.Context) bool {
 	}
 }
 func checkTokenEnable(token string) bool {
+	aes.NewCipher(conf.SecretKey)
 	return strings.EqualFold(token, "token")
 }
 
@@ -31,13 +33,16 @@ func tokenLogin(c *gin.Context) {
 func Login(c *gin.Context) {
 	account := c.PostForm("account")
 	pwd := c.PostForm("pwd")
+	//base64.StdEncoding.EncodeToString(hashData)
 
 	//pwd:=c.PostForm("pwd")
 	user := model.Users{}
 	db.First(&user, "account = ?", account)
 	fmt.Println(user.Info())
+
 	if user.ID > 0 {
 		if strings.EqualFold(user.Pwd, pwd) {
+
 			user.Token = "token"
 			c.JSON(200, gin.H{"msg": "密码正确",
 				"data": &user})

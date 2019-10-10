@@ -2,15 +2,38 @@ package main
 
 import (
 	"../../api_restful"
+	"fmt"
+	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
+	"time"
 )
 
+var Pool redis.Pool
+
+func init() {
+	Pool = redis.Pool{
+		MaxIdle:     16,
+		MaxActive:   32,
+		IdleTimeout: 120,
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", "192.168.0.100:6379")
+		},
+	}
+}
+
 func main() {
+
+	conn := Pool.Get()
+	res, err := conn.Do("HSET", "student", "name", "jack")
+	res1, err := redis.String(conn.Do("HGET", "student", "name"))
+
+	ok, rdsKey := redis.PutJSON("", "user", rdsVal, 1800*time.Second)
+
 	api_restful.InitApiDB()
-	// 默认启动方式，包含 Logger、Recovery 中间件
 	r := gin.Default()
+	// 默认启动方式，包含 Logger、Recovery 中间件
 	//无中间件启动
 	//r := gin.New()
 	//r.Use(gin.Logger())
