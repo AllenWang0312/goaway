@@ -4,8 +4,9 @@ import (
 	"net/http"
 )
 
-//var dataDir="Z:/photos/"
-var data = "I:/"
+var data = "Z:/photos/"
+
+//var data = "I:/"
 
 func main() {
 	mux := http.NewServeMux()
@@ -17,9 +18,9 @@ func main() {
 	//}
 	//func StripPrefix(prefix string, h Handler) Handler
 	// 给定url 删除前缀
-	mux.Handle("/meituri", http.StripPrefix("/meituri", http.FileServer(http.Dir(data+"meituri"))))
-	mux.Handle("/mm131", http.StripPrefix("/mm131", http.FileServer(http.Dir(data+"mm131"))))
-	mux.Handle("/mzitu", http.StripPrefix("/mzitu", http.FileServer(http.Dir(data+"mzitu"))))
+	mux.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(data+"meituri"))))
+	//mux.Handle("/mm131", http.StripPrefix("/mm131", http.FileServer(http.Dir(data+"mm131"))))
+	//mux.Handle("/mzitu", http.StripPrefix("/mzitu", http.FileServer(http.Dir(data+"mzitu"))))
 	//mux.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(data+"jp"))))
 	//mux.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(data+"cn"))))
 	http.ListenAndServe(":8081", mux)

@@ -28,9 +28,16 @@ func main() {
 
 	runtime.GOMAXPROCS(100)
 	//wg.Add(1)
-	downloadModelColums([]int{4072}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
+	//891 8245 8225
+	//downloadModelColums([]int{8245}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
 	//getModelColums()
-
+	models := gorm.GetCNModels()
+	for _, model := range *models {
+		fmt.Println(model.ID)
+		if model.ID <= 1512 { //3150
+			getModelColums(model.ID)
+		}
+	}
 	wg.Wait()
 }
 
@@ -41,8 +48,8 @@ func main() {
 //}
 func downloadModelColumsRange(from int, to int) {
 	for i := from; i <= to; i++ {
-		//getModelColums(i)
-		getModelInfo(i)
+		getModelColums(i)
+		//getModelInfo(i)
 	}
 }
 func downloadModelColums(modelIds []int) int {
@@ -429,7 +436,7 @@ func AnalyzeCompanyPage(doc *goquery.Document) int {
 }
 
 func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
-	println(doc.Url.String())
+	//println(doc.Url.String())
 	hezi := doc.Find("div.hezi")
 	if hezi != nil {
 		hezi.Find("ul").Find("li").Each(func(i int, s *goquery.Selection) {

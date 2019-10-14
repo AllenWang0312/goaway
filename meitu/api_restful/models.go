@@ -47,3 +47,28 @@ func GetModelList(c *gin.Context) {
 		}
 	}
 }
+
+type ModelDetail struct {
+	Info   model.Models
+	Colums []model.Colums
+}
+
+func GetModelHomePage(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("id"))
+	m := model.Models{
+		ID: id,
+	}
+	if nil == err {
+		db.First(&m)
+	}
+	colums := []model.Colums{}
+	db.Where("modelid = ?", id).Find(&colums)
+
+	c.JSON(200, gin.H{"data": ModelDetail{
+		Info:   m,
+		Colums: colums,
+	},
+	})
+
+	//search := c.PostForm("search")
+}

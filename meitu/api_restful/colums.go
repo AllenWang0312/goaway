@@ -1,11 +1,39 @@
 package api_restful
 
 import (
+	"../../configs"
 	model "../model/meituri"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"strconv"
 )
 
+func GetColumPhotos(c *gin.Context) {
+	modelId := c.Query("model_id")
+	columId := c.Query("colum_id")
+	p := "/" + modelId + "/" + columId + "/"
+	path := "../meituri" + p
+	//downloadFile(durl,path,filename)
+	rd, err := ioutil.ReadDir(path)
+	if err == nil {
+		paths := []string{}
+		for _, fi := range rd {
+			if fi.IsDir() {
+				fmt.Printf("[%s]\n", fi.Name())
+			} else {
+				fmt.Println(fi.Name())
+				p := conf.FileServerHostPort + p + fi.Name()
+				paths = append(paths, p)
+				fmt.Println(len(paths), cap(paths), paths, p)
+			}
+		}
+		c.JSON(200, gin.H{"data": paths})
+		return
+	}
+	c.JSON(404, gin.H{"message": "colum not exist"})
+
+}
 func GetColumsList(c *gin.Context) {
 	tag, err0 := strconv.Atoi(c.Query("tag"))
 

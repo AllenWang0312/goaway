@@ -14,7 +14,7 @@ func InitDB() {
 	var err error
 	db, err = gorm.Open("mysql", "root:Qunsi003@tcp(rm-wz952p7325m8jbe3x9o.mysql.rds.aliyuncs.com:3306)/meitu?charset=utf8&parseTime=True&loc=Local") //?charset=utf8&parseTime=True&loc=Local
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
 	}
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(100)
@@ -27,6 +27,7 @@ func SaveColum(userId int, c *model.Colums) {
 		println(err.Error())
 	}
 }
+
 func updateTag(tagId int, shortname string) {
 	tag := model.Tags{
 		Id:        tagId,
@@ -65,6 +66,11 @@ func SaveModelInfo(m *model.Models) {
 	//	fmt.Println("createSuccess")
 	//
 	//}
+}
+func GetCNModels() *[]model.Models {
+	models := []model.Models{}
+	db.Table("models_cn").Select("id").Where("id >= 917").Find(&models)
+	return &models
 }
 func addColumToFavourite(token string, columId int) {
 

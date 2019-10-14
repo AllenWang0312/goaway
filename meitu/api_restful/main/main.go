@@ -2,12 +2,10 @@ package main
 
 import (
 	"../../api_restful"
-	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
-	"time"
 )
 
 var Pool redis.Pool
@@ -25,11 +23,11 @@ func init() {
 
 func main() {
 
-	conn := Pool.Get()
-	res, err := conn.Do("HSET", "student", "name", "jack")
-	res1, err := redis.String(conn.Do("HGET", "student", "name"))
-
-	ok, rdsKey := redis.PutJSON("", "user", rdsVal, 1800*time.Second)
+	//conn := Pool.Get()
+	//res, err := conn.Do("HSET", "student", "name", "jack")
+	//res1, err := redis.String(conn.Do("HGET", "student", "name"))
+	//
+	//ok, rdsKey := redis.PutJSON("", "user", rdsVal, 1800*time.Second)
 
 	api_restful.InitApiDB()
 	r := gin.Default()
@@ -62,9 +60,14 @@ func main() {
 	v1 := r.Group("/v1")
 	api := v1.Group("/api")
 	{
-		//todo resources
-		api.POST("/models", api_restful.GetModelList)
+
+		model := api.Group("/model")
+		{ //todo resources
+			model.POST("/list", api_restful.GetModelList)
+			model.GET("", api_restful.GetModelHomePage)
+		}
 		api.POST("/colums", api_restful.GetColumsList)
+		api.GET("/colum", api_restful.GetColumPhotos)
 
 		tags := api.Group("/tags")
 		{

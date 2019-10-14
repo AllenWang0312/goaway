@@ -1,6 +1,7 @@
 package api_restful
 
 import (
+	"../../configs"
 	model "../model/meituri"
 	"crypto/aes"
 	"fmt"
@@ -18,7 +19,7 @@ func tokenEnable(c *gin.Context) bool {
 	}
 }
 func checkTokenEnable(token string) bool {
-	aes.NewCipher(conf.SecretKey)
+	aes.NewCipher([]byte(conf.AESSecretKey))
 	return strings.EqualFold(token, "token")
 }
 
