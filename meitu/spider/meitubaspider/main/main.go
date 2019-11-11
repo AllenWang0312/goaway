@@ -105,6 +105,8 @@ func jiexiPage(host string, fenlei string) int {
 	return 0
 }
 
+var errtimes = 0
+
 func downloadColum(fenlei string, id string, count int, colum *model.Colums) {
 	if count == 0 {
 		count = 100
@@ -116,6 +118,28 @@ func downloadColum(fenlei string, id string, count int, colum *model.Colums) {
 		} else {
 			url = host + fenlei + "/" + id + "_" + strconv.Itoa(i) + ".html"
 		}
+		req, err := http.NewRequest("GET", url, nil)
+		req.Header.Add("Referer", "https://www.meituba.com")
+		//req.Header.Add("Host", "img1.mmmw.net:443")
+		//req.Header.Add("Proxy-Connection", "keep-alive")
+		//req.Header.Add("User-Agent", "Mozilla/5.0 (Linux; Android 9; ONEPLUS A5000) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Mobile Safari/537.36")
+		if err != nil {
+			fmt.Println("request create faild: " + err.Error())
+			errtimes++
+			if errtimes > 3 {
+				break
+			}
+		}
+		http.DefaultClient.Timeout = 20 * time.Second
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil || resp.StatusCode >= 400 {
+			fmt.Println(url+" request error: "+err.Error(), resp.StatusCode)
+			errtimes++
+			if errtimes > 3 {
+				break
+			}
+		}
+
 		doc, err := goquery.NewDocument(url)
 		if err != nil {
 			fmt.Println(err.Error())
@@ -196,10 +220,10 @@ func downloadImage(asy bool, fenlei, columId, url, filename string) int {
 		fmt.Println(url + " request error: " + err.Error())
 		return -1
 	}
-	if resp.StatusCode != http.StatusOK {
-		fmt.Println(url + " response status: " + strconv.Itoa(resp.StatusCode))
-		return -1
-	}
+	//if resp.StatusCode != http.StatusOK {
+	//	fmt.Println(url + " response status: " + strconv.Itoa(resp.StatusCode))
+	//	return -1
+	//}
 	//fileName := getNameFromUrl(url)
 	defer func() {
 		resp.Body.Close()

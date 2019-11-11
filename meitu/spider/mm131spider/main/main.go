@@ -30,12 +30,13 @@ func main() {
 	orm.InitDB()
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
-	//fenxi(5137, "xinggan")
-	paqufenlei("chemo", 1, 20000)
+	paqufenlei("chemo", 1, 6000)
+	//paqufenlei("chemo", 1, 6000)
 	wg.Wait()
 }
 
 func paqufenlei(fenlei string, from int, to int) {
+	//for i := to; i >= from; i-- {
 	for i := from; i <= to; i++ {
 		url := h5_host + "/" + fenlei + "/" + strconv.Itoa(i) + ".html"
 		fenxi(i, fenlei, url)
