@@ -2,24 +2,23 @@ package main
 
 import (
 	"../../api_restful"
-	"github.com/garyburd/redigo/redis"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
 )
 
-var Pool redis.Pool
+//var Pool redis.Pool
 
-func init() {
-	Pool = redis.Pool{
-		MaxIdle:     16,
-		MaxActive:   32,
-		IdleTimeout: 120,
-		Dial: func() (redis.Conn, error) {
-			return redis.Dial("tcp", "192.168.0.100:6379")
-		},
-	}
-}
+//func init() {
+//	Pool = redis.Pool{
+//		MaxIdle:     16,
+//		MaxActive:   32,
+//		IdleTimeout: 120,
+//		Dial: func() (redis.Conn, error) {
+//			return redis.Dial("tcp", "192.168.0.100:6379")
+//		},
+//	}
+//}
 
 func main() {
 
