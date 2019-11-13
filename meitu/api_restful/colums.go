@@ -37,8 +37,8 @@ func GetColumPhotos(c *gin.Context) {
 func GetColumsList(c *gin.Context) {
 	tag, err0 := strconv.Atoi(c.Query("tag"))
 
-	pageNo, err1 := strconv.Atoi(c.PostForm("pageNo"))
-	pageSize, err2 := strconv.Atoi(c.PostForm("pageSize"))
+	pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
+	pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 	var colums = []model.Colums{}
 
 	if err0 == nil {

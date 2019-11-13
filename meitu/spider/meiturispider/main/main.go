@@ -20,6 +20,7 @@ import (
 )
 
 var client *http.Client
+var end = "cn"
 
 func main() {
 	gorm.InitDB()
@@ -30,14 +31,12 @@ func main() {
 	//wg.Add(1)
 	//891 8245 8225
 	//downloadModelColums([]int{8245}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
-	//getModelColums()
-	models := gorm.GetCNModels()
-	for _, model := range *models {
-		fmt.Println(model.ID)
-		if model.ID <= 1512 { //3150
-			getModelColums(model.ID)
-		}
-	}
+	getModelColums(786)
+	//models := gorm.GetCNModels()
+	//for _, model := range *models {
+	//	fmt.Println(model.ID)
+	//	getModelColums(model.ID)
+	//}
 	wg.Wait()
 }
 
@@ -156,7 +155,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
 			gorm.SaveColumInfo(columId, colum)
 
 			if meitu.DownloadImages {
-				_ = os.MkdirAll("../meituri/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
+				_ = os.MkdirAll("../meituri_"+end+"/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
 				if meitu.AsyTaskDownload {
 					for i := 1; true; i++ {
 						durl := meitu.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + strconv.Itoa(i) + ".jpg"
@@ -167,7 +166,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
 						//	return -2
 						//}
 						filename := strconv.Itoa(i) + ".jpg"
-						path := "../meituri/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+						path := "../meituri_" + end + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
 						//downloadFile(durl,path,filename)
 						e, _ := util.PathExists(path + filename)
 						if e {
@@ -237,7 +236,7 @@ func downloadColumCover(modelId int, columId int) {
 	//	println(err.Error())
 	//	return -2
 	//}
-	path := "../meituri/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+	path := "../meituri_" + end + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
 	//downloadFile(durl,path,filename)
 	e, _ := util.PathExists(path + filename)
 	if e {

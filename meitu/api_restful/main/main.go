@@ -58,15 +58,29 @@ func main() {
 	})
 	v1 := r.Group("/v1")
 	api := v1.Group("/api")
+
 	{
+		like := api.Group("/like")
+		{
+			like.GET("", api_restful.Like)
+			like.GET("/models", api_restful.LikeModelList)
+			like.GET("/colums", api_restful.LikeColumList)
+		}
+		cmd := api.Group("/cmd")
+		{
+			cmd.GET("/hot", api_restful.ManageHot)
+		}
 
 		model := api.Group("/model")
 		{ //todo resources
-			model.POST("/list", api_restful.GetModelList)
+			model.GET("/list", api_restful.GetModelList)
 			model.GET("", api_restful.GetModelHomePage)
 		}
-		api.POST("/colums", api_restful.GetColumsList)
-		api.GET("/colum", api_restful.GetColumPhotos)
+		colum := api.Group("/colum")
+		{
+			colum.GET("/list", api_restful.GetColumsList)
+			colum.GET("", api_restful.GetColumPhotos)
+		}
 
 		tags := api.Group("/tags")
 		{

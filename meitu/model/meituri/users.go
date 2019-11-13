@@ -15,6 +15,7 @@ type Users struct {
 	Tel      string `gorm:"type:varchar(20);index:tel" json:"tel"`
 	Birthday string `gorm:"type:varchar(20);index:birthday" json:"birthday"`
 	Token    string
+	Type     uint64 `gorm:"type:Integer(10);index:type" json:"type"`
 }
 
 func (u *Users) Info() string {

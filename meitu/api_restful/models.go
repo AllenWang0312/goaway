@@ -2,38 +2,15 @@ package api_restful
 
 import (
 	model "../model/meituri"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
-func likeModel(c *gin.Context) {
-	userId, err1 := strconv.Atoi(c.PostForm("userId"))
-	modelId, err2 := strconv.Atoi(c.PostForm("modelId"))
-	if nil == err1 && nil == err2 {
-		like := model.Like{
-			Userid:   userId,
-			Modelid:  modelId,
-			Relation: strconv.Itoa(userId) + "_" + strconv.Itoa(modelId),
-		}
-		db.Create(&like)
-		model := model.Models{
-			ID: modelId,
-		}
-		db.Find(&model)
-		model.Hot = model.Hot + 100
-		fmt.Print(model.Name, model.Hot)
-		db.Update(&model)
-		c.JSON(200, gin.H{"message": "收藏成功"})
-	} else {
-		c.JSON(404, gin.H{"status": 0, "msg": "缺少参数"})
-	}
-}
 func GetModelList(c *gin.Context) {
 	//search := c.PostForm("search")
 	if tokenEnable(c) {
-		pageNo, err1 := strconv.Atoi(c.PostForm("pageNo"))
-		pageSize, err2 := strconv.Atoi(c.PostForm("pageSize"))
+		pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
+		pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 		if nil == err1 && nil == err2 {
 			var models = []model.Models{}
 			//if len(search) == 0 {
@@ -49,8 +26,8 @@ func GetModelList(c *gin.Context) {
 }
 
 type ModelDetail struct {
-	Info   model.Models
-	Colums []model.Colums
+	Info   model.Models   `json:"info"`
+	Colums []model.Colums `json:"colums"`
 }
 
 func GetModelHomePage(c *gin.Context) {

@@ -10,7 +10,9 @@ type Colums struct {
 	Group   string `gorm:"type:varchar(100);index:group" json:"org"`
 	Groupid int    `gorm:"index:groupid" json:"orgid"`
 	No      string `gorm:"type:varchar(20);index:no" json:"no"`
-	Nums    int    `gorm:"index:nums" json:"nums"`
-	Time    string `gorm:"type:varchar(30);index:time" json:"time"`
+
+	Nums int    `gorm:"index:nums" json:"nums"`
+	Time string `gorm:"type:varchar(30);index:time" json:"time"`
+	Hot  int    `gorm:"index:hot" json:"hot"`
 	//Html    string `gorm:"type:varchar(255);index:html" json:"html"`
 }
