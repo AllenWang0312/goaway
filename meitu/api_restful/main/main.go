@@ -93,6 +93,7 @@ func main() {
 			account.PUT("/", api_restful.RegistAccount)
 			account.POST("/login", api_restful.Login)
 		}
+		api.POST("/file", api_restful.UploadFile)
 		//v1.POST("/login", loginEndpoint)
 		//v1.POST("/submit", submitEndpoint)
 		//v1.POST("/read", readEndpoint)
