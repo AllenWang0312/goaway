@@ -1,7 +1,8 @@
 package main
 
 import (
-	"../../api_restful"
+	"../../redis"
+	"../../server_api_restful"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
@@ -21,6 +22,8 @@ import (
 //}
 
 func main() {
+
+	redis.InitConn()
 
 	//conn := Pool.Get()
 	//res, err := conn.Do("HSET", "student", "name", "jack")
@@ -90,6 +93,8 @@ func main() {
 		//todo account
 		account := api.Group("/account")
 		{
+			account.POST("/user/info", api_restful.GetUser)
+			//account.POST("/user",api)
 			account.PUT("/", api_restful.RegistAccount)
 			account.POST("/login", api_restful.Login)
 		}

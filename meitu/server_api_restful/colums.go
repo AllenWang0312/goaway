@@ -23,7 +23,7 @@ func GetColumPhotos(c *gin.Context) {
 				fmt.Printf("[%s]\n", fi.Name())
 			} else {
 				fmt.Println(fi.Name())
-				p := conf.FileServerHostPort + p + fi.Name()
+				p := conf.FILE_SERVER + p + fi.Name()
 				paths = append(paths, p)
 				fmt.Println(len(paths), cap(paths), paths, p)
 			}

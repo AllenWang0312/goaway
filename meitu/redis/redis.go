@@ -1,19 +1,21 @@
-package cache
+package redis
 
 import (
-	"fmt"
 	"github.com/garyburd/redigo/redis"
 )
 
+//func main() {
+
+//}
 var conn redis.Conn
 
-func Init() {
-	conn, err := redis.Dial("tcp", "127.0.0.1:6379")
-	if err != nil {
-		fmt.Println("connect redis error :", err)
-		return
-	}
-	defer conn.Close()
+func InitConn() {
+	conn, _ = redis.Dial("tcp", "127.0.0.1:6379")
+	//if err != nil {
+	//	fmt.Println("connect redis error :", err)
+	//	return
+	//}
+	//defer conn.Close()
 }
 
 func Set(k string, v string, sec uint64) error {

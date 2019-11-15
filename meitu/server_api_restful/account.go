@@ -1,8 +1,11 @@
 package api_restful
 
 import (
+	"../../configs"
+	"../encrypt"
 	model "../model/meituri"
-	"fmt"
+	"../redis"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"strings"
 )
@@ -16,9 +19,18 @@ func tokenEnable(c *gin.Context) bool {
 		return true
 	}
 }
+func logedUser(c *gin.Context) bool {
+
+}
 func checkTokenEnable(token string) bool {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
-	return strings.EqualFold(token, "token")
+	_, err := redis.Get(token)
+	if nil == err {
+		return true
+	} else {
+		return false
+	}
+
 }
 
 func resetPass(c *gin.Context) {
@@ -36,15 +48,19 @@ func Login(c *gin.Context) {
 
 	//pwd:=c.PostForm("pwd")
 	user := model.Users{}
-	db.First(&user, "account = ?", account)
-	fmt.Println(user.Info())
-
+	db.Where("account = ?", account).First(&user)
 	if user.ID > 0 {
 		if strings.EqualFold(user.Pwd, pwd) {
-
-			user.Token = "token"
-			c.JSON(200, gin.H{"msg": "密码正确",
-				"data": &user})
+			token := encrypt.RandToken(16)
+			b, e := json.Marshal(user)
+			if nil == e {
+				err := redis.Set(token, string(b), 30*conf.Day)
+				if nil == err {
+					user.Token = token
+					c.JSON(200, gin.H{"msg": "密码正确",
+						"data": &user})
+				}
+			}
 		} else {
 			c.JSON(200, gin.H{"status": -1, "msg": "确认密码不符"})
 		}
@@ -106,7 +122,28 @@ func RegistAccount(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"status": 1, "msg": "创建成功"})
 }
+func GetUser(c *gin.Context) {
+	var user_id = c.PostForm("user_id")
+	var user = model.Users{}
+	db.Where("id = ?", user_id).First(&user)
+	if user.ID > 0 {
+		c.JSON(200, gin.H{"data": user})
+	} else {
+		c.JSON(404, gin.H{"msg": "用户不存在"})
+	}
+}
 
+//func EditUserInfo(c *gin.Context){
+//	var
+//	var name=c.PostForm("name")
+//	var user=model.Users{}
+//
+//	if user.ID>0 {
+//		c.JSON(200, gin.H{"data": user})
+//	}else {
+//		c.JSON(404, gin.H{"msg": "用户不存在"})
+//	}
+//}
 //todo
 func InsertUser(user *model.Users) error {
 
@@ -119,10 +156,4 @@ func ChangeUserName(userId uint64, userNaem string) error {
 func DeleteUser(userId uint64, statusType model.UserStatusType) error {
 
 	return nil
-}
-func GetUser(userId uint64) (model.Users, error) {
-	return model.Users{}, nil
-}
-func GetUsers() ([]model.Users, error) {
-	return []model.Users{}, nil
 }
