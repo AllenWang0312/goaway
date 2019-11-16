@@ -61,48 +61,48 @@ func main() {
 	})
 	v1 := r.Group("/v1")
 	api := v1.Group("/api")
-
+	//公开接口
+	model := api.Group("/model")
 	{
-		like := api.Group("/like")
-		{
-			like.GET("", api_restful.Like)
-			like.GET("/models", api_restful.LikeModelList)
-			like.GET("/colums", api_restful.LikeColumList)
-		}
-		cmd := api.Group("/cmd")
-		{
-			cmd.GET("/hot", api_restful.ManageHot)
-		}
-
-		model := api.Group("/model")
-		{ //todo resources
-			model.GET("/list", api_restful.GetModelList)
-			model.GET("", api_restful.GetModelHomePage)
-		}
-		colum := api.Group("/colum")
-		{
-			colum.GET("/list", api_restful.GetColumsList)
-			colum.GET("", api_restful.GetColumPhotos)
-		}
-
-		tags := api.Group("/tags")
-		{
-			tags.GET("/hot", api_restful.GetHotTag)
-		}
-
-		//todo account
-		account := api.Group("/account")
-		{
-			account.POST("/user/info", api_restful.GetUser)
-			//account.POST("/user",api)
-			account.PUT("/", api_restful.RegistAccount)
-			account.POST("/login", api_restful.Login)
-		}
-		api.POST("/file", api_restful.UploadFile)
-		//v1.POST("/login", loginEndpoint)
-		//v1.POST("/submit", submitEndpoint)
-		//v1.POST("/read", readEndpoint)
+		model.GET("/list", api_restful.GetModelList)
+		model.GET("", api_restful.GetModelHomePage)
 	}
+	colum := api.Group("/colum")
+	{
+		colum.GET("/list", api_restful.GetColumsList)
+		colum.GET("", api_restful.GetColumPhotos)
+	}
+	//需要登录验证的接口
+	like := api.Group("/like")
+	{
+		like.GET("", api_restful.Like)
+		like.GET("/models", api_restful.LikeModelList)
+		like.GET("/colums", api_restful.LikeColumList)
+	}
+	tags := api.Group("/tags")
+	{
+		tags.GET("/hot", api_restful.GetHotTag)
+	}
+
+	cmd := api.Group("/cmd")
+	{
+		cmd.GET("/hot", api_restful.ManageHot)
+	}
+
+	account := api.Group("/account")
+	{
+		account.POST("/user/info", api_restful.GetUser)
+		//account.POST("/user",api)
+		account.PUT("/", api_restful.RegistAccount)
+		account.POST("/login", api_restful.Login)
+	}
+
+	api.POST("/file", api_restful.UploadFile)
+
+	//v1.POST("/login", loginEndpoint)
+	//v1.POST("/submit", submitEndpoint)
+	//v1.POST("/read", readEndpoint)
+
 	//v2 := r.Group("/v2")
 	//{
 	//	v2.POST("/login", loginEndpoint)

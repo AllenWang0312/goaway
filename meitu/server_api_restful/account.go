@@ -13,15 +13,16 @@ import (
 func tokenEnable(c *gin.Context) bool {
 	token := c.GetHeader("token")
 	if !checkTokenEnable(token) {
-		c.JSON(401, gin.H{"status": -1, "msg": "token已失效"})
+		c.JSON(401, gin.H{"toast": "登录秘钥已过期"})
 		return false
 	} else {
 		return true
 	}
 }
-func logedUser(c *gin.Context) bool {
 
-}
+//func logedUser(c *gin.Context) bool {
+//
+//}
 func checkTokenEnable(token string) bool {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
 	_, err := redis.Get(token)
