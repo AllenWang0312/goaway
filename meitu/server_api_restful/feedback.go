@@ -9,8 +9,16 @@ import (
 
 func GetCommits(c *gin.Context) {
 	var commits []model.Feedback
-	db.Find(&commits)
-	c.JSON(200, gin.H{"data": commits})
+	pageNo, err1 := strconv.Atoi(c.Query("pogeNo"))
+	pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
+	if err1 != nil {
+		c.JSON(200, gin.H{"msg": err1.Error()})
+	} else if err2 != nil {
+		c.JSON(200, gin.H{"msg": err2.Error()})
+	} else {
+		db.Order("like desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&commits)
+		c.JSON(200, gin.H{"data": commits})
+	}
 }
 func Commit(c *gin.Context) {
 	//if tokenEnable(c) {
