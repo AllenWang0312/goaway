@@ -13,7 +13,7 @@ import (
 func tokenEnable(c *gin.Context) bool {
 	token := c.GetHeader("token")
 	if !checkTokenEnable(token) {
-		c.JSON(401, gin.H{"toast": "登录秘钥已过期"})
+		c.JSON(401, gin.H{"status": -1, "msg": "token已失效"})
 		return false
 	} else {
 		return true

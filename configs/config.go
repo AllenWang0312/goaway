@@ -5,9 +5,9 @@ var env = debug
 var proto = "http://"
 
 //var FSRoot = "Z:/photos/"
-var FSRoot = "F:/workspace/work/goaway"
-
 //var FSRoot = "/home/wpc/files/netimg"
+var FSRoot = "F:/workspace/work"
+var ProjectRoot = FSRoot + "/goaway"
 
 var HOST = "localhost"
 
