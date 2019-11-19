@@ -14,7 +14,7 @@ type Users struct {
 	Pwd      string `gorm:"type:varchar(20);index:pwd" json:"pwd"`
 	Tel      string `gorm:"type:varchar(20);index:tel" json:"tel"`
 	Birthday string `gorm:"type:varchar(20);index:birthday" json:"birthday"`
-	Token    string
+	Token    string `json:"token"`
 	Type     uint64 `gorm:"type:Integer(10);index:type" json:"type"`
 }
 

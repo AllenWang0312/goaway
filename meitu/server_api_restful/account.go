@@ -38,8 +38,23 @@ func resetPass(c *gin.Context) {
 
 }
 
-//todo
-func tokenLogin(c *gin.Context) {
+//
+func TokenLogin(c *gin.Context) {
+	token := c.PostForm("token")
+	if(len(token)>0){
+		userinfo, err := redis.Get(token)
+		if nil == err {
+			user := model.Users{}
+			if err := json.Unmarshal([]byte(userinfo), &user); err == nil {
+				c.JSON(200, gin.H{"data": user})
+			}
+		}else{
+			c.JSON(200, gin.H{"toast": err.Error()})
+		}
+	}else{
+		c.JSON(200, gin.H{"toast":"token 为空" })
+	}
+
 
 }
 func Login(c *gin.Context) {
@@ -58,7 +73,7 @@ func Login(c *gin.Context) {
 				err := redis.Set(token, string(b), 30*conf.Day)
 				if nil == err {
 					user.Token = token
-					c.JSON(200, gin.H{"msg": "密码正确",
+					c.JSON(200, gin.H{"toast": "密码正确",
 						"data": &user})
 				}
 			}

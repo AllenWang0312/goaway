@@ -9,14 +9,14 @@ import (
 
 func GetCommits(c *gin.Context) {
 	var commits []model.Feedback
-	pageNo, err1 := strconv.Atoi(c.Query("pogeNo"))
+	pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 	pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 	if err1 != nil {
 		c.JSON(200, gin.H{"msg": err1.Error()})
 	} else if err2 != nil {
 		c.JSON(200, gin.H{"msg": err2.Error()})
 	} else {
-		db.Order("like desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&commits)
+		db.Table("feedbacks").Order("likes desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&commits)
 		c.JSON(200, gin.H{"data": commits})
 	}
 }
@@ -47,7 +47,7 @@ func LikeCommit(c *gin.Context) {
 			Id: id,
 		}
 		db.First(&feed)
-		feed.Like += 1
+		feed.Likes += 1
 		db.Save(feed)
 		c.JSON(200, gin.H{"toast": "点赞成功"})
 	} else {

@@ -101,6 +101,7 @@ func main() {
 			account.POST("/user/info", api_restful.GetUser)
 			//account.POST("/user",api)
 			account.PUT("/", api_restful.RegistAccount)
+			account.POST("/tokenlogin", api_restful.TokenLogin)
 			account.POST("/login", api_restful.Login)
 		}
 		api.POST("/file", api_restful.UploadFile)
