@@ -1,6 +1,6 @@
 package meituri
 
-type Colums struct {
+type Colum struct {
 	ID      int `gorm:"primary_key;index:id" json:"id"`
 	Modelid int `gorm:"index:modelid" json:"modelid"`
 

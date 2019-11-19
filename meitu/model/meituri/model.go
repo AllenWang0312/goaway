@@ -1,6 +1,6 @@
 package meituri
 
-type Models struct {
+type Model struct {
 	ID            int    `gorm:"primary_key;index:id" json:"id"`
 	Cover         string `gorm:"type:varchar(100);index:cover" json:"cover"`
 	Name          string `gorm:"type:varchar(20);index:name" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值

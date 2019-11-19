@@ -41,20 +41,19 @@ func resetPass(c *gin.Context) {
 //
 func TokenLogin(c *gin.Context) {
 	token := c.PostForm("token")
-	if(len(token)>0){
+	if len(token) > 0 {
 		userinfo, err := redis.Get(token)
 		if nil == err {
-			user := model.Users{}
+			user := model.User{}
 			if err := json.Unmarshal([]byte(userinfo), &user); err == nil {
 				c.JSON(200, gin.H{"data": user})
 			}
-		}else{
+		} else {
 			c.JSON(200, gin.H{"toast": err.Error()})
 		}
-	}else{
-		c.JSON(200, gin.H{"toast":"token 为空" })
+	} else {
+		c.JSON(200, gin.H{"toast": "token 为空"})
 	}
-
 
 }
 func Login(c *gin.Context) {
@@ -63,7 +62,7 @@ func Login(c *gin.Context) {
 	//base64.StdEncoding.EncodeToString(hashData)
 
 	//pwd:=c.PostForm("pwd")
-	user := model.Users{}
+	user := model.User{}
 	db.Where("account = ?", account).First(&user)
 	if user.ID > 0 {
 		if strings.EqualFold(user.Pwd, pwd) {
@@ -95,7 +94,7 @@ func RegistAccount(c *gin.Context) {
 		email := c.PostForm("email")
 		if len(tel) > 0 {
 			if len(pwd) > 6 {
-				user := model.Users{
+				user := model.User{
 					Account: tel,
 					Tel:     tel,
 					Pwd:     pwd,
@@ -115,7 +114,7 @@ func RegistAccount(c *gin.Context) {
 			}
 		} else if len(email) > 4 {
 			if len(pwd) > 6 {
-				user := model.Users{
+				user := model.User{
 					Account: email,
 					Email:   email,
 					Pwd:     pwd,
@@ -140,7 +139,7 @@ func RegistAccount(c *gin.Context) {
 }
 func GetUser(c *gin.Context) {
 	var user_id = c.PostForm("user_id")
-	var user = model.Users{}
+	var user = model.User{}
 	db.Where("id = ?", user_id).First(&user)
 	if user.ID > 0 {
 		c.JSON(200, gin.H{"data": user})
@@ -152,7 +151,7 @@ func GetUser(c *gin.Context) {
 //func EditUserInfo(c *gin.Context){
 //	var
 //	var name=c.PostForm("name")
-//	var user=model.Users{}
+//	var user=model.User{}
 //
 //	if user.ID>0 {
 //		c.JSON(200, gin.H{"data": user})
@@ -161,7 +160,7 @@ func GetUser(c *gin.Context) {
 //	}
 //}
 //todo
-func InsertUser(user *model.Users) error {
+func InsertUser(user *model.User) error {
 
 	return nil
 }

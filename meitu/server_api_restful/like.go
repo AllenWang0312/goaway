@@ -16,7 +16,7 @@ import (
 //			Relation: strconv.Itoa(userId) + "_" + strconv.Itoa(modelId),
 //		}
 //		db.Save(&like)
-//		model := model.Models{
+//		model := model.Model{
 //			ID: modelId,
 //		}
 //		db.Find(&model)
@@ -31,9 +31,8 @@ import (
 func LikeModelList(c *gin.Context) {
 	user_id, err := strconv.Atoi(c.Query(USERID))
 	if nil == err {
-		likes := []model.Like{}
-		db.Where("userid = ?", user_id).Find(&likes)
-		println(len(likes))
+		likes := []model.LikeModel{}
+		db.Table("likes").Preload("Model").Where("userid = ?", user_id).Find(&likes)
 		c.JSON(200, gin.H{"data": likes})
 		return
 	} else {
@@ -47,8 +46,8 @@ func LikeColumList(c *gin.Context) {
 	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
 
 	if nil == err {
-		likes := []model.Like{}
-		db.Table(tableNmae).Where("userid = ?", user_id).Find(&likes)
+		likes := []model.LikeColum{}
+		db.Table(tableNmae).Preload("Colum").Where("userid = ?", user_id).Find(&likes)
 		c.JSON(200, gin.H{"data": likes})
 		return
 	} else {
@@ -78,7 +77,7 @@ func Like(c *gin.Context) {
 
 func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
 	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
-	var like = model.Like{
+	var like = model.LikeColum{
 		Userid:   user_id,
 		Modelid:  model_id,
 		Columid:  colum_id,
@@ -86,11 +85,11 @@ func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
 	}
 	db.Table(tableNmae).Where("relation = ?", like.Relation).First(&like)
 	newrec := db.Table(tableNmae).NewRecord(&like)
-	var m = model.Models{
+	var m = model.Model{
 		ID: model_id,
 	}
 	db.Table("models_cn").First(&m)
-	var colum = model.Colums{
+	var colum = model.Colum{
 		ID: colum_id,
 	}
 	db.First(&colum)
@@ -114,14 +113,14 @@ func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
 }
 
 func followModel(user_id int, model_id int, c *gin.Context) {
-	var like = model.Like{
+	var like = model.LikeModel{
 		Userid:   user_id,
 		Modelid:  model_id,
 		Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(model_id),
 	}
 	db.Where("relation = ?", like.Relation).First(&like)
 	newrec := db.NewRecord(&like)
-	var model = model.Models{
+	var model = model.Model{
 		ID: model_id,
 	}
 	db.Table("models_cn").First(&model)

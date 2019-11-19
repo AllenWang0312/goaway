@@ -103,7 +103,7 @@ func getCompanysColums(compId int) int {
 
 var wg sync.WaitGroup
 
-func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
+func downloadSingleColum(modelId int, columId int, colum *model.Colum) int {
 	downloadColumCover(modelId, columId)
 
 	doc, err := goquery.NewDocument(meitu.Host + "/a/" + strconv.Itoa(columId))
@@ -138,7 +138,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colums) int {
 			colum.Time = t
 			//colum.Html = html
 
-			//c := model.Colums{
+			//c := model.Colum{
 			//	ID:      columId,
 			//	Modelid: modelId,
 			//	Title:   title,
@@ -364,7 +364,7 @@ func saveUseInfo(modelId int, doc *goquery.Document) {
 	more := shuoming.Text()
 	tags := shuoming.Find("p").Text()
 	fmt.Println(nicknames, modelId)
-	model := model.Models{
+	model := model.Model{
 		ID:            modelId,
 		Cover:         cover,
 		Name:          strings.Split(nicknames, "、")[0],
@@ -398,7 +398,7 @@ func AnalyzeCompanyHomePageHtml(client *http.Client, url string, companyId int, 
 			name := s.Text()
 			homepage, _ := s.Attr("href")
 			id := util.GetIdFromUri(homepage)
-			group := model.Groups{
+			group := model.Group{
 				Id:       id,
 				Name:     name,
 				Homepage: homepage,
@@ -468,7 +468,7 @@ func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
 			//if(!util.PathExists(strconv.Itoa(colum))){
 			//
 			//}
-			c := model.Colums{
+			c := model.Colum{
 				Nums:    num,
 				Modelid: modelId,
 				Groupid: groupId,

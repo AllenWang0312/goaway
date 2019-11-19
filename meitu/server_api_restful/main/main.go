@@ -63,6 +63,10 @@ func main() {
 	api := v1.Group("/api")
 
 	{
+		config := api.Group("/config")
+		{
+			config.GET("/splash", api_restful.GetSplashInfo)
+		}
 		like := api.Group("/like")
 		{
 			like.GET("", api_restful.Like)

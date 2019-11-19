@@ -20,7 +20,7 @@ func InitDB() {
 	db.DB().SetMaxOpenConns(100)
 }
 
-func SaveColum(userId int, c *model.Colums) {
+func SaveColum(userId int, c *model.Colum) {
 
 	if err := db.Create(c).Error; err != nil {
 		//return -3
@@ -29,13 +29,13 @@ func SaveColum(userId int, c *model.Colums) {
 }
 
 func updateTag(tagId int, shortname string) {
-	tag := model.Tags{
+	tag := model.Tag{
 		Id:        tagId,
 		Shortname: shortname,
 	}
 	db.Model(tag).Update("shortname", shortname)
 }
-func SaveGroupInfo(groups model.Groups) int {
+func SaveGroupInfo(groups model.Group) int {
 	if err := db.Create(groups).Error; err != nil {
 		//return -3
 		println(err.Error())
@@ -44,7 +44,7 @@ func SaveGroupInfo(groups model.Groups) int {
 	}
 	return -1
 }
-func SaveTagInfo(tag model.Tags) int {
+func SaveTagInfo(tag model.Tag) int {
 	if err := db.Create(tag).Error; err != nil {
 		println(err.Error())
 	} else {
@@ -54,7 +54,7 @@ func SaveTagInfo(tag model.Tags) int {
 }
 
 //个人介绍页 获取资料
-func SaveModelInfo(m *model.Models) {
+func SaveModelInfo(m *model.Model) {
 	err1 := db.Create(m).Error
 	if err1 != nil {
 		fmt.Println(err1.Error())
@@ -67,8 +67,8 @@ func SaveModelInfo(m *model.Models) {
 	//
 	//}
 }
-func GetCNModels() *[]model.Models {
-	models := []model.Models{}
+func GetCNModels() *[]model.Model {
+	models := []model.Model{}
 	db.Table("models_cn").Select("id").Where("id >= 917").Find(&models)
 	return &models
 }
@@ -78,7 +78,7 @@ func addColumToFavourite(token string, columId int) {
 func cancelFavourite(token string, columId int) {
 
 }
-func SaveColumInfo(columId int, c *model.Colums) int {
+func SaveColumInfo(columId int, c *model.Colum) int {
 	tags := c.Tags
 	tag := strings.Split(tags, ")")
 	for _, str := range tag {

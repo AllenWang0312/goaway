@@ -3,6 +3,9 @@ package util
 import (
 	"strconv"
 	"strings"
+	//"golang.org/x/text/encoding/simplifiedchinese"
+	//"golang.org/x/text/transform"
+	//"github.com/axgle/mahonia"
 )
 
 // 型如 https://meituri.com/x/1/1096/ 获取1096
@@ -30,3 +33,8 @@ func GetNameIDFromUri(url string) string {
 	index := strings.LastIndex(url, ".")
 	return url[paths+1 : index]
 }
+
+//const (
+//	UTF8    = "UTF-8"
+//	GB18030 = "GB18030"
+//)

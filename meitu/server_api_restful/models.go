@@ -12,7 +12,7 @@ func GetModelList(c *gin.Context) {
 		pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 		pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 		if nil == err1 && nil == err2 {
-			var models = []model.Models{}
+			var models = []model.Model{}
 			//if len(search) == 0 {
 			//} else {
 			//}
@@ -26,19 +26,19 @@ func GetModelList(c *gin.Context) {
 }
 
 type ModelDetail struct {
-	Info   model.Models   `json:"info"`
-	Colums []model.Colums `json:"colums"`
+	Info   model.Model   `json:"info"`
+	Colums []model.Colum `json:"colums"`
 }
 
 func GetModelHomePage(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
-	m := model.Models{
+	m := model.Model{
 		ID: id,
 	}
 	if nil == err {
 		db.First(&m)
 	}
-	colums := []model.Colums{}
+	colums := []model.Colum{}
 	db.Where("modelid = ?", id).Find(&colums)
 
 	c.JSON(200, gin.H{"data": ModelDetail{

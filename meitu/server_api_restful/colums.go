@@ -39,7 +39,7 @@ func GetColumsList(c *gin.Context) {
 
 	pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 	pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
-	var colums = []model.Colums{}
+	var colums = []model.Colum{}
 
 	if err0 == nil {
 		db.Where("tags LIKE ?", tag).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&colums) //.Order("created_at desc")

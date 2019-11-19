@@ -24,15 +24,20 @@ func Commit(c *gin.Context) {
 	//if tokenEnable(c) {
 	user_id, err := strconv.Atoi(c.PostForm("user_id"))
 	content := c.PostForm("content")
-	images := c.PostForm("images")
-	println(images)
+	//content=mahonia.NewDecoder("utf-8").ConvertString(content)
+	println(content)
+	//images :=[]string{}
+	//_ = json.Unmarshal(, &images)
+	//println(images)
+	images := []byte(c.PostForm("images"))
+	now := time.Now()
 	if nil == err {
 		var feedback = model.Feedback{
 			Userid:     user_id,
 			Content:    content,
 			Images:     images,
 			State:      1,
-			Createtime: time.Now().Format("2006-01-02 15:04:05"),
+			Createtime: now,
 		}
 		db.Save(&feedback)
 		c.JSON(200, gin.H{"toast": "提交成功"})
