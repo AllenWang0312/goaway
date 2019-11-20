@@ -86,7 +86,7 @@ func main() {
 		colum := api.Group("/colum")
 		{
 			colum.GET("/list", api_restful.GetColumsList)
-			colum.GET("", api_restful.GetColumPhotos)
+			colum.GET("", api_restful.GetColumDetail)
 		}
 
 		tags := api.Group("/tags")

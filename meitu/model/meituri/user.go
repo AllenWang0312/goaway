@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	ID       uint64 `gorm:"primary_key" json:"id"`
+	ID       int `gorm:"primary_key" json:"id"`
 	Account  string `gorm:"type:varchar(20);index:account" json:"account"`
 	Name     string `gorm:"type:varchar(20);index:name" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
 	Portarit string `gorm:"type:varchar(100);index:portarit" json:"portarit"`
@@ -15,7 +15,7 @@ type User struct {
 	Tel      string `gorm:"type:varchar(20);index:tel" json:"tel"`
 	Birthday string `gorm:"type:varchar(20);index:birthday" json:"birthday"`
 	Token    string `json:"token"`
-	Type     uint64 `gorm:"type:Integer(10);index:type" json:"type"`
+	Type     int `gorm:"type:Integer(10);index:type" json:"type"`
 }
 
 func (u *User) Info() string {

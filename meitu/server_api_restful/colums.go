@@ -9,29 +9,42 @@ import (
 	"strconv"
 )
 
-func GetColumPhotos(c *gin.Context) {
+func GetColumDetail(c *gin.Context) {
 	modelId := c.Query("model_id")
 	columId := c.Query("colum_id")
-	p := "/" + modelId + "/" + columId + "/"
-	path := "../meituri" + p
-	//downloadFile(durl,path,filename)
-	rd, err := ioutil.ReadDir(path)
-	if err == nil {
-		paths := []string{}
-		for _, fi := range rd {
-			if fi.IsDir() {
-				fmt.Printf("[%s]\n", fi.Name())
-			} else {
-				fmt.Println(fi.Name())
-				p := conf.FILE_SERVER + p + fi.Name()
-				paths = append(paths, p)
-				fmt.Println(len(paths), cap(paths), paths, p)
+	colum := model.Colum{}
+
+	db.Where("id = ?", columId).First(&colum)
+
+	if(colum.ID>0){
+
+		p := "/" + modelId + "/" + columId + "/"
+		path := "../meituri" + p
+		//downloadFile(durl,path,filename)
+		rd, err := ioutil.ReadDir(path)
+		if err == nil {
+			paths := []string{}
+			for _, fi := range rd {
+				if fi.IsDir() {
+					fmt.Printf("[%s]\n", fi.Name())
+				} else {
+					fmt.Println(fi.Name())
+					p := conf.FILE_SERVER + p + fi.Name()
+					paths = append(paths, p)
+					fmt.Println(len(paths), cap(paths), paths, p)
+				}
 			}
+			colum.Images = paths
+			c.JSON(200, gin.H{"data": colum})
+			return
+		}else {
+			c.JSON(200, gin.H{"data": colum})
 		}
-		c.JSON(200, gin.H{"data": paths})
-		return
+	}else {
+		c.JSON(404, gin.H{"message": "colum not exist"})
 	}
-	c.JSON(404, gin.H{"message": "colum not exist"})
+
+
 
 }
 func GetColumsList(c *gin.Context) {
