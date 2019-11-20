@@ -74,7 +74,11 @@ func Login(c *gin.Context) {
 					user.Token = token
 					c.JSON(200, gin.H{"toast": "密码正确",
 						"data": &user})
+				}else {
+					c.JSON(200, gin.H{"msg": err.Error()})
 				}
+			}else{
+				c.JSON(200, gin.H{"msg": e.Error()})
 			}
 		} else {
 			c.JSON(200, gin.H{"status": -1, "msg": "确认密码不符"})
@@ -138,7 +142,7 @@ func RegistAccount(c *gin.Context) {
 	c.JSON(200, gin.H{"status": 1, "msg": "创建成功"})
 }
 func GetUser(c *gin.Context) {
-	var user_id = c.PostForm("user_id")
+	var user_id = getUserIdWithToken(c)
 	var user = model.User{}
 	db.Where("id = ?", user_id).First(&user)
 	if user.ID > 0 {
@@ -147,7 +151,42 @@ func GetUser(c *gin.Context) {
 		c.JSON(404, gin.H{"msg": "用户不存在"})
 	}
 }
-
+func getUserWithToken(c *gin.Context) (model.User,error) {
+	//aes.NewCipher([]byte(conf.AESSecretKey))
+	var token = c.PostForm("token")
+	user_str, err := redis.Get(token)
+	var user=model.User{}
+	if err==nil {
+		err = json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
+		if nil==err {
+			return user,nil
+		}else {
+			c.JSON(200,gin.H{"msg":err.Error()})
+		}
+		//json.NewDecoder().Decode(user_str,&user)
+	}else{
+		c.JSON(200,gin.H{"msg":err.Error()})
+	}
+	return user,err
+}
+func getUserIdWithToken(c *gin.Context) int {
+	//aes.NewCipher([]byte(conf.AESSecretKey))
+	var token = c.PostForm("token")
+	user_str, err := redis.Get(token)
+	var user=model.User{}
+	if err==nil {
+		err = json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
+		if nil==err {
+			return user.ID
+		}else {
+			c.JSON(200,gin.H{"msg":err.Error()})
+		}
+		//json.NewDecoder().Decode(user_str,&user)
+	}else{
+		c.JSON(200,gin.H{"msg":err.Error()})
+	}
+	return 0
+}
 //func EditUserInfo(c *gin.Context){
 //	var
 //	var name=c.PostForm("name")

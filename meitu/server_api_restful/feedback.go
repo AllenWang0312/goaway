@@ -21,17 +21,16 @@ func GetCommits(c *gin.Context) {
 	}
 }
 func Commit(c *gin.Context) {
-	//if tokenEnable(c) {
-	user_id, err := strconv.Atoi(c.PostForm("user_id"))
-	content := c.PostForm("content")
-	//content=mahonia.NewDecoder("utf-8").ConvertString(content)
-	println(content)
-	//images :=[]string{}
-	//_ = json.Unmarshal(, &images)
-	//println(images)
-	images := []byte(c.PostForm("images"))
-	now := time.Now()
-	if nil == err {
+	user_id := getUserIdWithToken(c)
+	if user_id > 0 {
+		content := c.PostForm("content")
+		//content=mahonia.NewDecoder("utf-8").ConvertString(content)
+		println(content)
+		//images :=[]string{}
+		//_ = json.Unmarshal(, &images)
+		//println(images)
+		images := []byte(c.PostForm("images"))
+		now := time.Now()
 		var feedback = model.Feedback{
 			Userid:     user_id,
 			Content:    content,
@@ -41,8 +40,10 @@ func Commit(c *gin.Context) {
 		}
 		db.Save(&feedback)
 		c.JSON(200, gin.H{"toast": "提交成功"})
+	}else {
+		c.JSON(200, gin.H{"toast": "提交失败"})
 	}
-	//}
+
 }
 
 func LikeCommit(c *gin.Context) {

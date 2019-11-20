@@ -29,47 +29,50 @@ import (
 //	}
 //}
 func LikeModelList(c *gin.Context) {
-	user_id, err := strconv.Atoi(c.Query(USERID))
-	if nil == err {
+	//user_id, err := strconv.Atoi(c.Query(USERID))
+	user_id := getUserIdWithToken(c)
+
+	if user_id > 0 {
 		likes := []model.LikeModel{}
 		db.Table("likes").Preload("Model").Where("userid = ?", user_id).Find(&likes)
 		c.JSON(200, gin.H{"data": likes})
 		return
 	} else {
-		println(err.Error())
+		//println(err.Error())
 	}
 	c.JSON(400, gin.H{"msg": "未知错误"})
-
 }
 func LikeColumList(c *gin.Context) {
-	user_id, err := strconv.Atoi(c.Query(USERID))
+
+	//user_id, err := strconv.Atoi(c.Query(USERID))
+	user_id := getUserIdWithToken(c)
+
 	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
 
-	if nil == err {
+	if user_id > 0 {
 		likes := []model.LikeColum{}
 		db.Table(tableNmae).Preload("Colum").Where("userid = ?", user_id).Find(&likes)
 		c.JSON(200, gin.H{"data": likes})
 		return
 	} else {
-		println(err.Error())
+		//println(err.Error())
 	}
 	c.JSON(400, gin.H{"msg": "未知错误"})
 
 }
 func Like(c *gin.Context) {
-	if tokenEnable(c) {
-		user_id, err0 := strconv.Atoi(c.Query("user_id"))
+	user_id := getUserIdWithToken(c)
+	if user_id > 0 {
+		//user_id, err0 := strconv.Atoi(c.Query("user_id"))
 		model_id, _ := strconv.Atoi(c.Query("model_id"))
 		colum_id, err1 := strconv.Atoi(c.Query("colum_id"))
 		//dislike,err2:=strconv.Atoi(c.Query("dis"))
-		if nil == err0 {
-			if nil == err1 {
-				likeColum(user_id, model_id, colum_id, c)
-				return
-			} else {
-				followModel(user_id, model_id, c)
-				return
-			}
+		if nil == err1 {
+			likeColum(user_id, model_id, colum_id, c)
+			return
+		} else {
+			followModel(user_id, model_id, c)
+			return
 		}
 	}
 	c.JSON(404, gin.H{"msg": "登录超时"})

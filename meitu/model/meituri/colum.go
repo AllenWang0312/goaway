@@ -14,5 +14,7 @@ type Colum struct {
 	Nums int    `gorm:"index:nums" json:"nums"`
 	Time string `gorm:"type:varchar(30);index:time" json:"time"`
 	Hot  int    `gorm:"index:hot" json:"hot"`
+
+	Images []string `gorm:"-" json:"images"`
 	//Html    string `gorm:"type:varchar(255);index:html" json:"html"`
 }
