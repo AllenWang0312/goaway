@@ -3,6 +3,7 @@ package api_restful
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"../../configs"
 )
 
 var db *gorm.DB
@@ -10,9 +11,10 @@ var db *gorm.DB
 func InitApiDB() {
 	var err error
 	//db, err = gorm.Open("mysql", "root:Qunsi003@tcp(rm-wz952p7325m8jbe3x9o.mysql.rds.aliyuncs.com:3306)/meitu?charset=utf8&parseTime=True&loc=Local") //?charset=utf8&parseTime=True&loc=Local
-	db, err = gorm.Open("mysql", "root:qunsi003@tcp(122.51.205.29:3306)/meitu?charset=utf8&parseTime=True&loc=Local")
+	db, err = gorm.Open("mysql", "root:qunsi003@tcp("+conf.DBHost+":3306)/meitu?charset=utf8&parseTime=True&loc=Local")
+	//db, err = gorm.Open("mysql", "root:qunsi003@tcp(122.51.205.29:3306)/meitu?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
-		panic(err)
+		println(err.Error())
 	}
 
 	db.DB().SetMaxIdleConns(10)

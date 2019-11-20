@@ -4,6 +4,9 @@ var env = debug
 
 var proto = "http://"
 
+const DBHost  ="127.0.0.1"
+//const DBHost  ="122.51.205.29"
+
 //var FSRoot = "Z:/photos/"
 var FSRoot = "/home/wpc/products/netimg/file"
 var ProjectRoot = "/home/wpc/products/netimg"
