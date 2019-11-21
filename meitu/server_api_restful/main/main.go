@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../../redis"
+	"../../cache"
 	"../../server_api_restful"
 	"github.com/gin-gonic/gin"
 	"io"
@@ -23,7 +23,7 @@ import (
 
 func main() {
 
-	redis.InitConn()
+	cache.InitConn()
 
 	//conn := Pool.Get()
 	//res, err := conn.Do("HSET", "student", "name", "jack")
@@ -63,21 +63,6 @@ func main() {
 	api := v1.Group("/api")
 
 	{
-		config := api.Group("/config")
-		{
-			config.GET("/splash", api_restful.GetSplashInfo)
-		}
-		like := api.Group("/like")
-		{
-			like.GET("", api_restful.Like)
-			like.GET("/models", api_restful.LikeModelList)
-			like.GET("/colums", api_restful.LikeColumList)
-		}
-		cmd := api.Group("/cmd")
-		{
-			cmd.GET("/hot", api_restful.ManageHot)
-		}
-
 		model := api.Group("/model")
 		{ //todo resources
 			model.GET("/list", api_restful.GetModelList)
@@ -89,10 +74,31 @@ func main() {
 			colum.GET("", api_restful.GetColumDetail)
 		}
 
-		tags := api.Group("/tags")
+		tag := api.Group("/tag")
 		{
-			tags.GET("/hot", api_restful.GetHotTag)
+			tag.GET("/hot", api_restful.GetHotTag)
 		}
+		group := api.Group("/group")
+		{
+			group.GET("/hot", api_restful.GetHotTag)
+		}
+
+		config := api.Group("/config")
+		{
+			config.GET("/splash", api_restful.GetSplashInfo)
+		}
+		like := api.Group("/like")
+		{
+			like.GET("", api_restful.Like)
+			like.POST("/models", api_restful.LikeModelList)
+			like.POST("/colums", api_restful.LikeColumList)
+		}
+		cmd := api.Group("/cmd")
+		{
+			cmd.GET("/hot", api_restful.ManageHot)
+		}
+
+
 		feedback := api.Group("/feedback")
 		{
 			feedback.GET("/list", api_restful.GetCommits)
@@ -102,6 +108,7 @@ func main() {
 		//todo account
 		account := api.Group("/account")
 		{
+			account.POST("/info", api_restful.GetUser)
 			account.POST("/user/info", api_restful.GetUser)
 			//account.POST("/user",api)
 			account.PUT("/", api_restful.RegistAccount)

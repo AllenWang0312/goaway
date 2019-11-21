@@ -22,7 +22,9 @@ func GetCommits(c *gin.Context) {
 }
 func Commit(c *gin.Context) {
 	user_id := getUserIdWithToken(c)
-	if user_id > 0 {
+	if user_id == -1 {
+		return
+	} else if user_id > 0 {
 		content := c.PostForm("content")
 		//content=mahonia.NewDecoder("utf-8").ConvertString(content)
 		println(content)

@@ -31,8 +31,9 @@ import (
 func LikeModelList(c *gin.Context) {
 	//user_id, err := strconv.Atoi(c.Query(USERID))
 	user_id := getUserIdWithToken(c)
-
-	if user_id > 0 {
+	if user_id == -1 {
+		return
+	} else if user_id > 0 {
 		likes := []model.LikeModel{}
 		db.Table("likes").Preload("Model").Where("userid = ?", user_id).Find(&likes)
 		c.JSON(200, gin.H{"data": likes})
@@ -48,8 +49,9 @@ func LikeColumList(c *gin.Context) {
 	user_id := getUserIdWithToken(c)
 
 	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
-
-	if user_id > 0 {
+	if user_id == -1 {
+		return
+	} else if user_id > 0 {
 		likes := []model.LikeColum{}
 		db.Table(tableNmae).Preload("Colum").Where("userid = ?", user_id).Find(&likes)
 		c.JSON(200, gin.H{"data": likes})
@@ -62,7 +64,9 @@ func LikeColumList(c *gin.Context) {
 }
 func Like(c *gin.Context) {
 	user_id := getUserIdWithToken(c)
-	if user_id > 0 {
+	if user_id == -1 {
+		return
+	} else if user_id > 0 {
 		//user_id, err0 := strconv.Atoi(c.Query("user_id"))
 		model_id, _ := strconv.Atoi(c.Query("model_id"))
 		colum_id, err1 := strconv.Atoi(c.Query("colum_id"))
