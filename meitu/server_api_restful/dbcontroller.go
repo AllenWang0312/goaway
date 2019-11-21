@@ -3,7 +3,7 @@ package api_restful
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"../../configs"
+	"../../conf"
 )
 
 var db *gorm.DB

@@ -1,10 +1,10 @@
 package api_restful
 
 import (
-	"../../configs"
+	"../../conf"
+	"../cache"
 	"../encrypt"
 	model "../model/meituri"
-	"../redis"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"strings"
@@ -25,8 +25,8 @@ func tokenEnable(c *gin.Context) bool {
 //}
 func checkTokenEnable(token string) bool {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
-	_, err := redis.Get(token)
-	if nil == err {
+	v := cache.Get(token)
+	if len(v)>0 {
 		return true
 	} else {
 		return false
@@ -40,16 +40,16 @@ func resetPass(c *gin.Context) {
 
 //
 func TokenLogin(c *gin.Context) {
-	token := c.PostForm("token")
+	token := c.GetHeader("token")
 	if len(token) > 0 {
-		userinfo, err := redis.Get(token)
-		if nil == err {
+		v := cache.Get(token)
+		if len(v)>0 {
 			user := model.User{}
-			if err := json.Unmarshal([]byte(userinfo), &user); err == nil {
+			if err := json.Unmarshal([]byte(v), &user); err == nil {
 				c.JSON(200, gin.H{"data": user})
 			}
 		} else {
-			c.JSON(200, gin.H{"toast": err.Error()})
+			c.JSON(200, gin.H{"toast": "获取token失败"})
 		}
 	} else {
 		c.JSON(200, gin.H{"toast": "token 为空"})
@@ -69,15 +69,15 @@ func Login(c *gin.Context) {
 			token := encrypt.RandToken(16)
 			b, e := json.Marshal(user)
 			if nil == e {
-				err := redis.Set(token, string(b), 30*conf.Day)
+				err := cache.Set(token, string(b), 30*conf.Day)
 				if nil == err {
 					user.Token = token
 					c.JSON(200, gin.H{"toast": "密码正确",
 						"data": &user})
-				}else {
-					c.JSON(200, gin.H{"msg": err.Error()})
+				} else {
+					c.JSON(200, gin.H{"toast": err.Error()})
 				}
-			}else{
+			} else {
 				c.JSON(200, gin.H{"msg": e.Error()})
 			}
 		} else {
@@ -141,52 +141,58 @@ func RegistAccount(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"status": 1, "msg": "创建成功"})
 }
+
+
 func GetUser(c *gin.Context) {
 	var user_id = getUserIdWithToken(c)
-	var user = model.User{}
-	db.Where("id = ?", user_id).First(&user)
-	if user.ID > 0 {
+	if user_id == -1 {
+		return
+	} else if user_id > 0 {
+		var user = model.User{}
+		db.Where("id = ?", user_id).First(&user)
 		c.JSON(200, gin.H{"data": user})
 	} else {
 		c.JSON(404, gin.H{"msg": "用户不存在"})
 	}
 }
-func getUserWithToken(c *gin.Context) (model.User,error) {
+
+func getUserWithToken(c *gin.Context) (model.User) {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
-	var token = c.PostForm("token")
-	user_str, err := redis.Get(token)
-	var user=model.User{}
-	if err==nil {
-		err = json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
-		if nil==err {
-			return user,nil
-		}else {
-			c.JSON(200,gin.H{"msg":err.Error()})
+	var token = c.GetHeader("token")
+	user_str := cache.Get(token)
+	var user = model.User{}
+	if len(user_str)>0  {
+		err := json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
+		if nil == err {
+		} else {
+			c.JSON(200, gin.H{"msg": err.Error()})
 		}
+		return user
 		//json.NewDecoder().Decode(user_str,&user)
-	}else{
-		c.JSON(200,gin.H{"msg":err.Error()})
+	} else {
+		c.JSON(200, gin.H{"msg": "token 获取失败"})
+		return user
 	}
-	return user,err
 }
 func getUserIdWithToken(c *gin.Context) int {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
-	var token = c.PostForm("token")
-	user_str, err := redis.Get(token)
-	var user=model.User{}
-	if err==nil {
-		err = json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
-		if nil==err {
+	var token = c.GetHeader("token")
+	user_str := cache.Get(token)
+	if len(user_str)>0 {
+		var user = model.User{}
+		err := json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
+		if nil == err {
 			return user.ID
-		}else {
-			c.JSON(200,gin.H{"msg":err.Error()})
+		} else {
+			c.JSON(200, gin.H{"msg": "token 有效 解析失败:"+err.Error()})
+			return -1
 		}
-		//json.NewDecoder().Decode(user_str,&user)
-	}else{
-		c.JSON(200,gin.H{"msg":err.Error()})
+	} else {
+		c.JSON(200, gin.H{"msg": "token 获取出错"})
+		return -1
 	}
-	return 0
 }
+
 //func EditUserInfo(c *gin.Context){
 //	var
 //	var name=c.PostForm("name")

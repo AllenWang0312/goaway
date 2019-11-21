@@ -1,7 +1,7 @@
 package api_restful
 
 import (
-	"../../configs"
+	"../../conf"
 	model "../model/meituri"
 	"fmt"
 	"github.com/gin-gonic/gin"

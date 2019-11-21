@@ -8,7 +8,7 @@ import (
 
 func GetModelList(c *gin.Context) {
 	//search := c.PostForm("search")
-	if tokenEnable(c) {
+	//if tokenEnable(c) {
 		pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 		pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 		if nil == err1 && nil == err2 {
@@ -22,7 +22,7 @@ func GetModelList(c *gin.Context) {
 		} else {
 			c.JSON(404, gin.H{"status": 0, "msg": "缺少参数"})
 		}
-	}
+	//}
 }
 
 type ModelDetail struct {

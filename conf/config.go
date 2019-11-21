@@ -3,16 +3,21 @@ package conf
 var env = debug
 
 var proto = "http://"
+//const RediaHost  ="127.0.0.1"
+//const DBHost  ="127.0.0.1"
+//var FSRoot = "/home/wpc/products/netimg/file"
+//var ProjectRoot = "/home/wpc/products/netimg"
 
-const DBHost  ="127.0.0.1"
-//const DBHost  ="122.51.205.29"
+const RediaHost  ="localhost"
+//const RediaHost  ="127.0.0.1"
+const DBHost  ="122.51.205.29"
+
+var FSRoot = "F:/workspace/work"
+var ProjectRoot = FSRoot + "/goaway"
+
+
 
 //var FSRoot = "Z:/photos/"
-var FSRoot = "/home/wpc/products/netimg/file"
-var ProjectRoot = "/home/wpc/products/netimg"
-
-//var FSRoot = "F:/workspace/work"
-//var ProjectRoot = FSRoot + "/goaway"
 
 var HOST = "localhost"
 
