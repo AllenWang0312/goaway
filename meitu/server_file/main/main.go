@@ -1,7 +1,7 @@
 package main
 
 import (
-	"../../../configs"
+	"../../../conf"
 	"fmt"
 	"net/http"
 )

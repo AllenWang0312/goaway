@@ -13,13 +13,10 @@ func GetColumDetail(c *gin.Context) {
 	modelId := c.Query("model_id")
 	columId := c.Query("colum_id")
 	colum := model.Colum{}
-
 	db.Where("id = ?", columId).First(&colum)
-
-	if(colum.ID>0){
-
+	if colum.ID > 0 {
 		p := "/" + modelId + "/" + columId + "/"
-		path := "../meituri" + p
+		path := conf.FSRoot + "/muri" + p
 		//downloadFile(durl,path,filename)
 		rd, err := ioutil.ReadDir(path)
 		if err == nil {
@@ -29,7 +26,7 @@ func GetColumDetail(c *gin.Context) {
 					fmt.Printf("[%s]\n", fi.Name())
 				} else {
 					fmt.Println(fi.Name())
-					p := conf.FILE_SERVER + p + fi.Name()
+					p := conf.FILE_SERVER + "/muri" + p + fi.Name()
 					paths = append(paths, p)
 					fmt.Println(len(paths), cap(paths), paths, p)
 				}
@@ -37,14 +34,12 @@ func GetColumDetail(c *gin.Context) {
 			colum.Images = paths
 			c.JSON(200, gin.H{"data": colum})
 			return
-		}else {
+		} else {
 			c.JSON(200, gin.H{"data": colum})
 		}
-	}else {
+	} else {
 		c.JSON(404, gin.H{"message": "colum not exist"})
 	}
-
-
 
 }
 func GetColumsList(c *gin.Context) {
@@ -57,6 +52,7 @@ func GetColumsList(c *gin.Context) {
 	if err0 == nil {
 		db.Where("tags LIKE ?", tag).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&colums) //.Order("created_at desc")
 		//c.String(200,)
+
 		c.JSON(200, gin.H{"data": colums})
 	} else {
 		if nil == err1 && nil == err2 {
