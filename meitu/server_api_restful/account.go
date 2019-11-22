@@ -25,8 +25,8 @@ func tokenEnable(c *gin.Context) bool {
 //}
 func checkTokenEnable(token string) bool {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
-	v := cache.Get(token)
-	if len(v)>0 {
+	_, err := cache.Get(token)
+	if nil == err {
 		return true
 	} else {
 		return false
@@ -40,21 +40,27 @@ func resetPass(c *gin.Context) {
 
 //
 func TokenLogin(c *gin.Context) {
-	token := c.GetHeader("token")
-	if len(token) > 0 {
-		v := cache.Get(token)
-		if len(v)>0 {
-			user := model.User{}
-			if err := json.Unmarshal([]byte(v), &user); err == nil {
-				c.JSON(200, gin.H{"data": user})
-			}
-		} else {
-			c.JSON(200, gin.H{"toast": "获取token失败"})
-		}
-	} else {
-		c.JSON(200, gin.H{"toast": "token 为空"})
-	}
+	//token := c.GetHeader("token")
+	//if len(token) > 0 {
+	//	v ,err:= cache.Get(token)
+	//	if nil==err {
+	//		user := model.User{}
+	//		if err := json.Unmarshal([]byte(v), &user); err == nil {
+	//			c.JSON(200, gin.H{"data": user})
+	//		}
+	//	} else {
+	//		c.JSON(200, gin.H{"toast": "获取token失败:"+err.Error()})
+	//	}
+	//} else {
+	//	c.JSON(200, gin.H{"toast": "token 为空"})
+	//}
 
+	user := getUserWithToken(c)
+	if (user.ID > 0) {
+		c.JSON(200, gin.H{"data": user})
+	} else {
+		c.JSON(200, gin.H{"toast": "token 登录失败"})
+	}
 }
 func Login(c *gin.Context) {
 	account := c.PostForm("account")
@@ -141,7 +147,6 @@ func RegistAccount(c *gin.Context) {
 	c.JSON(200, gin.H{"status": 1, "msg": "创建成功"})
 }
 
-
 func GetUser(c *gin.Context) {
 	var user_id = getUserIdWithToken(c)
 	if user_id == -1 {
@@ -158,9 +163,9 @@ func GetUser(c *gin.Context) {
 func getUserWithToken(c *gin.Context) (model.User) {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
 	var token = c.GetHeader("token")
-	user_str := cache.Get(token)
+	user_str, err := cache.Get(token)
 	var user = model.User{}
-	if len(user_str)>0  {
+	if nil == err {
 		err := json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
 		if nil == err {
 		} else {
@@ -169,25 +174,27 @@ func getUserWithToken(c *gin.Context) (model.User) {
 		return user
 		//json.NewDecoder().Decode(user_str,&user)
 	} else {
-		c.JSON(200, gin.H{"msg": "token 获取失败"})
+		c.JSON(200, gin.H{"msg": "token 获取失败:" + err.Error()})
 		return user
 	}
 }
 func getUserIdWithToken(c *gin.Context) int {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
 	var token = c.GetHeader("token")
-	user_str := cache.Get(token)
-	if len(user_str)>0 {
+	print(token)
+	user_str, err := cache.Get(token)
+	print(user_str)
+	if nil == err {
 		var user = model.User{}
 		err := json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
 		if nil == err {
 			return user.ID
 		} else {
-			c.JSON(200, gin.H{"msg": "token 有效 解析失败:"+err.Error()})
+			c.JSON(200, gin.H{"msg": "token 有效 解析失败:" + err.Error()})
 			return -1
 		}
 	} else {
-		c.JSON(200, gin.H{"msg": "token 获取出错"})
+		c.JSON(200, gin.H{"msg": "token 获取出错:" + err.Error()})
 		return -1
 	}
 }

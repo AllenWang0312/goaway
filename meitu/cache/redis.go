@@ -30,7 +30,7 @@ func Set(k string, v string, sec uint64) error {
 	}
 	return nil
 }
-func Get(k string) (string) {
-	v, _ := redis.String(conn.Do("GET", k))
-	return v
+func Get(k string) (string ,error) {
+	v, err := redis.String(conn.Do("GET", k))
+	return v,err
 }

@@ -50,7 +50,7 @@ func LikeColumList(c *gin.Context) {
 
 	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
 	if user_id == -1 {
-		return
+
 	} else if user_id > 0 {
 		likes := []model.LikeColum{}
 		db.Table(tableNmae).Preload("Colum").Where("userid = ?", user_id).Find(&likes)
