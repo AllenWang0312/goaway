@@ -4,16 +4,17 @@ var env = debug
 
 var proto = "http://"
 
-const RediaHost = "127.0.0.1"
-const DBHost = "127.0.0.1"
+//const RediaHost = "127.0.0.1"
+//const DBHost = "127.0.0.1"
+//
+//var FSRoot = "/home/wpc/products/netimg"
+//var ProjectRoot = "/home/wpc/products/netimg"
 
-var FSRoot = "/home/wpc/products/netimg"
-var ProjectRoot = "/home/wpc/products/netimg"
+const RediaHost = "122.51.205.29"
+const DBHost = "122.51.205.29"
 
-//const RediaHost  ="122.51.205.29"
-//const DBHost  ="122.51.205.29"
-//var FSRoot = "F:/workspace/work"
-//var ProjectRoot = FSRoot + "/goaway"
+var FSRoot = "F:/workspace/work"
+var ProjectRoot = FSRoot + "/goaway"
 
 //const RediaHost  ="122.51.205.29"
 //const DBHost  ="122.51.205.29"

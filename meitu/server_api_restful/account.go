@@ -60,7 +60,6 @@ func Login(c *gin.Context) {
 	account := c.PostForm("account")
 	pwd := c.PostForm("pwd")
 	//base64.StdEncoding.EncodeToString(hashData)
-
 	//pwd:=c.PostForm("pwd")
 	user := model.User{}
 	db.Where("account = ?", account).First(&user)
