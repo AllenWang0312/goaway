@@ -1,6 +1,7 @@
 package main
 
 import (
+	"../../../../conf"
 	"../gorm"
 
 	"fmt"
@@ -18,7 +19,6 @@ func main() {
 	gorm.InitDB()
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
-
 	runtime.GOMAXPROCS(100)
 	//wg.Add(1)
 	//891 8245 8225
@@ -32,7 +32,7 @@ func main() {
 
 }
 func changdir(id int) {
-	err := os.Rename("../meituri/"+strconv.Itoa(id), "../meituri_cn/"+strconv.Itoa(id))
+	err := os.Rename("../meituri/"+strconv.Itoa(id), conf.FSRoot+"../meituri_cn/"+strconv.Itoa(id))
 
 	if err != nil {
 		fmt.Println(err)

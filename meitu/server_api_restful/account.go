@@ -2,6 +2,7 @@ package api_restful
 
 import (
 	"../../conf"
+	"../../util"
 	"../cache"
 	"../encrypt"
 	model "../model/meituri"
@@ -146,7 +147,32 @@ func RegistAccount(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"status": 1, "msg": "创建成功"})
 }
-
+func Regist(c *gin.Context) {
+	account := c.PostForm("account")
+	pwd := c.PostForm("pwd")
+	if len(account) > 0 && len(pwd) > 0 {
+		var user= model.User{}
+		if util.IsEmail(account) {
+			user = model.User{
+				Account: account,
+				Pwd:     pwd,
+				Email:   account,
+			}
+		}else if util.IsMobile(account){
+			user = model.User{
+				Account: account,
+				Pwd:     pwd,
+				Tel:   account,
+			}
+		}
+		new := db.NewRecord(&user)
+		if new {
+			db.Create(&user)
+		} else {
+			c.JSON(200, gin.H{"toast": "用户已存在"})
+		}
+	}
+}
 func GetUser(c *gin.Context) {
 	var user_id = getUserIdWithToken(c)
 	if user_id == -1 {

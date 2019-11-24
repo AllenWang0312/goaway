@@ -108,6 +108,7 @@ func main() {
 		//todo account
 		account := api.Group("/account")
 		{
+			account.POST("/register", api_restful.Regist)
 			account.POST("/info", api_restful.GetUser)
 			account.POST("/user/info", api_restful.GetUser)
 			//account.POST("/user",api)

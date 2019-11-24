@@ -1,6 +1,7 @@
 package main
 
 import (
+	"../../../../conf"
 	"../../../../meitu"
 	model "../../../model/meituri"
 	"../../../util"
@@ -31,12 +32,35 @@ func main() {
 	//wg.Add(1)
 	//891 8245 8225
 	//downloadModelColums([]int{8245}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
-	getModelColums(786)
-	//models := gorm.GetCNModels()
-	//for _, model := range *models {
-	//	fmt.Println(model.ID)
-	//	getModelColums(model.ID)
-	//}
+	if len(os.Args) > 1 {
+		if len(os.Args)==2{
+			//like:=os.Args[1]
+			//gorm.CreateTableForModels(like)
+		}else if len(os.Args) == 3 {
+			contry := os.Args[1]
+			modelId, err := strconv.Atoi(os.Args[2])
+			if err == nil {
+				end = contry
+				getModelColums(modelId)
+			}
+		} else if len(os.Args) == 4{
+			contry := os.Args[1]
+			modelId, err := strconv.Atoi(os.Args[2])
+			columId, err1 := strconv.Atoi(os.Args[3])
+			if err == nil && err1 == nil {
+				end = contry
+				downloadSingleColum(modelId, columId, nil)
+			}
+		}
+	} else {
+		getModelColums(786)
+		//models := gorm.GetCNModels()
+		//for _, model := range *models {
+		//	fmt.Println(model.ID)
+		//	getModelColums(model.ID)
+		//}
+	}
+
 	wg.Wait()
 }
 
@@ -130,12 +154,16 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colum) int {
 			title := weizhi.Find("h1").Text()
 			subs := doc.Find("div.shuoming").Find("p").Text()
 			//println(title + subs)
-			colum.ID = columId
-			colum.Modelid = modelId
-			colum.Title = title
-			colum.Subs = subs
-			colum.No = no
-			colum.Time = t
+			if nil != colum {
+				colum.ID = columId
+				colum.Modelid = modelId
+				colum.Title = title
+				colum.Subs = subs
+				colum.No = no
+				colum.Time = t
+				gorm.SaveColumInfo(columId, colum)
+			}
+
 			//colum.Html = html
 
 			//c := model.Colum{
@@ -152,10 +180,9 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colum) int {
 			//} else {
 			//	println("saveColumInfo,Success" + strconv.Itoa(colum))
 			//}
-			gorm.SaveColumInfo(columId, colum)
 
 			if meitu.DownloadImages {
-				_ = os.MkdirAll("../meituri_"+end+"/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
+				_ = os.MkdirAll(conf.FSRoot+"/meituri_"+end+"/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
 				if meitu.AsyTaskDownload {
 					for i := 1; true; i++ {
 						durl := meitu.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + strconv.Itoa(i) + ".jpg"
@@ -166,7 +193,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colum) int {
 						//	return -2
 						//}
 						filename := strconv.Itoa(i) + ".jpg"
-						path := "../meituri_" + end + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+						path := conf.FSRoot + "/meituri_" + end + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
 						//downloadFile(durl,path,filename)
 						e, _ := util.PathExists(path + filename)
 						if e {
@@ -202,7 +229,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colum) int {
 					//	//	return -2
 					//	//}
 					//	filename := path.Base(uri.Path)
-					//	path := "../meituri/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+					//	path := conf.FSRoot+"/meituri/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
 					//	e, _ := util.PathExists(path + filename)
 					//	if e {
 					//		fmt.Println("file has exist" + path + filename)
@@ -236,7 +263,7 @@ func downloadColumCover(modelId int, columId int) {
 	//	println(err.Error())
 	//	return -2
 	//}
-	path := "../meituri_" + end + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+	path := conf.FSRoot + "/meituri_" + end + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
 	//downloadFile(durl,path,filename)
 	e, _ := util.PathExists(path + filename)
 	if e {
