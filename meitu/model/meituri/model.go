@@ -16,4 +16,5 @@ type Model struct {
 	More          string `gorm:"type:varchar(255);index:more" json:"more"`
 	Tags          string `gorm:"type:varchar(255);index:tags" json:"tags"`
 	Hot           int    `gorm:"index:hot" json:"hot"`
+	Get           bool   `gorm:"-" json:"get"`
 }

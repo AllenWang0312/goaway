@@ -33,8 +33,9 @@ func getDirList(dirpath string) ([]string, error) {
 	return dir_list, dir_err
 }
 func PathExists(path string) (bool, error) {
-	_, err := os.Stat(path)
+	stat, err := os.Stat(path)
 	if err == nil {
+		println(path,stat.Name(),stat.IsDir())
 		return true, nil
 	}
 	if os.IsNotExist(err) {
