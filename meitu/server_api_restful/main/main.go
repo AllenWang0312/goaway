@@ -62,6 +62,11 @@ func main() {
 	v1 := r.Group("/v1")
 	api := v1.Group("/api")
 
+	m:=api.Group("/m")
+	{
+		m.GET("/home",api_restful.GetHomeData)
+	}
+
 	{
 		model := api.Group("/model")
 		{ //todo resources
@@ -78,10 +83,10 @@ func main() {
 		{
 			tag.GET("/hot", api_restful.GetHotTag)
 		}
-		group := api.Group("/group")
-		{
-			group.GET("/hot", api_restful.GetHotTag)
-		}
+		//group := api.Group("/group")
+		//{
+		//	group.GET("/hot", api_restful.GetHotTag)
+		//}
 
 		config := api.Group("/config")
 		{
