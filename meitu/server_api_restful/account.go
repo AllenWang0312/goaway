@@ -4,10 +4,10 @@ import (
 	"../../conf"
 	"../../util"
 	"../cache"
-	"../encrypt"
 	model "../model/meituri"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"strconv"
 	"strings"
 )
 
@@ -57,31 +57,62 @@ func TokenLogin(c *gin.Context) {
 	//}
 
 	user := getUserWithToken(c)
-	if (user.ID > 0) {
+	if user.ID > 0 {
 		c.JSON(200, gin.H{"data": user})
 	} else {
 		c.JSON(200, gin.H{"toast": "token 登录失败"})
 	}
 }
 func Login(c *gin.Context) {
+	platform := c.Query("platform")
+
 	account := c.PostForm("account")
 	pwd := c.PostForm("pwd")
+	device := c.PostForm("device")
+
 	//base64.StdEncoding.EncodeToString(hashData)
 	//pwd:=c.PostForm("pwd")
 	user := model.User{}
 	db.Where("account = ?", account).First(&user)
+
 	if user.ID > 0 {
+		user_id:=strconv.Itoa(user.ID)
+
 		if strings.EqualFold(user.Pwd, pwd) {
-			token := encrypt.RandToken(16)
+			//token := encrypt.RandToken(16)
+			token:=platform+"_"+device
 			b, e := json.Marshal(user)
 			if nil == e {
-				err := cache.Set(token, string(b), 30*conf.Day)
-				if nil == err {
-					user.Token = token
-					c.JSON(200, gin.H{"toast": "密码正确",
-						"data": &user})
+				err2:= cache.Set(token,user_id, 30*conf.Day)
+				err1:=cache.SetV(user_id,string(b))
+
+				if nil == err1{
+					if nil==err2 {
+						user.Token = token
+						var frecord = model.FollowTab{}
+						db.Where("userid = ", user.ID).First(&frecord)
+
+						var bindDevices = [] model.BindDevice{}
+						db.Where("userid = ", user.ID).Find(&bindDevices)
+
+						var bind = false
+						for i, k := range bindDevices {
+							println(i, k.Key)
+							if k.Key == platform+"_"+device {
+								bind = true
+							}
+						}
+						c.JSON(200, gin.H{"toast": "密码正确",
+							"data": model.LoginResp{
+								User: user,
+								Tab:  frecord.ID > 0,
+								Bind: bind,
+							}})
+					}else{
+						c.JSON(200, gin.H{"toast": err2.Error()})
+					}
 				} else {
-					c.JSON(200, gin.H{"toast": err.Error()})
+					c.JSON(200, gin.H{"toast": err1.Error()})
 				}
 			} else {
 				c.JSON(200, gin.H{"msg": e.Error()})
@@ -147,27 +178,34 @@ func RegistAccount(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"status": 1, "msg": "创建成功"})
 }
+
 func Regist(c *gin.Context) {
 	account := c.PostForm("account")
 	pwd := c.PostForm("pwd")
 	if len(account) > 0 && len(pwd) > 0 {
-		var user= model.User{}
-		if util.IsEmail(account) {
+		var user = model.User{}
+		if util.IsMobile(account) {
 			user = model.User{
 				Account: account,
 				Pwd:     pwd,
-				Email:   account,
+				Tel:     account,
 			}
-		}else if util.IsMobile(account){
-			user = model.User{
-				Account: account,
-				Pwd:     pwd,
-				Tel:   account,
-			}
+		}else{
+			c.JSON(200, gin.H{"toast": "暂时只支持手机号注册哦"})
+			return
 		}
+		//else if util.IsEmail(account) {
+		//	user = model.User{
+		//		Account: account,
+		//		Pwd:     pwd,
+		//		Email:   account,
+		//	}
+		//}
+
 		new := db.NewRecord(&user)
 		if new {
-			db.Create(&user)
+			db.Save(&user)
+			c.JSON(200, gin.H{"toast": "创建成功"})
 		} else {
 			c.JSON(200, gin.H{"toast": "用户已存在"})
 		}
@@ -189,7 +227,7 @@ func GetUser(c *gin.Context) {
 func getUserWithToken(c *gin.Context) (model.User) {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
 	var token = c.GetHeader("token")
-	user_str, err := cache.Get(token)
+	user_str, err := cache.GetSecondaryToken(token)
 	var user = model.User{}
 	if nil == err {
 		err := json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
@@ -208,7 +246,7 @@ func getUserIdWithToken(c *gin.Context) int {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
 	var token = c.GetHeader("token")
 	print(token)
-	user_str, err := cache.Get(token)
+	user_str, err := cache.GetSecondaryToken(token)
 	print(user_str)
 	if nil == err {
 		var user = model.User{}

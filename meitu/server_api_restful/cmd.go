@@ -10,9 +10,9 @@ func ManageHot(c *gin.Context) {
 	model_id, err0 := strconv.Atoi(c.Query(MODELID))
 	hot, err1 := strconv.Atoi(c.Query(HOT))
 	if nil == err0 && nil == err1 {
-		var model = model.Model{
-			ID: model_id,
-		}
+		var model = model.Model{}
+		model.ID=model_id
+
 		db.First(&model)
 		model.Hot = hot
 		db.Save(&model)

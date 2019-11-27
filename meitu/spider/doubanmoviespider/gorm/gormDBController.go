@@ -26,8 +26,8 @@ func SaveMovie( c *model.Subject) {
 }
 //func updateTag(tagId int, shortname string) {
 //	tag := model.Tags{
-//		Id:        tagId,
-//		Shortname: shortname,
+//		ID:        tagId,
+//		ShortName: shortname,
 //	}
 //	db.Model(tag).Update("shortname", shortname)
 //}

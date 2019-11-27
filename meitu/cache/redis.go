@@ -2,6 +2,7 @@ package cache
 
 import (
 	"../../conf"
+	model "../model/meituri"
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -19,6 +20,21 @@ func InitConn() {
 	//defer conn.Close()
 }
 
+func SetV(k string, v string) error {
+	_, err := conn.Do("SET", k, v)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func SetBean(k string,v model.User) error{
+	_, err := conn.Do("SET", k, v)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func Set(k string, v string, sec uint64) error {
 	_, err := conn.Do("SET", k, v)
 	if err != nil {
@@ -30,7 +46,16 @@ func Set(k string, v string, sec uint64) error {
 	}
 	return nil
 }
-func Get(k string) (string ,error) {
+func Get(k string) (string, error) {
 	v, err := redis.String(conn.Do("GET", k))
-	return v,err
+	return v, err
+}
+
+func GetSecondaryToken(k string) (string, error) {
+	first, err := redis.String(conn.Do("GET", k))
+	if err == nil {
+		return Get(first)
+	} else {
+		return "", err
+	}
 }

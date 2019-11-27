@@ -22,7 +22,7 @@ func InitDB() {
 	db.DB().SetMaxOpenConns(100)
 }
 
-func SaveColum(userId int, c *model.Colum) {
+func SaveColum(userId int, c *model.Album) {
 
 	if err := db.Create(c).Error; err != nil {
 		//return -3
@@ -33,7 +33,7 @@ func SaveColum(userId int, c *model.Colum) {
 func updateTag(tagId int, shortname string) {
 	tag := model.Tag{
 		Id:        tagId,
-		Shortname: shortname,
+		ShortName: shortname,
 	}
 	db.Model(tag).Update("shortname", shortname)
 }
@@ -92,7 +92,7 @@ func addColumToFavourite(token string, columId int) {
 func cancelFavourite(token string, columId int) {
 
 }
-func SaveColumInfo(columId int, c *model.Colum) int {
+func SaveColumInfo(columId int, c *model.Album) int {
 	tags := c.Tags
 	tag := strings.Split(tags, ")")
 	for _, str := range tag {

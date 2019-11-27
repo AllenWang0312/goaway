@@ -11,8 +11,8 @@ import (
 //	modelId, err2 := strconv.Atoi(c.PostForm("modelId"))
 //	if nil == err1 && nil == err2 {
 //		like := model.Like{
-//			Userid:   userId,
-//			Modelid:  modelId,
+//			UserId:   userId,
+//			ModelId:  modelId,
 //			Relation: strconv.Itoa(userId) + "_" + strconv.Itoa(modelId),
 //		}
 //		db.Save(&like)
@@ -52,8 +52,8 @@ func LikeColumList(c *gin.Context) {
 	if user_id == -1 {
 
 	} else if user_id > 0 {
-		likes := []model.LikeColum{}
-		db.Table(tableNmae).Preload("Colum").Where("userid = ?", user_id).Find(&likes)
+		var likes []model.LikeAlbum
+		db.Table(tableNmae).Preload("Album").Where("userid = ?", user_id).Find(&likes)
 		c.JSON(200, gin.H{"data": likes})
 		return
 	} else {
@@ -84,19 +84,19 @@ func Like(c *gin.Context) {
 
 func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
 	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
-	var like = model.LikeColum{
-		Userid:   user_id,
-		Modelid:  model_id,
-		Columid:  colum_id,
+	var like = model.LikeAlbum{
+		UserId:   user_id,
+		ModelId:  model_id,
+		AlbumId:  colum_id,
 		Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(model_id) + "_" + strconv.Itoa(colum_id),
 	}
 	db.Table(tableNmae).Where("relation = ?", like.Relation).First(&like)
 	newrec := db.Table(tableNmae).NewRecord(&like)
-	var m = model.Model{
-		ID: model_id,
-	}
+	var m = model.Model{}
+	m.ID= model_id
+
 	db.Table("models_cn").First(&m)
-	var colum = model.Colum{
+	var colum = model.Album{
 		ID: colum_id,
 	}
 	db.First(&colum)
@@ -121,15 +121,15 @@ func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
 
 func followModel(user_id int, model_id int, c *gin.Context) {
 	var like = model.LikeModel{
-		Userid:   user_id,
-		Modelid:  model_id,
+		UserId:   user_id,
+		ModelId:  model_id,
 		Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(model_id),
 	}
 	db.Where("relation = ?", like.Relation).First(&like)
 	newrec := db.NewRecord(&like)
-	var model = model.Model{
-		ID: model_id,
-	}
+	var model = model.Model{}
+	model.ID=model_id
+
 	db.Table("models_cn").First(&model)
 	if newrec {
 		db.Save(&like)

@@ -127,7 +127,7 @@ func getCompanysColums(compId int) int {
 
 var wg sync.WaitGroup
 
-func downloadSingleColum(modelId int, columId int, colum *model.Colum) int {
+func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 	downloadColumCover(modelId, columId)
 
 	doc, err := goquery.NewDocument(meitu.Host + "/a/" + strconv.Itoa(columId))
@@ -156,7 +156,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colum) int {
 			//println(title + subs)
 			if nil != colum {
 				colum.ID = columId
-				colum.Modelid = modelId
+				colum.ModelId = modelId
 				colum.Title = title
 				colum.Subs = subs
 				colum.No = no
@@ -166,9 +166,9 @@ func downloadSingleColum(modelId int, columId int, colum *model.Colum) int {
 
 			//colum.Html = html
 
-			//c := model.Colum{
+			//c := model.Album{
 			//	ID:      columId,
-			//	Modelid: modelId,
+			//	ModelId: modelId,
 			//	Title:   title,
 			//	Subs:    subs,
 			//	Html:    html,
@@ -495,10 +495,10 @@ func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
 			//if(!util.PathExists(strconv.Itoa(colum))){
 			//
 			//}
-			c := model.Colum{
+			c := model.Album{
 				Nums:    num,
-				Modelid: modelId,
-				Groupid: groupId,
+				ModelId: modelId,
+				GroupId: groupId,
 				Group:   group,
 				Tags:    tags,
 			}

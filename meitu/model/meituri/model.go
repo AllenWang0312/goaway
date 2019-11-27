@@ -7,9 +7,9 @@ import (
 )
 
 type Model struct {
-	ID            int    `gorm:"primary_key;index:id" json:"id"`
-	Cover         string `gorm:"type:varchar(100);index:cover" json:"cover"`
-	Name          string `gorm:"type:varchar(20);index:name" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
+	Tab
+	Cover string `gorm:"type:varchar(100);index:cover" json:"cover"`
+	//由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
 	Nicknames     string `gorm:"type:varchar(100);index:nicknames" json:"nickname"`
 	Birthday      string `gorm:"type:varchar(20);index:birthday" json:"birthday"`
 	Constellation string `gorm:"type:varchar(10);index:constellation" json:"constellation"`
@@ -21,18 +21,17 @@ type Model struct {
 	Interest      string `gorm:"type:varchar(200);index:interest" json:"interest"`
 	More          string `gorm:"type:varchar(255);index:more" json:"more"`
 	Tags          string `gorm:"type:varchar(255);index:tags" json:"tags"`
-	Hot           int    `gorm:"index:hot" json:"hot"`
 	Get           bool   `gorm:"-" json:"get"`
 }
-type Colum struct {
+type Album struct {
 	ID      int `gorm:"primary_key;index:id" json:"id"`
-	Modelid int `gorm:"index:modelid" json:"modelid"`
+	ModelId int `gorm:"index:modelid" json:"model_id"`
 
 	Title   string `gorm:"type:varchar(100);index:title" json:"title"`
 	Tags    string `gorm:"type:varchar(100);index:tags" json:"tags"`
 	Subs    string `gorm:"type:varchar(500);index:subs" json:"subs"`
 	Group   string `gorm:"type:varchar(100);index:group" json:"org"`
-	Groupid int    `gorm:"index:groupid" json:"orgid"`
+	GroupId int    `gorm:"index:groupid" json:"group_id"`
 	No      string `gorm:"type:varchar(20);index:no" json:"no"`
 
 	Nums int    `gorm:"index:nums" json:"nums"`
@@ -44,45 +43,28 @@ type Colum struct {
 }
 
 type Tag struct {
-	Id        int    `gorm:"primary_key;index:id" json:"id,omitempty"`
-	Name      string `gorm:"type:varchar(100);index:name" json:"name,omitempty"`
-	Shortname string `gorm:"type:varchar(8);index:shortname" json:"shortname,omitempty"`
-	Des       string `gorm:"type:varchar(200);index:des" json:"des,omitempty"`
-	Nums      int    `gorm:"index:nums" json:"nums,omitempty"`
-	Hot       int    `gorm:"index:hot" json:"hot,omitempty"`
+	Tab
+	Des      string `gorm:"type:varchar(200);index:des" json:"des"`
+	FullName string `gorm:"index:fullname" json:"fullname"`
+	Nums     int    `gorm:"index:nums" json:"nums"`
 }
-
 type Company struct {
-	ID    int    `gorm:"primary_key" json:"id"`
-	Name  string `gorm:"index:name" json:"name"`
-	Count int    `gorm:"index:count" json:"count"`
-	Hot   int    `gorm:"index:hot" json:"hot"`
+	Tab
+	Count int `gorm:"index:count" json:"count"`
 }
 type Group struct {
-	Id       int    `gorm:"primary_key"`
-	Name     string `gorm:"type:varchar(20);index:name"`
+	Tab
 	Belong   int    `gorm:"type:int(20);index:belong"`
 	Homepage string `gorm:"type:varchar(255);index:homepage"`
 }
 
-type LikeModel struct {
-	ID     int `gorm:"primary_key;index:id" json:"id"`
-	Userid int `gorm:"index:userid" json:"userid"`
 
-	Modelid int   `gorm:"index:modelid" json:"modelid"`
-	Model   Model `gorm:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Modelid" json:"model"`
 
-	Relation string `gorm:"index:relation" json:"relation"`
-}
-
-type LikeColum struct {
-	ID      int   `gorm:"primary_key;index:id" json:"id"`
-	Userid  int   `gorm:"index:userid" json:"userid"`
-	Modelid int   `gorm:"index:modelid" json:"modelid"`
-	Columid int   `gorm:"index:columid" json:"columid"`
-	Colum   Colum `gorm:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Columid" json:"colum"`
-
-	Relation string `gorm:"index:relation" json:"relation"`
+type Tab struct {
+	ID   int    `gorm:"primary_key" json:"id"`
+	Name string `gorm:"index:name" json:"name"`
+	Hot  int    `gorm:"index:hot" json:"hot"`
+	Type int `gorm:"-" json:"type"`
 }
 
 type Banner struct {

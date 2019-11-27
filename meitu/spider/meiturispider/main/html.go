@@ -75,7 +75,7 @@ package main
 //			homepage, _ := s.Attr("href")
 //			id := getIdFromUri(homepage)
 //			group := model.Groups{
-//				Id:       id,
+//				ID:       id,
 //				Name:     name,
 //				Homepage: homepage,
 //				Belong:   companyId,

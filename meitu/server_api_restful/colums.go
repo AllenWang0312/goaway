@@ -12,7 +12,7 @@ import (
 func GetColumDetail(c *gin.Context) {
 	modelId := c.Query("model_id")
 	columId := c.Query("colum_id")
-	colum := model.Colum{}
+	colum := model.Album{}
 	db.Where("id = ?", columId).First(&colum)
 	if colum.ID > 0 {
 		p := "/" + modelId + "/" + columId + "/"
@@ -47,7 +47,7 @@ func GetColumsList(c *gin.Context) {
 
 	pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 	pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
-	var colums = []model.Colum{}
+	var colums = []model.Album{}
 
 	if err0 == nil {
 		db.Where("tags LIKE ?", tag).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&colums) //.Order("created_at desc")

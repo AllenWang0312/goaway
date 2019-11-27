@@ -64,6 +64,8 @@ func main() {
 
 	m:=api.Group("/m")
 	{
+		m.GET("/tabs",api_restful.GetTandomHotTab)
+		m.GET("/tabs/follow",api_restful.FollowTabs)
 		m.GET("/home",api_restful.GetHomeData)
 	}
 
@@ -114,10 +116,11 @@ func main() {
 		account := api.Group("/account")
 		{
 			account.POST("/register", api_restful.Regist)
+			//account.PUT("/", api_restful.RegistAccount)
+
 			account.POST("/info", api_restful.GetUser)
 			account.POST("/user/info", api_restful.GetUser)
 			//account.POST("/user",api)
-			account.PUT("/", api_restful.RegistAccount)
 			account.POST("/tokenlogin", api_restful.TokenLogin)
 			account.POST("/login", api_restful.Login)
 		}
