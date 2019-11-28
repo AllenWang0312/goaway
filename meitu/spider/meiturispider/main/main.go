@@ -33,17 +33,17 @@ func main() {
 	//891 8245 8225
 	//downloadModelColums([]int{8245}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
 	if len(os.Args) > 1 {
-		if len(os.Args)==2{
+		if len(os.Args) == 2 {
 			//like:=os.Args[1]
 			//gorm.CreateTableForModels(like)
-		}else if len(os.Args) == 3 {
+		} else if len(os.Args) == 3 {
 			contry := os.Args[1]
 			modelId, err := strconv.Atoi(os.Args[2])
 			if err == nil {
 				end = contry
 				getModelColums(modelId)
 			}
-		} else if len(os.Args) == 4{
+		} else if len(os.Args) == 4 {
 			contry := os.Args[1]
 			modelId, err := strconv.Atoi(os.Args[2])
 			columId, err1 := strconv.Atoi(os.Args[3])
@@ -53,12 +53,11 @@ func main() {
 			}
 		}
 	} else {
-		getModelColums(786)
-		//models := gorm.GetCNModels()
-		//for _, model := range *models {
-		//	fmt.Println(model.ID)
-		//	getModelColums(model.ID)
-		//}
+		//getModelColums(786)
+		models := gorm.GetCNModels()
+		for _, model := range *models {
+			getModelColums(model.ID)
+		}
 	}
 
 	wg.Wait()
@@ -156,7 +155,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 			//println(title + subs)
 			if nil != colum {
 				colum.ID = columId
-				colum.ModelId = modelId
+				colum.Modelid = modelId
 				colum.Title = title
 				colum.Subs = subs
 				colum.No = no
@@ -392,9 +391,7 @@ func saveUseInfo(modelId int, doc *goquery.Document) {
 	tags := shuoming.Find("p").Text()
 	fmt.Println(nicknames, modelId)
 	model := model.Model{
-		ID:            modelId,
 		Cover:         cover,
-		Name:          strings.Split(nicknames, "、")[0],
 		Nicknames:     nicknames,
 		More:          more,
 		Tags:          tags,
@@ -407,6 +404,9 @@ func saveUseInfo(modelId int, doc *goquery.Document) {
 		Jobs:          map1["职业"],
 		Interest:      map1["兴趣"],
 	}
+	model.ID=modelId
+	model.Name=strings.Split(nicknames, "、")[0]
+
 	gorm.SaveModelInfo(&model)
 }
 
@@ -426,11 +426,11 @@ func AnalyzeCompanyHomePageHtml(client *http.Client, url string, companyId int, 
 			homepage, _ := s.Attr("href")
 			id := util.GetIdFromUri(homepage)
 			group := model.Group{
-				Id:       id,
-				Name:     name,
 				Homepage: homepage,
 				Belong:   companyId,
 			}
+			group.ID=id
+			group.Name=name
 			gorm.SaveGroupInfo(group)
 			//fmt.Print()
 		})
@@ -478,7 +478,6 @@ func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
 					groupId = util.GetIdFromUri(href)
 					group = a.Text()
 				} else if strings.Contains(s1.Text(), "类型") {
-
 					s1.Find("a").Each(func(i int, s2 *goquery.Selection) {
 						href, _ := s2.Attr("href")
 						tags += s2.Text() + "(" + strconv.Itoa(util.GetIdFromUri(href)) + ")"
@@ -497,8 +496,8 @@ func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
 			//}
 			c := model.Album{
 				Nums:    num,
-				ModelId: modelId,
-				GroupId: groupId,
+				Modelid: modelId,
+				Groupid: groupId,
 				Group:   group,
 				Tags:    tags,
 			}

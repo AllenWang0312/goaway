@@ -22,14 +22,19 @@ func (u *User) Info() string {
 }
 
 type Zone struct {
-	ID int `gorm:"type:int(11);primary_key" json:"id"`
-	Type int `gorm:"type:int(4)" json:"type"`
-	Userid int `gorm:"type:int(11)" json:"user_id"`
-	Companyid int `gorm:"type:int(11)" json:"company_id"`
-	Groupid int `gorm:"type:int(11)" json:"group_id"`
-	Modelid int `gorm:"type:int(11)" json:"model_id"`
-	Albumid int `gorm:"type:int(11)" json:"album_id"`
+	ID        int     `gorm:"primary_key;AUTO_INCREMENT" json:"id"`
+	Type      int     `gorm:"type:int(4)" json:"type"`
+	Userid    int     `gorm:"type:int(11)" json:"user_id"`
+	Companyid int     `gorm:"type:int(11)" json:"company_id"`
+	Groupid   int     `gorm:"type:int(11)" json:"group_id"`
+	Modelid   int     `gorm:"type:int(11)" json:"model_id"`
+	Albumid   int     `gorm:"type:int(11);index:albumid;unique" json:"album_id"`
 
+	Content   string  `gorm:"type:varchar(255)" json:"content"`
+	Time      string    `gorm:"type:varchar(32)" json:"time"`
+	Address   string  `gorm:"type:varchar(100)" json:"address"`
+	Lat       float32 `gorm:"type:float(32)" json:"lat"`
+	Long      float32 `gorm:"type:float(32)" json:"long"`
 }
 type BindDevice struct {
 	ID       int    `gorm:"primary_key" json:"id"`

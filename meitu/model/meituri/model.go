@@ -25,18 +25,18 @@ type Model struct {
 }
 type Album struct {
 	ID      int `gorm:"primary_key;index:id" json:"id"`
-	ModelId int `gorm:"index:modelid" json:"model_id"`
+	Modelid int `gorm:"type:int(11)" json:"model_id"`
+	Groupid int `gorm:"type:int(11)" json:"group_id"`
 
-	Title   string `gorm:"type:varchar(100);index:title" json:"title"`
-	Tags    string `gorm:"type:varchar(100);index:tags" json:"tags"`
-	Subs    string `gorm:"type:varchar(500);index:subs" json:"subs"`
-	Group   string `gorm:"type:varchar(100);index:group" json:"org"`
-	GroupId int    `gorm:"index:groupid" json:"group_id"`
-	No      string `gorm:"type:varchar(20);index:no" json:"no"`
+	Title string `gorm:"type:varchar(100);index:title" json:"title"`
+	Tags  string `gorm:"type:varchar(100);index:tags" json:"tags"`
+	Subs  string `gorm:"type:varchar(500);index:subs" json:"subs"`
+	Group string `gorm:"type:varchar(100);index:group" json:"org"`
+	No    string `gorm:"type:varchar(20);index:no" json:"no"`
 
-	Nums int    `gorm:"index:nums" json:"nums"`
+	Nums int    `gorm:"type:int(11)" json:"nums"`
 	Time string `gorm:"type:varchar(30);index:time" json:"time"`
-	Hot  int    `gorm:"index:hot" json:"hot"`
+	Hot  int    `gorm:"type:int(16)" json:"hot"`
 
 	Images []string `gorm:"-" json:"images"`
 	//Html    string `gorm:"type:varchar(255);index:html" json:"html"`
@@ -86,10 +86,10 @@ type Splash struct {
 	End    Time   `gorm:"index:end" json:"end"`
 	ArtUrl string `gorm:"index:art_url" json:"art_url"`
 
-	AuthorId int `gorm:"index:authorid" json:"author_id"`
-	//Author   User `gorm:"FOREIGNKEY AuthorId" json:"author"`
+	Authorid int `gorm:"type:int(11)" json:"author_id"`
+	//Author   User `gorm:"FOREIGNKEY Authorid" json:"author"`
 
-	ModelId int `gorm:"index:modelid" json:"model_id"`
+	Modelid int `gorm:"type:int(11)" json:"model_id"`
 	//Model Model `gorm:"FOREIGNKEY Modelid" json:"model"`
 }
 
@@ -110,7 +110,7 @@ func (t Time) MarshalJSON() ([]byte, error) {
 //feedback
 type StringArray []byte
 type Feedback struct {
-	Id         int         `gorm:"primary_key" json:"id"`
+	ID         int         `gorm:"primary_key" json:"id"`
 	Userid     int         `gorm:"type:int(20);index:userid" json:"user_id"`
 	Content    string      `gorm:"type:varchar(255);index:name" json:"content"`
 	Images     StringArray `gorm:"type:varchar(255);index:images" json:"images"`

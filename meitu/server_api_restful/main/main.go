@@ -112,7 +112,7 @@ func main() {
 		cmd := api.Group("/cmd")
 		{
 			cmd.GET("/hot", api_restful.ManageHot)
-			cmd.GET("/zone",api_restful.createHistryForAlbum)
+			cmd.GET("/zone",api_restful.CreateHistryForAlbum)
 		}
 
 

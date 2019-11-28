@@ -83,7 +83,7 @@ func SaveModelInfo(m *model.Model) {
 func GetCNModels() *[]model.Model {
 	models := []model.Model{}
 	//.Where("id >= 917")
-	db.Table("models_cn").Select("id").Find(&models)
+	db.Table("models_cn").Select("id,hot").Order("hot desc").Find(&models)
 	return &models
 }
 func addColumToFavourite(token string, columId int) {

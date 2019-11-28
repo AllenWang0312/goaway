@@ -52,7 +52,7 @@ func LikeCommit(c *gin.Context) {
 	id, err := strconv.Atoi(c.PostForm("id"))
 	if nil == err {
 		feed := model.Feedback{
-			Id: id,
+			ID: id,
 		}
 		db.First(&feed)
 		feed.Likes += 1

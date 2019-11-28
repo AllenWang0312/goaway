@@ -12,4 +12,5 @@ const Day = 24 * Hour
 const Company = 0
 const Group = 1
 const Model = 2
-const Tag  = 3
+const Tag = 3
+const Album = 4

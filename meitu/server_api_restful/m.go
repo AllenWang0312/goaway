@@ -107,9 +107,9 @@ func FollowedTabs(c *gin.Context) {
 				followed = append(followed, tag.Tab)
 			}
 		}
-		c.JSON(200,gin.H{"data":followed})
-	}else {
-		c.JSON(200,gin.H{"toast":"token 失效"})
+		c.JSON(200, gin.H{"data": followed})
+	} else {
+		c.JSON(200, gin.H{"toast": "token 失效"})
 	}
 
 }
@@ -134,20 +134,23 @@ func GetHomeData(c *gin.Context) {
 	}
 }
 func GetZoneHistroy(c *gin.Context) {
-	var user_id=getUserIdWithToken(c)
-	if user_id>0 {
+	var user_id = getUserIdWithToken(c)
+	if user_id > 0 {
 		pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 		pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
-		if err1==nil&&err2==nil {
+		if err1 == nil && err2 == nil {
 			var tabs []model.FollowTab
-			db.Where("userid = ? And type = 2",user_id).Find(&tabs)
-			for _,f:=range tabs {
-				db=db.Or("modelid = ?",f.Resid)
+			db.Where("userid = ? And type = 2", user_id).Find(&tabs)
+			for _, f := range tabs {
+				db = db.Or("modelid = ?", f.Resid)
 			}
-			db.Offset((pageNo-1 )* pageSize).Limit(pageSize).Find()
+			var zones = []model.Zone{}
+			db.Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&zones)
+			c.JSON(200,gin.H{"data":zones})
+		}else{
+			c.JSON(200,gin.H{"toast":"参数错误"})
 		}
-
-
+	}else {
 
 	}
 }
