@@ -64,9 +64,18 @@ func main() {
 
 	m:=api.Group("/m")
 	{
-		m.GET("/tabs",api_restful.GetTandomHotTab)
-		m.GET("/tabs/follow",api_restful.FollowTabs)
-		m.GET("/home",api_restful.GetHomeData)
+		tabs:=m.Group("/tabs")
+		{
+			tabs.GET("/",api_restful.GetTandomHotTab)
+			tabs.POST("/follow",api_restful.FollowTabs)
+			tabs.GET("/followed",api_restful.FollowedTabs)
+
+		}
+		home:=m.Group("/home")
+		{
+			home.GET("/",api_restful.GetHomeData)
+			home.GET("/zone",api_restful.GetZoneHistroy)
+		}
 	}
 
 	{
@@ -103,6 +112,7 @@ func main() {
 		cmd := api.Group("/cmd")
 		{
 			cmd.GET("/hot", api_restful.ManageHot)
+			cmd.GET("/zone",api_restful.createHistryForAlbum)
 		}
 
 

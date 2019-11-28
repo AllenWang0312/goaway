@@ -11,8 +11,8 @@ import (
 //	modelId, err2 := strconv.Atoi(c.PostForm("modelId"))
 //	if nil == err1 && nil == err2 {
 //		like := model.Like{
-//			UserId:   userId,
-//			ModelId:  modelId,
+//			Userid:   userId,
+//			Modelid:  modelId,
 //			Relation: strconv.Itoa(userId) + "_" + strconv.Itoa(modelId),
 //		}
 //		db.Save(&like)
@@ -85,9 +85,9 @@ func Like(c *gin.Context) {
 func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
 	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
 	var like = model.LikeAlbum{
-		UserId:   user_id,
-		ModelId:  model_id,
-		AlbumId:  colum_id,
+		Userid:   user_id,
+		Modelid:  model_id,
+		Albumid:  colum_id,
 		Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(model_id) + "_" + strconv.Itoa(colum_id),
 	}
 	db.Table(tableNmae).Where("relation = ?", like.Relation).First(&like)
@@ -121,8 +121,8 @@ func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
 
 func followModel(user_id int, model_id int, c *gin.Context) {
 	var like = model.LikeModel{
-		UserId:   user_id,
-		ModelId:  model_id,
+		Userid:   user_id,
+		Modelid:  model_id,
 		Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(model_id),
 	}
 	db.Where("relation = ?", like.Relation).First(&like)

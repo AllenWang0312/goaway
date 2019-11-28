@@ -40,7 +40,7 @@ func Commit(c *gin.Context) {
 			State:      1,
 			Createtime: now,
 		}
-		db.Save(&feedback)
+		db.Create(&feedback)
 		c.JSON(200, gin.H{"toast": "提交成功"})
 	}else {
 		c.JSON(200, gin.H{"toast": "提交失败"})
@@ -56,7 +56,7 @@ func LikeCommit(c *gin.Context) {
 		}
 		db.First(&feed)
 		feed.Likes += 1
-		db.Save(feed)
+		db.Create(feed)
 		c.JSON(200, gin.H{"toast": "点赞成功"})
 	} else {
 		c.JSON(404, gin.H{"toast": "id 不能为空"})

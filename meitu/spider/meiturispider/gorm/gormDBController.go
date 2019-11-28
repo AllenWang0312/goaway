@@ -31,12 +31,12 @@ func SaveColum(userId int, c *model.Album) {
 }
 
 func updateTag(tagId int, shortname string) {
-	tag := model.Tag{
-		Id:        tagId,
-		ShortName: shortname,
-	}
-	db.Model(tag).Update("shortname", shortname)
+	tag := model.Tag{}
+	tag.ID=tagId
+	tag.Name=shortname
+	db.Model(tag).Update("name", shortname)
 }
+
 func SaveGroupInfo(groups model.Group) int {
 	if err := db.Create(groups).Error; err != nil {
 		//return -3
