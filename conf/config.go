@@ -11,18 +11,18 @@ var proto = "http://"
 //var ProjectRoot = "/home/wpc/products/netimg"
 
 //work
-const RediaHost = "122.51.205.29"
-const DBHost = "122.51.205.29"
-var FSRoot = "F:/workspace/work"
-var FSMuri = FSRoot+"/muri"
-var ProjectRoot = FSRoot + "/goaway"
+//const RediaHost = "122.51.205.29"
+//const DBHost = "122.51.205.29"
+//var FSRoot = "F:/workspace/work"
+//var FSMuri = FSRoot+"/muri"
+//var ProjectRoot = FSRoot + "/goaway"
 
 //home
-//const RediaHost  ="122.51.205.29"
-//const DBHost  ="122.51.205.29"
-//var FSRoot = "Z:/photos"
-//var FSMuri = FSRoot+"/meituri_cn"
-//var ProjectRoot ="E:/work/goaway"
+const RediaHost  ="122.51.205.29"
+const DBHost  ="122.51.205.29"
+var FSRoot = "Z:/photos"
+var FSMuri = FSRoot+"/meituri_cn"
+var ProjectRoot ="E:/work/goaway"
 //
 
 var HOST = "localhost"
