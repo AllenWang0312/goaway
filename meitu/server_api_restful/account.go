@@ -58,11 +58,19 @@ func TokenLogin(c *gin.Context) {
 
 	user := getUserWithToken(c)
 	if user.ID > 0 {
-		c.JSON(200, gin.H{"data": user})
+		platform := c.Query("platform")
+		device := c.PostForm("device")
+
+		c.JSON(200, gin.H{"data": model.LoginResp{
+			User: user,
+			Tab:  getFirstTabFollowID(user.ID) > 0,
+			Bind: hasThisDeviceBinded(user.ID, platform, device),
+		}})
 	} else {
 		c.JSON(200, gin.H{"toast": "token 登录失败"})
 	}
 }
+
 func Login(c *gin.Context) {
 	platform := c.Query("platform")
 
@@ -76,39 +84,27 @@ func Login(c *gin.Context) {
 	db.Where("account = ?", account).First(&user)
 
 	if user.ID > 0 {
-		user_id:=strconv.Itoa(user.ID)
+		user_id := strconv.Itoa(user.ID)
 
 		if strings.EqualFold(user.Pwd, pwd) {
 			//token := encrypt.RandToken(16)
-			token:=platform+"_"+device
+			token := platform + "_" + device
 			b, e := json.Marshal(user)
 			if nil == e {
-				err2:= cache.Set(token,user_id, 30*conf.Day)
-				err1:=cache.SetV(user_id,string(b))
+				err2 := cache.Set(token, user_id, 30*conf.Day)
+				err1 := cache.SetV(user_id, string(b))
 
-				if nil == err1{
-					if nil==err2 {
+				if nil == err1 {
+					if nil == err2 {
 						user.Token = token
-						var frecord = model.FollowTab{}
-						db.Where("userid = ", user.ID).First(&frecord)
 
-						var bindDevices = [] model.BindDevice{}
-						db.Where("userid = ", user.ID).Find(&bindDevices)
-
-						var bind = false
-						for i, k := range bindDevices {
-							println(i, k.Key)
-							if k.Key == platform+"_"+device {
-								bind = true
-							}
-						}
 						c.JSON(200, gin.H{"toast": "密码正确",
 							"data": model.LoginResp{
 								User: user,
-								Tab:  frecord.ID > 0,
-								Bind: bind,
+								Tab:  getFirstTabFollowID(user.ID) > 0,
+								Bind: hasThisDeviceBinded(user.ID, platform, device),
 							}})
-					}else{
+					} else {
 						c.JSON(200, gin.H{"toast": err2.Error()})
 					}
 				} else {
@@ -123,6 +119,26 @@ func Login(c *gin.Context) {
 	} else {
 		c.JSON(200, gin.H{"msg": "用户不存在"})
 	}
+}
+
+func hasThisDeviceBinded(userid int, platform string, device string) bool {
+	var bindDevices = [] model.BindDevice{}
+	db.Where("userid = ", userid).Find(&bindDevices)
+
+	var bind = false
+	for i, k := range bindDevices {
+		println(i, k.Key)
+		if k.Key == platform+"_"+device {
+			bind = true
+		}
+	}
+	return bind
+}
+
+func getFirstTabFollowID(userid int) int {
+	var frecord = model.FollowTab{}
+	db.Where("userid = ", userid).First(&frecord)
+	return frecord.ID
 }
 
 func RegistAccount(c *gin.Context) {
@@ -190,7 +206,7 @@ func Regist(c *gin.Context) {
 				Pwd:     pwd,
 				Tel:     account,
 			}
-		}else{
+		} else {
 			c.JSON(200, gin.H{"toast": "暂时只支持手机号注册哦"})
 			return
 		}
@@ -204,7 +220,7 @@ func Regist(c *gin.Context) {
 
 		new := db.NewRecord(&user)
 		if new {
-			db.Save(&user)
+			db.Create(&user)
 			c.JSON(200, gin.H{"toast": "创建成功"})
 		} else {
 			c.JSON(200, gin.H{"toast": "用户已存在"})
@@ -245,22 +261,30 @@ func getUserWithToken(c *gin.Context) (model.User) {
 func getUserIdWithToken(c *gin.Context) int {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
 	var token = c.GetHeader("token")
-	print(token)
-	user_str, err := cache.GetSecondaryToken(token)
-	print(user_str)
-	if nil == err {
-		var user = model.User{}
-		err := json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
-		if nil == err {
-			return user.ID
-		} else {
-			c.JSON(200, gin.H{"msg": "token 有效 解析失败:" + err.Error()})
-			return -1
-		}
-	} else {
-		c.JSON(200, gin.H{"msg": "token 获取出错:" + err.Error()})
-		return -1
+	//print(token)
+	user_id,err:=cache.Get(token)
+	id,err1:=strconv.Atoi(user_id)
+	if err==nil&&err1==nil {
+		return id
+	}else {
+		return 0
 	}
+
+	//user_str, err := cache.GetSecondaryToken(token)
+	//print(user_str)
+	//if nil == err {
+	//	var user = model.User{}
+	//	err := json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
+	//	if nil == err {
+	//		return user.ID
+	//	} else {
+	//		c.JSON(200, gin.H{"msg": "token 有效 解析失败:" + err.Error()})
+	//		return -1
+	//	}
+	//} else {
+	//	c.JSON(200, gin.H{"msg": "token 获取出错:" + err.Error()})
+	//	return -1
+	//}
 }
 
 //func EditUserInfo(c *gin.Context){

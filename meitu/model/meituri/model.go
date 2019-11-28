@@ -58,13 +58,12 @@ type Group struct {
 	Homepage string `gorm:"type:varchar(255);index:homepage"`
 }
 
-
-
 type Tab struct {
-	ID   int    `gorm:"primary_key" json:"id"`
-	Name string `gorm:"index:name" json:"name"`
-	Hot  int    `gorm:"index:hot" json:"hot"`
-	Type int `gorm:"-" json:"type"`
+	ID    int    `gorm:"primary_key" json:"id"`
+	Name  string `gorm:"index:name" json:"name"`
+	Hot   int    `gorm:"index:hot" json:"hot"`
+	Type  int    `gorm:"-" json:"type"`
+	Alias string `gorm:"-" json:"alias"`
 }
 
 type Banner struct {
@@ -91,7 +90,7 @@ type Splash struct {
 	//Author   User `gorm:"FOREIGNKEY AuthorId" json:"author"`
 
 	ModelId int `gorm:"index:modelid" json:"model_id"`
-	//Model Model `gorm:"FOREIGNKEY ModelId" json:"model"`
+	//Model Model `gorm:"FOREIGNKEY Modelid" json:"model"`
 }
 
 func (t *Time) UnmarshalJSON(data []byte) (err error) {

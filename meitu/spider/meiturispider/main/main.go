@@ -168,7 +168,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 
 			//c := model.Album{
 			//	ID:      columId,
-			//	ModelId: modelId,
+			//	Modelid: modelId,
 			//	Title:   title,
 			//	Subs:    subs,
 			//	Html:    html,
