@@ -27,7 +27,7 @@ func SetV(k string, v string) error {
 	}
 	return nil
 }
-func SetBean(k string,v model.User) error{
+func SetBean(k string, v model.User) error {
 	_, err := conn.Do("SET", k, v)
 	if err != nil {
 		return err
@@ -52,8 +52,9 @@ func Get(k string) (string, error) {
 }
 
 func GetSecondaryToken(k string) (string, error) {
-	first, err := redis.String(conn.Do("GET", k))
+	first, err := Get(k)
 	if err == nil {
+		println(first)
 		return Get(first)
 	} else {
 		return "", err

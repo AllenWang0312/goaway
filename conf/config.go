@@ -1,14 +1,14 @@
 package conf
 
-var env = debug
-
+var Env = Release
+const GormDebug=false
 var proto = "http://"
 //release
-//const RediaHost = "127.0.0.1"
-//const DBHost = "127.0.0.1"
-//var FSRoot = "/home/wpc/products/netimg"
-//var FSMuri = FSRoot+"/muri"
-//var ProjectRoot = "/home/wpc/products/netimg"
+const RediaHost = "127.0.0.1"
+const DBHost = "127.0.0.1"
+var FSRoot = "/home/wpc/products/netimg"
+var FSMuri = FSRoot+"/muri"
+var ProjectRoot = "/home/wpc/products/netimg"
 
 //work
 //const RediaHost = "122.51.205.29"
@@ -18,11 +18,11 @@ var proto = "http://"
 //var ProjectRoot = FSRoot + "/goaway"
 
 //home
-const RediaHost  ="122.51.205.29"
-const DBHost  ="122.51.205.29"
-var FSRoot = "Z:/photos"
-var FSMuri = FSRoot+"/meituri_cn"
-var ProjectRoot ="E:/work/goaway"
+//const RediaHost  ="122.51.205.29"
+//const DBHost  ="122.51.205.29"
+//var FSRoot = "Z:/photos"
+//var FSMuri = FSRoot+"/meituri_cn"
+//var ProjectRoot ="E:/work/goaway"
 //
 
 var HOST = "localhost"

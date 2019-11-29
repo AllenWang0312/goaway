@@ -14,9 +14,10 @@ func InitApiDB() {
 	db, err = gorm.Open("mysql", "root:qunsi003@tcp("+conf.DBHost+":3306)/meitu?charset=utf8&parseTime=True&loc=Local")
 	//db, err = gorm.Open("mysql", "root:qunsi003@tcp(122.51.205.29:3306)/meitu?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
-		println(err.Error())
+		panic(err.Error())
 	}
-
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(100)
+	db.LogMode(conf.GormDebug)
+
 }

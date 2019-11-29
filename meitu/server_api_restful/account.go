@@ -240,23 +240,25 @@ func GetUser(c *gin.Context) {
 	}
 }
 
-func getUserWithToken(c *gin.Context) (model.User) {
+func getUserWithToken(c *gin.Context) model.User {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
 	var token = c.GetHeader("token")
-	user_str, err := cache.GetSecondaryToken(token)
+	userStr, err := cache.GetSecondaryToken(token)
 	var user = model.User{}
-	if nil == err {
-		err := json.NewDecoder(strings.NewReader(string(user_str))).Decode(&user)
+	//if len(userStr)>0 {
 		if nil == err {
+			err := json.NewDecoder(strings.NewReader(string(userStr))).Decode(&user)
+			if nil == err {
+			} else {
+				c.JSON(200, gin.H{"msg": err.Error()})
+			}
+			return user
+			//json.NewDecoder().Decode(user_str,&user)
 		} else {
-			c.JSON(200, gin.H{"msg": err.Error()})
+			c.JSON(200, gin.H{"msg": "token 获取失败:" + err.Error()})
+			return user
 		}
-		return user
-		//json.NewDecoder().Decode(user_str,&user)
-	} else {
-		c.JSON(200, gin.H{"msg": "token 获取失败:" + err.Error()})
-		return user
-	}
+	//}
 }
 func getUserIdWithToken(c *gin.Context) int {
 	//aes.NewCipher([]byte(conf.AESSecretKey))

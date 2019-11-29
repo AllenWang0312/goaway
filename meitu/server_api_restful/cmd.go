@@ -30,39 +30,39 @@ func CreateHistryForAlbum(c *gin.Context) {
 		var albums []model.Album
 		db.Order("time desc").Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&albums)
 		var timeCache string
-
+		var tablename string
 		for _, a := range albums {
-			var tablename string
 			var zone = model.Zone{}
 			var time = strings.Trim(a.Time, " ")
 			if time != timeCache {
 				if len(time) > 0 {
 					var chars = strings.Split(time, ".")
-					if len(chars)==3 {
+					if len(chars) == 3 {
 						tablename = "zone" + chars[0] + "_" + chars[1]
-					}else{
+					} else {
 						tablename = "zone"
 					}
 					if !db.HasTable(tablename) {
-						db=db.Table(tablename)
 						db.Table(tablename).CreateTable(model.Zone{})
 					}
 				}
 				timeCache = time
 			}
-			println(a.ID,a.Modelid,a.Groupid)
 			zone.Albumid = a.ID
 			zone.Modelid = a.Modelid
 			zone.Groupid = a.Groupid
-			zone.Time=time
+			zone.Time = time
 			zone.Type = conf.Album
-			db.Table(tablename).Create(&zone)
 
-			//new := db.Table(tablename).NewRecord(&zone)
-			//if (new) {
-			//} else {
-			//	println("record exist")
-			//}
+			//INSERT INTO `meitu`.`zone2019_08` (`id`, `type`, `userid`, `companyid`, `groupid`, `modelid`, `albumid`, `content`, `time`, `address`, `lat`, `long`) VALUES ('1', '4', '0', '0', '58', '3156', '30212', '', '2019.08.30', '', '0', '0');
+			//db.Exec("INSERT INTO `meitu`.`" + tablename + "` (`type`, `groupid`, `modelid`, `albumid`, `time`)" +
+			//	" VALUES ('"+conf.Album+"', '?', '?', '?', '?');",a.Groupid,a.Modelid,a.ID,time)
+			new := db.Table(tablename).NewRecord(&zone)
+			if (new) {
+				db.Table(tablename).Create(&zone)
+			} else {
+				println("record exist")
+			}
 		}
 		c.JSON(200, gin.H{"toast": "操作成功"})
 

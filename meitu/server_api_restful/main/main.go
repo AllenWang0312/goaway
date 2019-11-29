@@ -1,6 +1,7 @@
 package main
 
 import (
+	"../../../conf"
 	"../../cache"
 	"../../server_api_restful"
 	"github.com/gin-gonic/gin"
@@ -22,16 +23,14 @@ import (
 //}
 
 func main() {
-
 	cache.InitConn()
+	api_restful.InitApiDB()
 
 	//conn := Pool.Get()
 	//res, err := conn.Do("HSET", "student", "name", "jack")
 	//res1, err := redis.String(conn.Do("HGET", "student", "name"))
 	//
 	//ok, rdsKey := redis.PutJSON("", "user", rdsVal, 1800*time.Second)
-
-	api_restful.InitApiDB()
 	r := gin.Default()
 	// 默认启动方式，包含 Logger、Recovery 中间件
 	//无中间件启动
@@ -61,23 +60,28 @@ func main() {
 	})
 	v1 := r.Group("/v1")
 	api := v1.Group("/api")
-
-	m:=api.Group("/m")
-	{
-		tabs:=m.Group("/tabs")
+	if conf.Env != conf.Release {
+		cmd := api.Group("/cmd")
 		{
-			tabs.GET("/",api_restful.GetTandomHotTab)
-			tabs.POST("/follow",api_restful.FollowTabs)
-			tabs.GET("/followed",api_restful.FollowedTabs)
-
-		}
-		home:=m.Group("/home")
-		{
-			home.GET("/",api_restful.GetHomeData)
-			home.GET("/zone",api_restful.GetZoneHistroy)
+			cmd.GET("/hot", api_restful.ManageHot)
+			cmd.GET("/zone", api_restful.CreateHistryForAlbum)
 		}
 	}
+	m := api.Group("/m")
+	{
+		tabs := m.Group("/tabs")
+		{
+			tabs.GET("", api_restful.GetTandomHotTab)
+			tabs.POST("/follow", api_restful.FollowTabs)
+			tabs.GET("/followed", api_restful.FollowedTabs)
 
+		}
+		home := m.Group("/home")
+		{
+			home.GET("/", api_restful.GetHomeData)
+			home.GET("/zone", api_restful.GetZoneHistroy)
+		}
+	}
 	{
 		model := api.Group("/model")
 		{ //todo resources
@@ -108,11 +112,6 @@ func main() {
 			like.GET("", api_restful.Like)
 			like.POST("/models", api_restful.LikeModelList)
 			like.POST("/colums", api_restful.LikeColumList)
-		}
-		cmd := api.Group("/cmd")
-		{
-			cmd.GET("/hot", api_restful.ManageHot)
-			cmd.GET("/zone",api_restful.CreateHistryForAlbum)
 		}
 
 

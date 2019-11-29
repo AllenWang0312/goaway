@@ -6,10 +6,10 @@ import (
 
 type User struct {
 	ID       int    `gorm:"primary_key" json:"id"`
-	Account  string `gorm:"type:varchar(20)" json:"account"`
+	Account  string `gorm:"type:varchar(50)" json:"account"`
 	Name     string `gorm:"type:varchar(20)" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
-	Portarit string `gorm:"type:varchar(100)" json:"portarit"`
-	Email    string `gorm:"type:varchar(20)" json:"email"`
+	Portarit string `gorm:"type:varchar(225)" json:"portarit"`
+	Email    string `gorm:"type:varchar(30)" json:"email"`
 	Pwd      string `gorm:"type:varchar(20)" json:"pwd"`
 	Tel      string `gorm:"type:varchar(20)" json:"tel"`
 	Birthday string `gorm:"type:varchar(20)" json:"birthday"`
@@ -22,19 +22,22 @@ func (u *User) Info() string {
 }
 
 type Zone struct {
-	ID        int     `gorm:"primary_key;AUTO_INCREMENT" json:"id"`
-	Type      int     `gorm:"type:int(4)" json:"type"`
-	Userid    int     `gorm:"type:int(11)" json:"user_id"`
-	Companyid int     `gorm:"type:int(11)" json:"company_id"`
-	Groupid   int     `gorm:"type:int(11)" json:"group_id"`
-	Modelid   int     `gorm:"type:int(11)" json:"model_id"`
-	Albumid   int     `gorm:"type:int(11);index:albumid;unique" json:"album_id"`
+	ID        int `gorm:"primary_key;AUTO_INCREMENT" json:"id"`
+	Type      int `gorm:"type:int(4)" json:"type"`
+	Userid    int `gorm:"type:int(11)" json:"user_id"`
+	Companyid int `gorm:"type:int(11)" json:"company_id"`
+	Groupid   int `gorm:"type:int(11)" json:"group_id"`
 
-	Content   string  `gorm:"type:varchar(255)" json:"content"`
-	Time      string    `gorm:"type:varchar(32)" json:"time"`
-	Address   string  `gorm:"type:varchar(100)" json:"address"`
-	Lat       float32 `gorm:"type:float(32)" json:"lat"`
-	Long      float32 `gorm:"type:float(32)" json:"long"`
+	Modelid int   `gorm:"type:int(11)" json:"model_id"`
+	Model   Model `gorm:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Modelid" json:"model"`
+	Albumid int   `gorm:"type:int(11);index:albumid;unique" json:"album_id"`
+	Album   Album `gorm:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Albumid" json:"album"`
+
+	Content string  `gorm:"type:varchar(255)" json:"content"`
+	Time    string  `gorm:"type:varchar(32)" json:"time"`
+	Address string  `gorm:"type:varchar(100)" json:"address"`
+	Lat     float32 `gorm:"type:float(32)" json:"lat"`
+	Long    float32 `gorm:"type:float(32)" json:"long"`
 }
 type BindDevice struct {
 	ID       int    `gorm:"primary_key" json:"id"`

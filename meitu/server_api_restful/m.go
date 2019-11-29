@@ -5,6 +5,7 @@ import (
 	model "../model/meituri"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"strconv"
 	"strings"
 )
@@ -55,33 +56,42 @@ func FollowTabs(c *gin.Context) {
 	var user_id = getUserIdWithToken(c)
 	if user_id > 0 {
 		//var tabstr=c.PostForm("tabs")
-		buf := make([]byte, 1024)
-		n, _ := c.Request.Body.Read(buf)
-		tabstr := string(buf[0:n])
-
-		var tabs [] model.Tab
-		err := json.NewDecoder(strings.NewReader(string(tabstr))).Decode(&tabs)
-		if err == nil {
-			for _, t := range tabs {
-				var follow = model.FollowTab{
-					Userid:   user_id,
-					Resid:    t.ID,
-					Type:     t.Type,
-					Alias:    t.Alias,
-					Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(t.Type) + "_" + strconv.Itoa(t.ID),
+		//readStringFromBody(c.Request.Body)
+		tabstr, err0 := ioutil.ReadAll(c.Request.Body)
+		if err0 == nil {
+			var tabs [] model.Tab
+			err := json.NewDecoder(strings.NewReader(string(tabstr))).Decode(&tabs)
+			if err == nil {
+				for _, t := range tabs {
+					var follow = model.FollowTab{
+						Userid:   user_id,
+						Resid:    t.ID,
+						Type:     t.Type,
+						Alias:    t.Alias,
+						Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(t.Type) + "_" + strconv.Itoa(t.ID),
+					}
+					var new = db.NewRecord(&follow)
+					if new {
+						db.Create(&follow)
+					} else {
+						db.Model(&follow).Where("id = ?", follow.ID).Update("alias", follow.Alias)
+						//db.Model(&follow).UpdateColumn("alias", follow.Alias)
+					}
 				}
-				var new = db.NewRecord(&follow)
-				if new {
-					db.Create(&follow)
-				} else {
-					db.Model(&follow).Where("id = ?", follow.ID).Update("alias", follow.Alias)
-					//db.Model(&follow).UpdateColumn("alias", follow.Alias)
-				}
+				c.JSON(200, gin.H{"toast": "关注成功"})
 			}
-			c.JSON(200, gin.H{"toast": "关注成功"})
 		}
+
 	}
 }
+
+//func readStringFromBody(closer io.ReadCloser) {
+//	buf := make([]byte, 1024)
+//	for n>0{
+//		n, _ :=closer.Read(buf)
+//	}
+//	tabstr := string(buf[0:n])
+//}
 func FollowedTabs(c *gin.Context) {
 	var userId = getUserIdWithToken(c)
 	if userId > 0 {
@@ -136,6 +146,8 @@ func GetHomeData(c *gin.Context) {
 func GetZoneHistroy(c *gin.Context) {
 	var user_id = getUserIdWithToken(c)
 	if user_id > 0 {
+		year := c.Query("year")
+		month := c.Query("month")
 		pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 		pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 		if err1 == nil && err2 == nil {
@@ -145,12 +157,17 @@ func GetZoneHistroy(c *gin.Context) {
 				db = db.Or("modelid = ?", f.Resid)
 			}
 			var zones = []model.Zone{}
-			db.Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&zones)
-			c.JSON(200,gin.H{"data":zones})
-		}else{
-			c.JSON(200,gin.H{"toast":"参数错误"})
+			var tablename = "zone" + year + "_" + month
+			if !db.HasTable(tablename) {
+				tablename = "zone"
+			}
+			db.Table(tablename).Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Model").Preload("Album").Find(&zones)
+
+			c.JSON(200, gin.H{"data": zones})
+		} else {
+			c.JSON(200, gin.H{"toast": "参数错误"})
 		}
-	}else {
+	} else {
 
 	}
 }
