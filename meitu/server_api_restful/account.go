@@ -105,24 +105,24 @@ func Login(c *gin.Context) {
 								Bind: hasThisDeviceBinded(user.ID, platform, device),
 							}})
 					} else {
-						c.JSON(200, gin.H{"toast": err2.Error()})
+						c.JSON(200, gin.H{"msg": err2.Error()})
 					}
 				} else {
-					c.JSON(200, gin.H{"toast": err1.Error()})
+					c.JSON(200, gin.H{"msg": err1.Error()})
 				}
 			} else {
 				c.JSON(200, gin.H{"msg": e.Error()})
 			}
 		} else {
-			c.JSON(200, gin.H{"status": -1, "msg": "确认密码不符"})
+			c.JSON(200, gin.H{"status": -1, "toast": "确认密码不符"})
 		}
 	} else {
-		c.JSON(200, gin.H{"msg": "用户不存在"})
+		c.JSON(200, gin.H{"toast": "用户不存在"})
 	}
 }
 
 func hasThisDeviceBinded(userid int, platform string, device string) bool {
-	var bindDevices = [] model.BindDevice{}
+	var bindDevices [] model.BindDevice
 	db.Where("userid = ", userid).Find(&bindDevices)
 
 	var bind = false

@@ -81,6 +81,7 @@ func FollowTabs(c *gin.Context) {
 				c.JSON(200, gin.H{"toast": "关注成功"})
 			}
 		}
+	}else{
 
 	}
 }

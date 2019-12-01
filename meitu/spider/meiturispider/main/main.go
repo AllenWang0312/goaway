@@ -2,7 +2,6 @@ package main
 
 import (
 	"../../../../conf"
-	"../../../../meitu"
 	model "../../../model/meituri"
 	"../../../util"
 	"../gorm"
@@ -54,6 +53,7 @@ func main() {
 		}
 	} else {
 		//getModelColums(786)
+		//downloadModelColumsRange(0,1000)
 		models := gorm.GetCNModels()
 		for _, model := range *models {
 			getModelColums(model.ID)
@@ -68,6 +68,7 @@ func main() {
 //		downloadSingleColum(modelId, columIds[i])
 //	}
 //}
+
 func downloadModelColumsRange(from int, to int) {
 	for i := from; i <= to; i++ {
 		getModelColums(i)
@@ -86,50 +87,49 @@ func downloadModelColums(modelIds []int) int {
 	return 0
 }
 func getModelColums(modelId int) int {
-	for i := 1; i < meitu.UserColumsPageMaxSize; i++ {
+	for i := 1; i < conf.UserColumsPageMaxSize; i++ {
 		url := ""
 		if i > 1 {
-			url = meitu.Host + "/t/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(i) + ".html"
+			url = conf.Host + "/t/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(i) + ".html"
 		} else {
-			url = meitu.Host + "/t/" + strconv.Itoa(modelId) + "/"
+			url = conf.Host + "/t/" + strconv.Itoa(modelId) + "/"
 		}
 		err := AnalyzeModelHomePageHtml(client, url, modelId, i)
-		if err == meitu.AnalysisHtmlFaild {
+		if err == conf.AnalysisHtmlFaild {
 			continue
-		} else if err == meitu.UrlInvalid {
+		} else if err == conf.UrlInvalid {
 			break
 		}
 	}
 	return 0
 }
 func getModelInfo(modelId int) {
-	url := meitu.Host + "/t/" + strconv.Itoa(modelId) + "/"
+	url := conf.Host + "/t/" + strconv.Itoa(modelId) + "/"
 	AnalyzeModelInfoHtml(client, url, modelId)
 }
 func getCompanysColums(compId int) int {
-	for i := 1; i < meitu.CompanysColumsPageMaxSize; i++ {
+	for i := 1; i < conf.CompanysColumsPageMaxSize; i++ {
 		url := ""
 		if i > 1 {
-			url = meitu.Host + "/x/" + strconv.Itoa(compId) + "/index_" + strconv.Itoa(i-1) + ".html"
+			url = conf.Host + "/x/" + strconv.Itoa(compId) + "/index_" + strconv.Itoa(i-1) + ".html"
 		} else {
-			url = meitu.Host + "/x/" + strconv.Itoa(compId) + "/"
+			url = conf.Host + "/x/" + strconv.Itoa(compId) + "/"
 		}
 		err := AnalyzeCompanyHomePageHtml(client, url, compId, i)
-		if err == meitu.AnalysisHtmlFaild {
+		if err == conf.AnalysisHtmlFaild {
 			continue
-		} else if err == meitu.UrlInvalid {
+		} else if err == conf.UrlInvalid {
 			break
 		}
 	}
-	return meitu.Success
+	return conf.Success
 }
 
 var wg sync.WaitGroup
 
 func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 	downloadColumCover(modelId, columId)
-
-	doc, err := goquery.NewDocument(meitu.Host + "/a/" + strconv.Itoa(columId))
+	doc, err := goquery.NewDocument(conf.Host + "/a/" + strconv.Itoa(columId))
 	if err != nil {
 		//return -1
 		println(err.Error())
@@ -162,9 +162,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 				colum.Time = t
 				gorm.SaveColumInfo(columId, colum)
 			}
-
 			//colum.Html = html
-
 			//c := model.Album{
 			//	ID:      columId,
 			//	Modelid: modelId,
@@ -179,12 +177,11 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 			//} else {
 			//	println("saveColumInfo,Success" + strconv.Itoa(colum))
 			//}
-
-			if meitu.DownloadImages {
+			if conf.DownloadImages {
 				_ = os.MkdirAll(conf.FSRoot+"/meituri_"+end+"/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
-				if meitu.AsyTaskDownload {
+				if conf.AsyTaskDownload {
 					for i := 1; true; i++ {
-						durl := meitu.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + strconv.Itoa(i) + ".jpg"
+						durl := conf.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + strconv.Itoa(i) + ".jpg"
 						//resp, err := url.ParseRequestURI(durl)
 						//if err != nil {
 						//	//panic("url err")
@@ -244,9 +241,9 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 				}
 			}
 
-			return meitu.Success
+			return conf.Success
 		} else {
-			return meitu.AnalysisHtmlFaild
+			return conf.AnalysisHtmlFaild
 		}
 	}
 
@@ -255,7 +252,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 
 func downloadColumCover(modelId int, columId int) {
 	filename := "0.jpg"
-	durl := meitu.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + filename
+	durl := conf.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + filename
 	//resp, err := url.ParseRequestURI(durl)
 	//if err != nil {
 	//	//panic("url err")
@@ -266,7 +263,7 @@ func downloadColumCover(modelId int, columId int) {
 	//downloadFile(durl,path,filename)
 	e, _ := util.PathExists(path + filename)
 	if e {
-		//fmt.Println("download file faild" + path + "/" + filename + "exist")
+		fmt.Println("download file faild" + path + "/" + filename + "exist")
 		return
 	}
 	//filename := path.Base(uri.Path)
@@ -324,16 +321,16 @@ func AnalyzeModelHomePageHtml(client *http.Client, url string, modelId int, i in
 
 	if err != nil {
 		fmt.Println("analysis html faild")
-		return meitu.AnalysisHtmlFaild
+		return conf.AnalysisHtmlFaild
 	}
 	if resp.StatusCode > 400 {
 		fmt.Println("resp.StatusCode > 400")
-		return meitu.UrlInvalid
+		return conf.UrlInvalid
 	}
 	defer resp.Body.Close()
 	doc, err := goquery.NewDocument(url)
 	if nil == err {
-		if i == 1 && meitu.SaveUserInfo {
+		if i == 1 && conf.SaveUserInfo {
 			saveUseInfo(modelId, doc)
 		}
 	}
@@ -414,13 +411,13 @@ func AnalyzeCompanyHomePageHtml(client *http.Client, url string, companyId int, 
 	resp, err := client.Get(url)
 	defer resp.Body.Close()
 	if resp.StatusCode > 400 {
-		return meitu.UrlInvalid
+		return conf.UrlInvalid
 	}
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
-		return meitu.AnalysisHtmlFaild
+		return conf.AnalysisHtmlFaild
 	}
-	if i == 1 && meitu.SaveCompanyGroupRatation {
+	if i == 1 && conf.SaveCompanyGroupRatation {
 		doc.Find("div.fenlei").Find("p").Find("a").Each(func(i int, s *goquery.Selection) {
 			name := s.Text()
 			homepage, _ := s.Attr("href")
@@ -456,9 +453,9 @@ func AnalyzeCompanyPage(doc *goquery.Document) int {
 			})
 		})
 	} else {
-		return meitu.AnalysisHtmlFaild
+		return conf.AnalysisHtmlFaild
 	}
-	return meitu.Success
+	return conf.Success
 }
 
 func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
@@ -508,7 +505,7 @@ func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
 			}
 		})
 	} else {
-		return meitu.AnalysisHtmlFaild
+		return conf.AnalysisHtmlFaild
 	}
-	return meitu.Success
+	return conf.Success
 }

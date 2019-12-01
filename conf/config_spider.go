@@ -1,4 +1,4 @@
-package meitu
+package conf
 
 const (
 	//Host    = "https://www.mzitu.com"
@@ -9,7 +9,7 @@ const (
 	SaveUserInfo             = true
 	//SaveColumInfo            = true
 
-	DownloadImages  = true
+	DownloadImages  = false
 	AsyTaskDownload = true
 
 	CompanysColumsPageMaxSize = 20
