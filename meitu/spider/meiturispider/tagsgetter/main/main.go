@@ -1,19 +1,19 @@
 package main
 
 import (
-	"../../../.."
-	"../../../../model"
+	"../../../../../conf"
+	model "../../../../model/meituri"
 	"../../gorm"
-	"strconv"
-	"net/http"
 	"fmt"
-	"time"
 	"github.com/PuerkitoBio/goquery"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 func main() {
-	for i := 100; i<500; i++ {
-		url := meitu.Host + "/s/" + strconv.Itoa(i)
+	for i := 100; i < 500; i++ {
+		url := conf.Host + "/s/" + strconv.Itoa(i)
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
 			fmt.Println("request create faild: " + err.Error())
@@ -35,13 +35,13 @@ func main() {
 		num, _ := strconv.Atoi(shuliang)
 		name := fenlei.Find("h1").Text()
 		des := fenlei.Find("p").Text()
-		fmt.Println(name+des+shuliang)
-		tag := model.Tags{
-			Id:i,
-			Name: name,
+		fmt.Println(name + des + shuliang)
+		tag := model.Tag{
 			Des:  des,
-			Nums:  num,
+			Nums: num,
 		}
-		gorm.SaveTagInfo(tag)
+		tag.ID = i
+		tag.Name = name
+		gorm.SaveTag(tag)
 	}
 }

@@ -23,21 +23,16 @@ func InitDB() {
 }
 
 func SaveColum(userId int, c *model.Album) {
-
 	if err := db.Create(c).Error; err != nil {
 		//return -3
 		println(err.Error())
 	}
 }
 
-func updateTag(tagId int, shortname string) {
-	tag := model.Tag{}
-	tag.ID=tagId
-	tag.Name=shortname
-	db.Model(tag).Update("name", shortname)
-}
-
 func SaveGroupInfo(groups model.Group) int {
+	if !db.HasTable("groups") {
+		db.CreateTable(model.Group{})
+	}
 	if err := db.Create(groups).Error; err != nil {
 		//return -3
 		println(err.Error())
@@ -46,51 +41,77 @@ func SaveGroupInfo(groups model.Group) int {
 	}
 	return -1
 }
-func SaveTagInfo(tag model.Tag) int {
-	if err := db.Create(tag).Error; err != nil {
-		println(err.Error())
+func SaveTag(tag model.Tag) int {
+	//if !db.HasTable("tags") {
+	//	db.CreateTable(model.Tag{})
+	//}
+	new := db.NewRecord(&tag)
+	if (new) {
+		db.Create(&tag)
 	} else {
-		println("SaveTagInfo,Success")
+		db.Save(&tag)
 	}
 	return -1
 }
-func CreateTableForModels(str string) {
+func SaveTagInfo(id int, name string) {
+	tag := model.Tag{}
+	tag.ID = id
+	tag.Name = name
+	SaveTag(tag)
+}
+
+func CreateTableForModels(end string, str string) {
 	var models = [] model.Model{}
 	db.Where("address like ?", "%"+str+"%").Find(&models)
+	var tableName = "models_" + end
+	if !db.HasTable(tableName) {
+		db.Table(tableName).CreateTable(model.Model{})
+	}
 	for i, m := range models {
-		//new :=db.Table("models_jp").NewRecord(&m)
-		//if(new){
-		db.Table("models_jp").Save(&m)
-		//}
+		new := db.Table(tableName).NewRecord(&m)
+		if (new) {
+			db.Table(tableName).Create(&m)
+		} else {
+			db.Table(tableName).Save(&m)
+		}
 		println(i, m.ID, m.Name+m.Address)
 	}
 }
 
-//个人介绍页 获取资料
-func SaveModelInfo(m *model.Model) {
-	err1 := db.Create(m).Error
-	if err1 != nil {
-		fmt.Println(err1.Error())
-	} else {
-
-	}
-	//createSuccess := db.NewRecord(m)
-	//if createSuccess {
-	//	fmt.Println("createSuccess")
-	//
-	//}
-}
 func GetCNModels() *[]model.Model {
 	models := []model.Model{}
 	//.Where("id >= 917")
 	db.Table("models_cn").Select("id,hot").Order("hot desc").Find(&models)
 	return &models
 }
-func addColumToFavourite(token string, columId int) {
 
-}
-func cancelFavourite(token string, columId int) {
+//func addColumToFavourite(token string, columId int) {
+//
+//}
+//func cancelFavourite(token string, columId int) {
+//
+//}
 
+//个人介绍页 获取资料
+func SaveModelInfo(contry string, m *model.Model) {
+
+	if len(contry) > 0 {
+		var tableName = "models_" + contry
+		if !db.HasTable(tableName) {
+			db.CreateTable(model.Model{})
+		}
+		db.Table(tableName).Create(m)
+	} else {
+		if !db.HasTable("models") {
+			db.CreateTable(model.Model{})
+		}
+		db.Create(m)
+	}
+	//createSuccess := db.NewRecord(m)
+	//if createSuccess {
+	//	fmt.Println("createSuccess")
+	//
+	//}
 }
 func SaveColumInfo(columId int, c *model.Album) int {
 	tags := c.Tags
@@ -99,8 +120,11 @@ func SaveColumInfo(columId int, c *model.Album) int {
 		vk := strings.Split(str, "(")
 		if len(vk) >= 2 {
 			id, _ := strconv.Atoi(vk[1])
-			updateTag(id, vk[0])
+			SaveTagInfo(id, vk[0])
 		}
+	}
+	if !db.HasTable("albums") {
+		db.CreateTable(model.Album{})
 	}
 	if err := db.Create(c).Error; err != nil {
 		//return -3

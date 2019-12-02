@@ -31,32 +31,32 @@ func main() {
 	//wg.Add(1)
 	//891 8245 8225
 	//downloadModelColums([]int{8245}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
+
 	if len(os.Args) > 1 {
 		if len(os.Args) == 2 {
-			//like:=os.Args[1]
-			//gorm.CreateTableForModels(like)
-		} else if len(os.Args) == 3 {
-			contry := os.Args[1]
+
+		} else if len(os.Args) == 3 { //main jp 1234
 			modelId, err := strconv.Atoi(os.Args[2])
 			if err == nil {
-				end = contry
+				end = os.Args[1]
 				getModelColums(modelId)
+			} else { //main jp 日本
+				end = os.Args[1]
+				like := os.Args[2]
+				gorm.CreateTableForModels(end, like)
 			}
 		} else if len(os.Args) == 4 {
-			contry := os.Args[1]
-			modelId, err := strconv.Atoi(os.Args[2])
-			columId, err1 := strconv.Atoi(os.Args[3])
+			str1 := os.Args[1]
+			id1, err := strconv.Atoi(os.Args[2])
+			id2, err1 := strconv.Atoi(os.Args[3])
 			if err == nil && err1 == nil {
-				end = contry
-				downloadSingleColum(modelId, columId, nil)
+				if strings.EqualFold(str1, "range") { //main range 1 1000
+					downloadModelColumsRange(id1, id2) //下载 from to
+				} else { //main cn modelid albunid
+					end = str1
+					downloadSingleColum(id1, id2, nil) //下载 model/album
+				}
 			}
-		}
-	} else {
-		//getModelColums(786)
-		//downloadModelColumsRange(0,1000)
-		models := gorm.GetCNModels()
-		for _, model := range *models {
-			getModelColums(model.ID)
 		}
 	}
 
@@ -387,6 +387,8 @@ func saveUseInfo(modelId int, doc *goquery.Document) {
 	more := shuoming.Text()
 	tags := shuoming.Find("p").Text()
 	fmt.Println(nicknames, modelId)
+	var from = map1["来自"]
+	var contry = ""
 	model := model.Model{
 		Cover:         cover,
 		Nicknames:     nicknames,
@@ -397,16 +399,19 @@ func saveUseInfo(modelId int, doc *goquery.Document) {
 		Height:        map1["身高"],
 		Weight:        map1["体重"],
 		Dimensions:    map1["罩杯"],
-		Address:       map1["来自"],
+		Address:       from,
 		Jobs:          map1["职业"],
 		Interest:      map1["兴趣"],
 	}
-	model.ID=modelId
-	model.Name=strings.Split(nicknames, "、")[0]
-
-	gorm.SaveModelInfo(&model)
+	model.ID = modelId
+	model.Name = strings.Split(nicknames, "、")[0]
+	//if (strings.Contains(from, "日本")) {
+	//	contry="jp"
+	//}else if strings.Contains(from, "泰国") {
+	//	contry="tai"
+	//}
+	gorm.SaveModelInfo(contry, &model)
 }
-
 func AnalyzeCompanyHomePageHtml(client *http.Client, url string, companyId int, i int) int {
 	resp, err := client.Get(url)
 	defer resp.Body.Close()
@@ -426,8 +431,8 @@ func AnalyzeCompanyHomePageHtml(client *http.Client, url string, companyId int, 
 				Homepage: homepage,
 				Belong:   companyId,
 			}
-			group.ID=id
-			group.Name=name
+			group.ID = id
+			group.Name = name
 			gorm.SaveGroupInfo(group)
 			//fmt.Print()
 		})

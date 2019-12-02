@@ -45,23 +45,23 @@ type Album struct {
 type Tag struct {
 	Tab
 	Des      string `gorm:"type:varchar(200);index:des" json:"des"`
-	FullName string `gorm:"index:fullname" json:"fullname"`
-	Nums     int    `gorm:"index:nums" json:"nums"`
+	FullName string `gorm:"type:varchar(100);index:fullname" json:"fullname"`
+	Nums     int    `type:int(11);gorm:"index:nums" json:"nums"`
 }
 type Company struct {
 	Tab
-	Count int `gorm:"index:count" json:"count"`
+	Count int `gorm:"type:int(11);index:count" json:"count"`
 }
 type Group struct {
 	Tab
-	Belong   int    `gorm:"type:int(20);index:belong"`
+	Belong   int    `gorm:"type:int(11);index:belong"`
 	Homepage string `gorm:"type:varchar(255);index:homepage"`
 }
 
 type Tab struct {
 	ID    int    `gorm:"primary_key" json:"id"`
-	Name  string `gorm:"index:name" json:"name"`
-	Hot   int    `gorm:"index:hot" json:"hot"`
+	Name  string `gorm:"type:varchar(100);index:name" json:"name"`
+	Hot   int    `gorm:"type:int(20);index:hot" json:"hot"`
 	Type  int    `gorm:"-" json:"type"`
 	Alias string `gorm:"-" json:"alias"`
 }
