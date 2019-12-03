@@ -13,6 +13,7 @@ type User struct {
 	Pwd      string `gorm:"type:varchar(20)" json:"pwd"`
 	Tel      string `gorm:"type:varchar(20)" json:"tel"`
 	Birthday string `gorm:"type:varchar(20)" json:"birthday"`
+	InvitateCode string `gorm:"type:varchar(100);index:invitatecode" json:"invitate_code"`
 	Token    string `gorm:"-" json:"token"`
 	//Type     int    `gorm:"type:Integer(10)" json:"type"`
 }

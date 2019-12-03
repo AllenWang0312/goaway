@@ -1,4 +1,4 @@
-package util
+package encrypt
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"fmt"
 )
 
+const Key  ="qunsi003"
 func main() {
 	//x:=[]byte("世界上最邪恶最专制的现代奴隶制国家--朝鲜")
 	//key:=[]byte("hgfedcba87654321")
@@ -17,7 +18,7 @@ func main() {
 	//fmt.Print(string(x2))
 
 	orig := "hello world"
-	key := "0123456789012345"
+
 	fmt.Println("原文：", orig)
 	encryptCode := AesCBCEncrypt(orig, key)
 	fmt.Println("密文：", encryptCode)

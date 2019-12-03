@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
+	"../encrypt"
 )
 
 func tokenEnable(c *gin.Context) bool {
@@ -87,7 +88,6 @@ func Login(c *gin.Context) {
 		user_id := strconv.Itoa(user.ID)
 
 		if strings.EqualFold(user.Pwd, pwd) {
-			//token := encrypt.RandToken(16)
 			token := platform + "_" + device
 			b, e := json.Marshal(user)
 			if nil == e {
@@ -201,6 +201,7 @@ func Regist(c *gin.Context) {
 	if len(account) > 0 && len(pwd) > 0 {
 		var user = model.User{}
 		if util.IsMobile(account) {
+
 			user = model.User{
 				Account: account,
 				Pwd:     pwd,
@@ -222,6 +223,9 @@ func Regist(c *gin.Context) {
 		//if new {
 		db.Create(&user)
 		println(user.ID)
+		var code=encrypt.AesCBCDecrypt(strconv.Itoa(user.ID),encrypt.Key)
+		user.InvitateCode=code
+		db.Where("id = ",user.ID).Update("invitatecode",code)
 		c.JSON(200, gin.H{"toast": "创建成功",
 			"data": user})
 		//} else {
