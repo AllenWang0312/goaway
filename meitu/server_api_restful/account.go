@@ -114,10 +114,10 @@ func Login(c *gin.Context) {
 				c.JSON(200, gin.H{"msg": e.Error()})
 			}
 		} else {
-			c.JSON(200, gin.H{"status": -1, "toast": "确认密码不符"})
+			c.JSON(200, gin.H{"code": -1, "toast": "确认密码不符"})
 		}
 	} else {
-		c.JSON(200, gin.H{"toast": "用户不存在"})
+		c.JSON(200, gin.H{"code": -1, "toast": "用户不存在"})
 	}
 }
 
@@ -218,25 +218,29 @@ func Regist(c *gin.Context) {
 		//	}
 		//}
 
-		new := db.NewRecord(&user)
-		if new {
-			db.Create(&user)
-			c.JSON(200, gin.H{"toast": "创建成功"})
-		} else {
-			c.JSON(200, gin.H{"toast": "用户已存在"})
-		}
+		//new := db.NewRecord(&user)
+		//if new {
+		db.Create(&user)
+		println(user.ID)
+		c.JSON(200, gin.H{"toast": "创建成功",
+			"data": user})
+		//} else {
+		//	c.JSON(200, gin.H{"toast": "用户已存在"})
+		//}
 	}
 }
 func GetUser(c *gin.Context) {
+	var user = getUserWithToken(c)
+	c.JSON(200, gin.H{"data": &user})
+}
+func GetUserInfo(c *gin.Context) {
 	var user_id = getUserIdWithToken(c)
-	if user_id == -1 {
-		return
-	} else if user_id > 0 {
+	if user_id > 0 {
 		var user = model.User{}
 		db.Where("id = ?", user_id).First(&user)
 		c.JSON(200, gin.H{"data": user})
 	} else {
-		c.JSON(404, gin.H{"msg": "用户不存在"})
+		c.JSON(200, gin.H{"code": -1, "toast": "用户不存在"})
 	}
 }
 
@@ -246,29 +250,29 @@ func getUserWithToken(c *gin.Context) model.User {
 	userStr, err := cache.GetSecondaryToken(token)
 	var user = model.User{}
 	//if len(userStr)>0 {
+	if nil == err {
+		err := json.NewDecoder(strings.NewReader(string(userStr))).Decode(&user)
 		if nil == err {
-			err := json.NewDecoder(strings.NewReader(string(userStr))).Decode(&user)
-			if nil == err {
-			} else {
-				c.JSON(200, gin.H{"msg": err.Error()})
-			}
-			return user
-			//json.NewDecoder().Decode(user_str,&user)
 		} else {
-			c.JSON(200, gin.H{"msg": "token 获取失败:" + err.Error()})
-			return user
+			c.JSON(200, gin.H{"msg": err.Error()})
 		}
+		return user
+		//json.NewDecoder().Decode(user_str,&user)
+	} else {
+		c.JSON(200, gin.H{"msg": "token 获取失败:" + err.Error()})
+		return user
+	}
 	//}
 }
 func getUserIdWithToken(c *gin.Context) int {
 	//aes.NewCipher([]byte(conf.AESSecretKey))
 	var token = c.GetHeader("token")
 	//print(token)
-	user_id,err:=cache.Get(token)
-	id,err1:=strconv.Atoi(user_id)
-	if err==nil&&err1==nil {
+	user_id, err := cache.Get(token)
+	id, err1 := strconv.Atoi(user_id)
+	if err == nil && err1 == nil {
 		return id
-	}else {
+	} else {
 		return 0
 	}
 

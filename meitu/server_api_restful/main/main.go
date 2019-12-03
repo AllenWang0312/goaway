@@ -1,7 +1,6 @@
 package main
 
 import (
-	"../../../conf"
 	"../../cache"
 	"../../server_api_restful"
 	"github.com/gin-gonic/gin"
@@ -60,13 +59,19 @@ func main() {
 	})
 	v1 := r.Group("/v1")
 	api := v1.Group("/api")
-	if conf.Env != conf.Release {
-		cmd := api.Group("/cmd")
-		{
-			cmd.GET("/hot", api_restful.ManageHot)
-			cmd.GET("/zone", api_restful.CreateHistryForAlbum)
-		}
+	//todo account
+	account := api.Group("/account")
+	{
+		account.POST("/register", api_restful.Regist)
+		//account.PUT("/", api_restful.RegistAccount)
+		//account.POST("/user/info", api_restful.GetUser)
+		//account.POST("/user",api)
+		account.POST("/info", api_restful.GetUser)
+		account.POST("/tokenlogin", api_restful.TokenLogin)
+		account.POST("/login", api_restful.Login)
 	}
+	api.POST("/file", api_restful.UploadFile)
+
 	m := api.Group("/m")
 	{
 		tabs := m.Group("/tabs")
@@ -74,12 +79,15 @@ func main() {
 			tabs.GET("", api_restful.GetTandomHotTab)
 			tabs.POST("/follow", api_restful.FollowTabs)
 			tabs.GET("/followed", api_restful.FollowedTabs)
-
 		}
 		home := m.Group("/home")
 		{
-			home.GET("/", api_restful.GetHomeData)
+			home.GET("", api_restful.GetHomeData)
 			home.GET("/zone", api_restful.GetZoneHistroy)
+		}
+		mine:=m.Group("/mine")
+		{
+			mine.POST("/info", api_restful.GetUserInfo)
 		}
 	}
 	{
@@ -121,19 +129,7 @@ func main() {
 			feedback.POST("/commit", api_restful.Commit)
 			feedback.POST("/like", api_restful.LikeCommit)
 		}
-		//todo account
-		account := api.Group("/account")
-		{
-			account.POST("/register", api_restful.Regist)
-			//account.PUT("/", api_restful.RegistAccount)
 
-			account.POST("/info", api_restful.GetUser)
-			account.POST("/user/info", api_restful.GetUser)
-			//account.POST("/user",api)
-			account.POST("/tokenlogin", api_restful.TokenLogin)
-			account.POST("/login", api_restful.Login)
-		}
-		api.POST("/file", api_restful.UploadFile)
 		//v1.POST("/login", loginEndpoint)
 		//v1.POST("/submit", submitEndpoint)
 		//v1.POST("/read", readEndpoint)

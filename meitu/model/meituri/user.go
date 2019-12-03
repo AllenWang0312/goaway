@@ -8,13 +8,13 @@ type User struct {
 	ID       int    `gorm:"primary_key" json:"id"`
 	Account  string `gorm:"type:varchar(50)" json:"account"`
 	Name     string `gorm:"type:varchar(20)" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
-	Portarit string `gorm:"type:varchar(225)" json:"portarit"`
+	Portarit string `gorm:"type:varchar(255)" json:"portarit"`
 	Email    string `gorm:"type:varchar(30)" json:"email"`
 	Pwd      string `gorm:"type:varchar(20)" json:"pwd"`
 	Tel      string `gorm:"type:varchar(20)" json:"tel"`
 	Birthday string `gorm:"type:varchar(20)" json:"birthday"`
 	Token    string `gorm:"-" json:"token"`
-	Type     int    `gorm:"type:Integer(10)" json:"type"`
+	//Type     int    `gorm:"type:Integer(10)" json:"type"`
 }
 
 func (u *User) Info() string {

@@ -60,20 +60,98 @@ func SaveTagInfo(id int, name string) {
 	SaveTag(tag)
 }
 
-func CreateTableForModels(end string, str string) {
-	var models = [] model.Model{}
-	db.Where("address like ?", "%"+str+"%").Find(&models)
-	var tableName = "models_" + end
-	if !db.HasTable(tableName) {
-		db.Table(tableName).CreateTable(model.Model{})
-	}
-	for i, m := range models {
-		new := db.Table(tableName).NewRecord(&m)
-		if (new) {
-			db.Table(tableName).Create(&m)
-		} else {
-			db.Table(tableName).Save(&m)
+func CreateHistryForAlbum(pageNo int, pageSize int) {
+	var albums []model.Album
+	db.Order("time desc").Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&albums)
+	var timeCache string
+	var tablename string
+	for _, a := range albums {
+		var zone = model.Zone{}
+		var time = strings.Trim(a.Time, " ")
+		if time != timeCache {
+			if len(time) > 0 {
+				var chars = strings.Split(time, ".")
+				if len(chars) == 3 {
+					tablename = "zone" + chars[0] + "_" + chars[1]
+				} else {
+					tablename = "zone"
+				}
+				if !db.HasTable(tablename) {
+					db.Table(tablename).CreateTable(model.Zone{})
+				}
+			}
+			timeCache = time
 		}
+		zone.Albumid = a.ID
+		zone.Modelid = a.Modelid
+		zone.Groupid = a.Groupid
+		zone.Time = time
+		zone.Type = conf.Album
+
+		//INSERT INTO `meitu`.`zone2019_08` (`id`, `type`, `userid`, `companyid`, `groupid`, `modelid`, `albumid`, `content`, `time`, `address`, `lat`, `long`) VALUES ('1', '4', '0', '0', '58', '3156', '30212', '', '2019.08.30', '', '0', '0');
+		//db.Exec("INSERT INTO `meitu`.`" + tablename + "` (`type`, `groupid`, `modelid`, `albumid`, `time`)" +
+		//	" VALUES ('"+conf.Album+"', '?', '?', '?', '?');",a.Groupid,a.Modelid,a.ID,time)
+		new := db.Table(tablename).NewRecord(&zone)
+		if (new) {
+			db.Table(tablename).Create(&zone)
+		} else {
+			println("record exist")
+		}
+	}
+}
+func UpDateHot(id int, hot int) {
+	var model = model.Model{}
+	model.ID = id
+	db.First(&model)
+	model.Hot = hot
+	db.Save(&model)
+}
+func CreateSplashForColum(modelid int, albumid int, src string) {
+	var album = model.Album{
+		ID:      albumid,
+		Modelid: modelid,
+	}
+	db.First(&album)
+
+	if len(album.Title) > 0 {
+		var splash = model.Splash{}
+		splash.Type = 0
+		splash.Src = conf.FILE_SERVER + "/muri/" + strconv.Itoa(modelid) + "/" + strconv.Itoa(albumid) + "/" + src
+		splash.Link = "/album?id=" + strconv.Itoa(albumid)
+		db.Table("banners").Create(&splash)
+	}
+}
+
+func CreateTableForModels() {
+	var models = [] model.Model{}
+	db.Find(&models)
+	for i, m := range models {
+		var end = "cn"
+		if strings.Contains(m.Address, "日本") {
+			end = "jp"
+		} else if strings.Contains(m.Address, "美国") {
+			end = "usa"
+		} else if strings.Contains(m.Address, "韩国") {
+			end = "kr"
+		} else if strings.Contains(m.Address, "泰国") {
+			end = "tha"
+		} else if strings.Contains(m.Address, "香港") {
+			end = "cn_hk"
+		} else if strings.Contains(m.Address, "台湾") {
+			end = "cn_tw"
+		} else if strings.Contains(m.Address, "澳门") {
+			end = "cn_mo"
+		}
+		var tableName = "models_" + end
+		if !db.HasTable(tableName) {
+			db.Table(tableName).CreateTable(model.Model{})
+		}
+		//new := db.Table(tableName).NewRecord(&m)
+		//if (new) {
+		db.Table(tableName).Create(&m)
+		//} else {
+		//	db.Table(tableName).Save(&m)
+		//}
 		println(i, m.ID, m.Name+m.Address)
 	}
 }

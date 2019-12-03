@@ -1,6 +1,8 @@
 package conf
 
 const Env = Pre
+const GormDebug=true
+
 //release
 //const RediaHost = "127.0.0.1"
 //const DBHost = "127.0.0.1"
@@ -22,7 +24,6 @@ var ProjectRoot = FSRoot + "/goaway"
 //
 const proto = "http://"
 
-const GormDebug=false
 const RediaPass  ="qunsi003"
 const MysqlPass  ="qunsi003"
 

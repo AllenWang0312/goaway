@@ -160,13 +160,15 @@ func GetZoneHistroy(c *gin.Context) {
 			var zones = []model.Zone{}
 			var tablename = "zone" + year + "_" + month
 			if !db.HasTable(tablename) {
-				tablename = "zone"
+				//tablename = "zone"
+				c.JSON(200, gin.H{"toast": "没有这个月份的数据哦"})
+				return
 			}
 			db.Table(tablename).Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Model").Preload("Album").Find(&zones)
 
 			c.JSON(200, gin.H{"data": zones})
 		} else {
-			c.JSON(200, gin.H{"toast": "参数错误"})
+			c.JSON(200, gin.H{"code":-1,"toast": "参数错误"})
 		}
 	} else {
 

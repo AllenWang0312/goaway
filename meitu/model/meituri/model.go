@@ -66,30 +66,40 @@ type Tab struct {
 	Alias string `gorm:"-" json:"alias"`
 }
 
-type Banner struct {
-	ID    int    `gorm:"primary_key;index:id" json:"id"`
-	State bool   `gorm:"state" json:"state"`
-	Res   string `gorm:"res" json:"res"`
-	Link  string `gorm:"link" json:"link"`
-}
-
 type Time time.Time
 
 const (
 	timeFormart = "2006-01-02 15:04:05"
 )
 
-type Splash struct {
-	ID     int    `gorm:"primary_key" json:"id"`
-	Enable bool   `gorm:"index:enable" json:"enable"`
-	Start  Time   `gorm:"index:start" json:"start"`
-	End    Time   `gorm:"index:end" json:"end"`
-	ArtUrl string `gorm:"index:art_url" json:"art_url"`
+type Banner struct {
+	ID     int    `gorm:"primary_key;index:id" json:"id"`
+	Type   int    `gorm:"index:type" json:"type"`
+	Enable bool   `gorm:"enable" json:"enable"`
+	Start   Time `gorm:"index:start" json:"start"`
+	End     Time `gorm:"index:end" json:"end"`
+	Src    string `gorm:"src" json:"src"`
+	Link   string `gorm:"link" json:"link"`
+}
 
-	Authorid int `gorm:"type:int(11)" json:"author_id"`
+type Role struct {
+	Rolename string `json:"role_name"`
+	Roleid   int    `gorm:"index:id" json:"role_id"`
+}
+type UserRole struct {
+	Role
+	Name   string
+	Userid int
+	Jobid  int
+}
+type Splash struct {
+	Banner
+
+	Authors []UserRole
+	//Authorid int `gorm:"type:int(11)" json:"author_id"`
 	//Author   User `gorm:"FOREIGNKEY Authorid" json:"author"`
 
-	Modelid int `gorm:"type:int(11)" json:"model_id"`
+	//Modelid int `gorm:"type:int(11)" json:"model_id"`
 	//Model Model `gorm:"FOREIGNKEY Modelid" json:"model"`
 }
 

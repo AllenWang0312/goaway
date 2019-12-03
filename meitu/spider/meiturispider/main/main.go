@@ -35,29 +35,41 @@ func main() {
 	if len(os.Args) > 1 {
 		if len(os.Args) == 2 {
 
-		} else if len(os.Args) == 3 { //main jp 1234
-			modelId, err := strconv.Atoi(os.Args[2])
-			if err == nil {
-				end = os.Args[1]
-				getModelColums(modelId)
-			} else { //main jp 日本
-				end = os.Args[1]
-				like := os.Args[2]
-				gorm.CreateTableForModels(end, like)
+		} else if len(os.Args) == 3 {
+			id1, err := strconv.Atoi(os.Args[1])
+			id2, err1 := strconv.Atoi(os.Args[2])
+			if err == nil { //main pageNo pageSize
+				gorm.CreateHistryForAlbum(id1, id2)
+			} else { //main jp 1234
+				if err1 == nil {
+					end = os.Args[1]
+					getModelColums(id2)
+				}
 			}
 		} else if len(os.Args) == 4 {
 			str1 := os.Args[1]
 			id1, err := strconv.Atoi(os.Args[2])
 			id2, err1 := strconv.Atoi(os.Args[3])
 			if err == nil && err1 == nil {
-				if strings.EqualFold(str1, "range") { //main range 1 1000
+				if strings.EqualFold(str1, "range") { //main range 1 1000 //step 1
 					downloadModelColumsRange(id1, id2) //下载 from to
+				} else if strings.EqualFold(str1, "hot") {
+					gorm.UpDateHot(id1, id2)
 				} else { //main cn modelid albunid
 					end = str1
 					downloadSingleColum(id1, id2, nil) //下载 model/album
 				}
 			}
+		} else if len(os.Args) == 5 { //main splash modelid columid 11.jpeg
+			modelid, err := strconv.Atoi(os.Args[2])
+			albumid, err1 := strconv.Atoi(os.Args[3])
+			resName:=os.Args[4]
+			if err == nil && err1 == nil {
+				gorm.CreateSplashForColum(modelid,albumid,resName)
+			}
 		}
+	} else {
+		gorm.CreateTableForModels() //main //step2
 	}
 
 	wg.Wait()

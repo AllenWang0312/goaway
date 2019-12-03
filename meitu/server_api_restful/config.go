@@ -6,9 +6,9 @@ import (
 )
 
 func GetSplashInfo(c *gin.Context) {
-	var splashs = []model.Splash{}
+	var splashs = []model.Banner{}
 	//.Preload("Users").Preload("Models")
-	db.Where("enable = ?", 1).Find(&splashs)
+	db.Where("type = ?", 0).Find(&splashs)
 	if len(splashs) > 0 {
 		c.JSON(200, gin.H{"data": splashs})
 	} else {
