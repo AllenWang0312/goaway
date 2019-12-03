@@ -96,7 +96,7 @@ func main() {
 			model.GET("/list", api_restful.GetModelList)
 			model.GET("", api_restful.GetModelHomePage)
 		}
-		colum := api.Group("/colum")
+		colum := api.Group("/album")
 		{
 			colum.GET("/list", api_restful.GetColumsList)
 			colum.GET("", api_restful.GetColumDetail)

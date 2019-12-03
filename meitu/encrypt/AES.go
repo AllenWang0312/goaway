@@ -20,9 +20,9 @@ func main() {
 	orig := "hello world"
 
 	fmt.Println("原文：", orig)
-	encryptCode := AesCBCEncrypt(orig, key)
+	encryptCode := AesCBCEncrypt(orig, Key)
 	fmt.Println("密文：", encryptCode)
-	decryptCode := AesCBCDecrypt(encryptCode, key)
+	decryptCode := AesCBCDecrypt(encryptCode, Key)
 	fmt.Println("解密结果：", decryptCode)
 }
 func AesCBCEncrypt(orig string, key string) string {

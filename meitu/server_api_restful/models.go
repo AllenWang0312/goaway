@@ -34,22 +34,22 @@ func GetModelList(c *gin.Context) {
 
 type ModelDetail struct {
 	Info   model.Model   `json:"info"`
-	Colums []model.Album `json:"colums"`
+	Albums []model.Album `json:"albums"`
 }
 
 func GetModelHomePage(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("id"))
 	m := model.Model{}
-	m.ID=id
+	m.ID = id
 	if nil == err {
 		db.First(&m)
 	}
-	colums := []model.Album{}
-	db.Where("modelid = ?", id).Find(&colums)
+	albums := []model.Album{}
+	db.Where("modelid = ?", id).Find(&albums)
 
 	c.JSON(200, gin.H{"data": ModelDetail{
 		Info:   m,
-		Colums: colums,
+		Albums: albums,
 	},
 	})
 
