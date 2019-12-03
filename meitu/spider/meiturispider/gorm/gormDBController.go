@@ -14,7 +14,7 @@ var db *gorm.DB
 func InitDB() {
 	var err error
 	//db, err = gorm.Open("mysql", "root:Qunsi003@tcp(rm-wz952p7325m8jbe3x9o.mysql.rds.aliyuncs.com:3306)/meitu?charset=utf8&parseTime=True&loc=Local") //?charset=utf8&parseTime=True&loc=Local
-	db, err = gorm.Open("mysql", "root:qunsi003@tcp("+conf.DBHost+":3306)/meitu?charset=utf8&parseTime=True&loc=Local")
+	db, err = gorm.Open("mysql", "root:"+conf.MysqlPass+"@tcp("+conf.DBHost+":3306)/meitu?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		fmt.Println(err)
 	}

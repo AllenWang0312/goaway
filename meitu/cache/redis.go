@@ -9,14 +9,19 @@ import (
 //func main() {
 
 //}
+var err error
 var conn redis.Conn
 
 func InitConn() {
-	conn, _ = redis.Dial("tcp", conf.RediaHost+":6379")
-	//if err != nil {
-	//	fmt.Println("connect redis error :", err)
-	//	return
-	//}
+
+	if conn, err = redis.Dial("tcp", conf.RediaHost+":6379");err != nil {
+		panic(err)
+	}
+	if _, err := conn.Do("AUTH", conf.RediaPass); err != nil {
+		conn.Close()
+		panic(err)
+	}
+
 	//defer conn.Close()
 }
 
