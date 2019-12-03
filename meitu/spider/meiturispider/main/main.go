@@ -52,6 +52,8 @@ func main() {
 			id2, err1 := strconv.Atoi(os.Args[3])
 			if err == nil && err1 == nil {
 				if strings.EqualFold(str1, "range") { //main range 1 1000 //step 1
+				//3775 4000
+				//4610 5000
 					downloadModelColumsRange(id1, id2) //下载 from to
 				} else if strings.EqualFold(str1, "hot") {
 					gorm.UpDateHot(id1, id2)

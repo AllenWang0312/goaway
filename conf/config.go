@@ -6,12 +6,12 @@ const proto = "http://"
 const GormDebug=false
 
 //release
-const RediaHost = "127.0.0.1"
-const DBHost = "127.0.0.1"
-const FSHost="122.51.205.29"
-const Muri="/muri"
-var FSRoot = "/home/wpc/products/netimg"
-var ProjectRoot = "/home/wpc/products/netimg"
+//const RediaHost = "127.0.0.1"
+//const DBHost = "127.0.0.1"
+//const FSHost="122.51.205.29"
+//const Muri="/muri"
+//var FSRoot = "/home/wpc/products/netimg"
+//var ProjectRoot = "/home/wpc/products/netimg"
 //work
 //const RediaHost = "122.51.205.29"
 //const DBHost = "122.51.205.29"
@@ -19,12 +19,12 @@ var ProjectRoot = "/home/wpc/products/netimg"
 //var FSMuri = FSRoot+"/muri"
 //var ProjectRoot = FSRoot + "/goaway"
 //home
-//const RediaHost  ="122.51.205.29"
-//const DBHost  ="122.51.205.29"
-//const FSHost="192.168.0.100"
-//const Muri="/meituri_cn_like"
-//var FSRoot = "Z:/photos"
-//var ProjectRoot ="E:/work/goaway"
+const RediaHost  ="122.51.205.29"
+const DBHost  ="122.51.205.29"
+const FSHost="192.168.0.100"
+const Muri="/meituri_cn_like"
+var FSRoot = "Z:/photos"
+var ProjectRoot ="E:/work/goaway"
 
 var FSMuri = FSRoot+Muri
 
