@@ -1,4 +1,4 @@
-package api_restful
+package api
 
 import "github.com/gin-gonic/gin"
 

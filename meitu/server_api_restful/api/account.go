@@ -1,15 +1,15 @@
-package api_restful
+package api
 
 import (
-	"../../conf"
-	"../../util"
-	"../cache"
-	model "../model/meituri"
+	"../../../conf"
+	"../../../util"
+	"../../cache"
+	"../../encrypt"
+	model "../../model/meituri"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
-	"../encrypt"
 )
 
 func tokenEnable(c *gin.Context) bool {
@@ -223,9 +223,9 @@ func Regist(c *gin.Context) {
 		//if new {
 		db.Create(&user)
 		println(user.ID)
-		var code=encrypt.AesCBCDecrypt(strconv.Itoa(user.ID),encrypt.Key)
-		user.InvitateCode=code
-		db.Where("id = ",user.ID).Update("invitatecode",code)
+		var code = encrypt.AesCBCDecrypt(strconv.Itoa(user.ID), encrypt.Key)
+		user.InvitateCode = code
+		db.Where("id = ", user.ID).Update("invitatecode", code)
 		c.JSON(200, gin.H{"toast": "创建成功",
 			"data": user})
 		//} else {
@@ -279,7 +279,6 @@ func getUserIdWithToken(c *gin.Context) int {
 	} else {
 		return 0
 	}
-
 	//user_str, err := cache.GetSecondaryToken(token)
 	//print(user_str)
 	//if nil == err {
@@ -295,6 +294,17 @@ func getUserIdWithToken(c *gin.Context) int {
 	//	c.JSON(200, gin.H{"msg": "token 获取出错:" + err.Error()})
 	//	return -1
 	//}
+}
+func getUserIdStrWithToken(c *gin.Context) string {
+	//aes.NewCipher([]byte(conf.AESSecretKey))
+	var token = c.GetHeader("token")
+	//print(token)
+	user_id, err := cache.Get(token)
+	if err == nil {
+		return user_id
+	} else {
+		return "0"
+	}
 }
 
 //func EditUserInfo(c *gin.Context){

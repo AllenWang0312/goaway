@@ -1,9 +1,9 @@
-package api_restful
+package api
 
 import (
-	"../../conf"
-	model "../model/meituri"
-	"../util"
+	"../../../conf"
+	model "../../model/meituri"
+	"../../util"
 
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -15,7 +15,7 @@ func GetModelList(c *gin.Context) {
 	pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 	pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 	if nil == err1 && nil == err2 {
-		var models = []model.Model{}
+		var models []model.Model
 		//if len(search) == 0 {
 		//} else {
 		//}
@@ -44,14 +44,12 @@ func GetModelHomePage(c *gin.Context) {
 	if nil == err {
 		db.First(&m)
 	}
-	albums := []model.Album{}
+	var albums []model.Album
 	db.Where("modelid = ?", id).Find(&albums)
-
 	c.JSON(200, gin.H{"data": ModelDetail{
 		Info:   m,
 		Albums: albums,
 	},
 	})
-
 	//search := c.PostForm("search")
 }

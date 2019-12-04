@@ -68,19 +68,18 @@ func CreateHistryForAlbum(pageNo int, pageSize int) {
 	for _, a := range albums {
 		var zone = model.Zone{}
 		var time = strings.Trim(a.Time, " ")
+		tablename = "zones"
 		if time != timeCache {
 			if len(time) > 0 {
 				var chars = strings.Split(time, ".")
 				if len(chars) == 3 {
-					tablename = "zone" + chars[0] + "_" + chars[1]
-				} else {
-					tablename = "zone"
-				}
-				if !db.HasTable(tablename) {
-					db.Table(tablename).CreateTable(model.Zone{})
+					tablename = "zones" + chars[0] + "_" + chars[1]
 				}
 			}
 			timeCache = time
+		}
+		if !db.HasTable(tablename) {
+			db.Table(tablename).CreateTable(model.Zone{})
 		}
 		zone.Albumid = a.ID
 		zone.Modelid = a.Modelid
@@ -122,9 +121,9 @@ func CreateSplashForColum(modelid int, albumid int, src string) {
 	}
 }
 
-func CreateTableForModels() {
+func CreateTableForModels(offset int,count int) {
 	var models = [] model.Model{}
-	db.Find(&models)
+	db.Offset(offset).Limit(count).Find(&models)
 	for i, m := range models {
 		var end = "cn"
 		if strings.Contains(m.Address, "日本") {

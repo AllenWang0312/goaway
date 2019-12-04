@@ -1,7 +1,7 @@
-package api_restful
+package api
 
 import (
-	model "../model/meituri"
+	model "../../model/meituri"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"../../../../conf"
-	model "../../../model/meituri"
-	"../../../util"
-	"../gorm"
+	"../../../conf"
+	model "../../model/meituri"
+	"../../util"
+	"./gorm"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -52,12 +52,12 @@ func main() {
 			id2, err1 := strconv.Atoi(os.Args[3])
 			if err == nil && err1 == nil {
 				if strings.EqualFold(str1, "range") { //main range 1 1000 //step 1
-				//3775 4000
-				//4610 5000
 					downloadModelColumsRange(id1, id2) //下载 from to
 				} else if strings.EqualFold(str1, "hot") {
 					gorm.UpDateHot(id1, id2)
-				} else { //main cn modelid albunid
+				} else if strings.EqualFold(str1, "分类") {
+					gorm.CreateTableForModels(id1,id2) //main 模特分类/step2
+				}else{ //main cn modelid albunid
 					end = str1
 					downloadSingleColum(id1, id2, nil) //下载 model/album
 				}
@@ -65,15 +65,14 @@ func main() {
 		} else if len(os.Args) == 5 { //main splash modelid columid 11.jpeg
 			modelid, err := strconv.Atoi(os.Args[2])
 			albumid, err1 := strconv.Atoi(os.Args[3])
-			resName:=os.Args[4]
+			resName := os.Args[4]
 			if err == nil && err1 == nil {
-				gorm.CreateSplashForColum(modelid,albumid,resName)
+				gorm.CreateSplashForColum(modelid, albumid, resName)
 			}
 		}
 	} else {
-		gorm.CreateTableForModels() //main //step2
-	}
 
+	}
 	wg.Wait()
 }
 

@@ -1,9 +1,9 @@
-package api_restful
+package api
 
 import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"../../conf"
+	"../../../conf"
 )
 
 var db *gorm.DB

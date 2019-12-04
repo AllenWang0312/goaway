@@ -1,8 +1,8 @@
-package api_restful
+package api
 
 import (
-	"../../conf"
-	model "../model/meituri"
+	"../../../conf"
+	model "../../model/meituri"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -81,7 +81,7 @@ func FollowTabs(c *gin.Context) {
 				c.JSON(200, gin.H{"toast": "关注成功"})
 			}
 		}
-	}else{
+	} else {
 
 	}
 }
@@ -123,54 +123,4 @@ func FollowedTabs(c *gin.Context) {
 		c.JSON(200, gin.H{"toast": "token 失效"})
 	}
 
-}
-
-func GetHomeData(c *gin.Context) {
-	if tokenEnable(c) {
-		var cn = c.Query("contry")
-		var banners [] model.Banner
-		var companies [] model.Company
-		var models []model.Model
-
-		db.Where("state = ?", 1).Find(&banners)
-		db.Order("hot desc").Limit(10).Find(&companies)
-		db.Table("models_" + cn).Order("hot desc").Limit(10).Find(&models)
-
-		var home = model.Home{
-			Banners:  banners,
-			Companys: companies,
-			Models:   models,
-		}
-		c.JSON(200, gin.H{"data": home})
-	}
-}
-func GetZoneHistroy(c *gin.Context) {
-	var user_id = getUserIdWithToken(c)
-	if user_id > 0 {
-		year := c.Query("year")
-		month := c.Query("month")
-		pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
-		pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
-		if err1 == nil && err2 == nil {
-			var tabs []model.FollowTab
-			db.Where("userid = ? And type = 2", user_id).Find(&tabs)
-			for _, f := range tabs {
-				db = db.Or("modelid = ?", f.Resid)
-			}
-			var zones = []model.Zone{}
-			var tablename = "zone" + year + "_" + month
-			if !db.HasTable(tablename) {
-				//tablename = "zone"
-				c.JSON(200, gin.H{"toast": "没有这个月份的数据哦"})
-				return
-			}
-			db.Table(tablename).Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Model").Preload("Album").Find(&zones)
-
-			c.JSON(200, gin.H{"data": zones})
-		} else {
-			c.JSON(200, gin.H{"code":-1,"toast": "参数错误"})
-		}
-	} else {
-
-	}
 }

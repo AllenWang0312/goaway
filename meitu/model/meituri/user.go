@@ -5,16 +5,16 @@ import (
 )
 
 type User struct {
-	ID       int    `gorm:"primary_key" json:"id"`
-	Account  string `gorm:"type:varchar(50)" json:"account"`
-	Name     string `gorm:"type:varchar(20)" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
-	Portarit string `gorm:"type:varchar(255)" json:"portarit"`
-	Email    string `gorm:"type:varchar(30)" json:"email"`
-	Pwd      string `gorm:"type:varchar(20)" json:"pwd"`
-	Tel      string `gorm:"type:varchar(20)" json:"tel"`
-	Birthday string `gorm:"type:varchar(20)" json:"birthday"`
+	ID           int    `gorm:"primary_key" json:"id"`
+	Account      string `gorm:"type:varchar(50)" json:"account"`
+	Name         string `gorm:"type:varchar(20)" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
+	Portarit     string `gorm:"type:varchar(255)" json:"portarit"`
+	Email        string `gorm:"type:varchar(30)" json:"email"`
+	Pwd          string `gorm:"type:varchar(20)" json:"pwd"`
+	Tel          string `gorm:"type:varchar(20)" json:"tel"`
+	Birthday     string `gorm:"type:varchar(20)" json:"birthday"`
 	InvitateCode string `gorm:"type:varchar(100);index:invitatecode" json:"invitate_code"`
-	Token    string `gorm:"-" json:"token"`
+	Token        string `gorm:"-" json:"token"`
 	//Type     int    `gorm:"type:Integer(10)" json:"type"`
 }
 
@@ -40,6 +40,14 @@ type Zone struct {
 	Lat     float32 `gorm:"type:float(32)" json:"lat"`
 	Long    float32 `gorm:"type:float(32)" json:"long"`
 }
+type VisitHistroy struct {
+	ID       int    `gorm:"primary_key" json:"id"`
+	Albumid  int    `grom:"type:int(11)" json:"album_id"`
+	Album    Album  `grom:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Albumid" json:"album"`
+	Userid   int    `grom:"type:int(11)" json:"user_id"`
+	Date     string `grom:"type:varchar(20)" json:"date"`
+	Relation string `grom:"type:varchar(50);unique" json:"relation"`
+}
 type BindDevice struct {
 	ID       int    `gorm:"primary_key" json:"id"`
 	Userid   int    `json:"user_id"`
@@ -55,7 +63,7 @@ type FollowTab struct {
 	Type     int    `json:"type"`
 	Tab      Tab    `gorm:"-" json:"tab"`
 	Alias    string `json:"alias"`
-	Relation string `gorm:"index:relation" json:"relation"`
+	Relation string `gorm:"index:relation;unique" json:"relation"`
 }
 
 type LikCompany struct {
@@ -63,7 +71,7 @@ type LikCompany struct {
 	Userid    int `json:"user_id"`
 	Companyid int `json:"company_id"`
 	//Model   Model `gorm:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Modelid" json:"model"`
-	Relation string `gorm:"index:relation" json:"relation"`
+	Relation string `gorm:"index:relation;unique" json:"relation"`
 }
 
 type LikGroup struct {
@@ -71,7 +79,7 @@ type LikGroup struct {
 	UserId  int `json:"user_id"`
 	GroupId int `json:"group_id"`
 	//Model   Model `gorm:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Modelid" json:"model"`
-	Relation string `gorm:"index:relation" json:"relation"`
+	Relation string `gorm:"index:relation;unique" json:"relation"`
 }
 
 type LikeModel struct {
@@ -79,7 +87,7 @@ type LikeModel struct {
 	Userid   int    `json:"user_id"`
 	Modelid  int    `json:"model_id"`
 	Model    Model  `gorm:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Modelid" json:"model"`
-	Relation string `gorm:"index:relation" json:"relation"`
+	Relation string `gorm:"index:relation;unique" json:"relation"`
 }
 
 type LikeAlbum struct {

@@ -1,7 +1,7 @@
-package api_restful
+package api
 
 import (
-	model "../model/meituri"
+	model "../../model/meituri"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -34,7 +34,7 @@ func LikeModelList(c *gin.Context) {
 	if user_id == -1 {
 		return
 	} else if user_id > 0 {
-		likes := []model.LikeModel{}
+		var likes []model.LikeModel
 		db.Table("likes").Preload("Model").Where("userid = ?", user_id).Find(&likes)
 		c.JSON(200, gin.H{"data": likes})
 		return
@@ -43,12 +43,12 @@ func LikeModelList(c *gin.Context) {
 	}
 	c.JSON(400, gin.H{"msg": "未知错误"})
 }
-func LikeColumList(c *gin.Context) {
+func LikeAlbumList(c *gin.Context) {
 
 	//user_id, err := strconv.Atoi(c.Query(USERID))
 	user_id := getUserIdWithToken(c)
 
-	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
+	var tableNmae = "like_album" + strconv.Itoa(user_id/1000)
 	if user_id == -1 {
 
 	} else if user_id > 0 {
@@ -69,10 +69,10 @@ func Like(c *gin.Context) {
 	} else if user_id > 0 {
 		//user_id, err0 := strconv.Atoi(c.Query("user_id"))
 		model_id, _ := strconv.Atoi(c.Query("model_id"))
-		colum_id, err1 := strconv.Atoi(c.Query("colum_id"))
+		album_id, err1 := strconv.Atoi(c.Query("album_id"))
 		//dislike,err2:=strconv.Atoi(c.Query("dis"))
 		if nil == err1 {
-			likeColum(user_id, model_id, colum_id, c)
+			likeColum(user_id, model_id, album_id, c)
 			return
 		} else {
 			followModel(user_id, model_id, c)
@@ -82,13 +82,13 @@ func Like(c *gin.Context) {
 	c.JSON(404, gin.H{"msg": "登录超时"})
 }
 
-func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
-	var tableNmae = "like_colum" + strconv.Itoa(user_id/1000)
+func likeColum(user_id int, model_id int, album_id int, c *gin.Context) {
+	var tableNmae = "like_album" + strconv.Itoa(user_id/1000)
 	var like = model.LikeAlbum{
 		Userid:   user_id,
 		Modelid:  model_id,
-		Albumid:  colum_id,
-		Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(model_id) + "_" + strconv.Itoa(colum_id),
+		Albumid:  album_id,
+		Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(model_id) + "_" + strconv.Itoa(album_id),
 	}
 	db.Table(tableNmae).Where("relation = ?", like.Relation).First(&like)
 	newrec := db.Table(tableNmae).NewRecord(&like)
@@ -96,26 +96,26 @@ func likeColum(user_id int, model_id int, colum_id int, c *gin.Context) {
 	m.ID= model_id
 
 	db.Table("models_cn").First(&m)
-	var colum = model.Album{
-		ID: colum_id,
+	var album = model.Album{
+		ID: album_id,
 	}
-	db.First(&colum)
+	db.First(&album)
 	if newrec {
 		db.Table(tableNmae).Save(&like)
-		m.Hot += like_colum_hot
+		m.Hot += like_album_hot
 		//println(model.Hot)
 		db.Table("models_cn").Save(&m)
-		colum.Hot += 10
-		db.Save(&colum)
-		c.JSON(200, gin.H{"toast": "收藏成功", "data": colum.Hot})
+		album.Hot += 10
+		db.Save(&album)
+		c.JSON(200, gin.H{"toast": "收藏成功", "data": album.Hot})
 	} else {
 		db.Table(tableNmae).Delete(&like)
-		m.Hot -= like_colum_hot
+		m.Hot -= like_album_hot
 		//println(model.Hot)
 		db.Table("models_cn").Save(&m)
-		colum.Hot -= 10
-		db.Save(&colum)
-		c.JSON(200, gin.H{"toast": "取消成功", "data": colum.Hot})
+		album.Hot -= 10
+		db.Save(&album)
+		c.JSON(200, gin.H{"toast": "取消成功", "data": album.Hot})
 	}
 }
 
@@ -147,5 +147,5 @@ func followModel(user_id int, model_id int, c *gin.Context) {
 }
 
 const follow_hot = 100
-const like_colum_hot = 10
+const like_album_hot = 10
 const view_item_hot = 1

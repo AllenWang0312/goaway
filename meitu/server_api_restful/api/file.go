@@ -1,7 +1,7 @@
-package api_restful
+package api
 
 import (
-	"../../conf"
+	"../../../conf"
 	"github.com/gin-gonic/gin"
 	"os"
 )

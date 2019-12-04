@@ -1,4 +1,4 @@
-package api_restful
+package api
 
 const MODELID = "model_id"
 const USERID = "user_id"
