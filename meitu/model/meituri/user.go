@@ -4,6 +4,15 @@ import (
 	"strconv"
 )
 
+type App struct {
+	ID        int    `gorm:"primary_key" json:"id"`
+	Path      string `grom:"type:varchar(30)" json:"path"`
+	Name      string `gorm:"type:varchar(10)" json:"name"`
+	Icon      string `gorm:"type:varchar(255)" json:"icon"`
+	Lottie    string `gorm:"type:varchar(255)" json:"lottie"`
+	LottieRes string `gorm:"type:varchar(255)" json:"lottie_res"`
+	Gif       string `gorm:"type:varchar(255)" json:"gif"`
+}
 type User struct {
 	ID           int    `gorm:"primary_key" json:"id"`
 	Account      string `gorm:"type:varchar(50)" json:"account"`

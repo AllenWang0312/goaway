@@ -2,25 +2,25 @@ package main
 
 import (
 	"../../../conf"
+	"../../../util"
 	model "../../model/meituri"
-	"../../util"
+	"./download"
 	"./gorm"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
-	"io"
 	"net/http"
 	"os"
 	"runtime"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
 var client *http.Client
-var end = "cn"
+
+
 
 func main() {
 	gorm.InitDB()
@@ -28,12 +28,16 @@ func main() {
 	client.Timeout = 20 * time.Second
 
 	runtime.GOMAXPROCS(100)
-	//wg.Add(1)
+	//WG.Add(1)
 	//891 8245 8225
 	//downloadModelColums([]int{8245}) //795,1289,954,3175,467,1558,429, 3239, 2008, 893,919
-
+	//models := gorm.GetCNModels()
+	//for _, model := range *models {
+	//	fmt.Println(model.ID)
+	//	changdir(model.ID)
+	//}
 	if len(os.Args) > 1 {
-		if len(os.Args) == 2 {
+		if len(os.Args) == 2 { //main cover pageNo pageSize
 
 		} else if len(os.Args) == 3 {
 			id1, err := strconv.Atoi(os.Args[1])
@@ -42,7 +46,7 @@ func main() {
 				gorm.CreateHistryForAlbum(id1, id2)
 			} else { //main jp 1234
 				if err1 == nil {
-					end = os.Args[1]
+					download.END = os.Args[1]
 					getModelColums(id2)
 				}
 			}
@@ -51,14 +55,16 @@ func main() {
 			id1, err := strconv.Atoi(os.Args[2])
 			id2, err1 := strconv.Atoi(os.Args[3])
 			if err == nil && err1 == nil {
-				if strings.EqualFold(str1, "range") { //main range 1 1000 //step 1
+				if strings.EqualFold(str1, "cover") {//4281
+					gorm.DownloadCoverForModel(id1, id2)
+				}else if strings.EqualFold(str1, "range") { //main range 1 1000 //step 1
 					downloadModelColumsRange(id1, id2) //下载 from to
 				} else if strings.EqualFold(str1, "hot") {
 					gorm.UpDateHot(id1, id2)
 				} else if strings.EqualFold(str1, "分类") {
-					gorm.CreateTableForModels(id1,id2) //main 模特分类/step2
-				}else{ //main cn modelid albunid
-					end = str1
+					gorm.CreateTableForModels(id1, id2) //main 模特分类/step2
+				} else { //main cn modelid albunid
+					download.END = str1
 					downloadSingleColum(id1, id2, nil) //下载 model/album
 				}
 			}
@@ -73,7 +79,7 @@ func main() {
 	} else {
 
 	}
-	wg.Wait()
+	download.WG.Wait()
 }
 
 //func downloadColums(modelId int, columIds []int) {
@@ -116,10 +122,12 @@ func getModelColums(modelId int) int {
 	}
 	return 0
 }
+
 func getModelInfo(modelId int) {
 	url := conf.Host + "/t/" + strconv.Itoa(modelId) + "/"
 	AnalyzeModelInfoHtml(client, url, modelId)
 }
+
 func getCompanysColums(compId int) int {
 	for i := 1; i < conf.CompanysColumsPageMaxSize; i++ {
 		url := ""
@@ -138,10 +146,9 @@ func getCompanysColums(compId int) int {
 	return conf.Success
 }
 
-var wg sync.WaitGroup
 
 func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
-	downloadColumCover(modelId, columId)
+	download.DownloadAlbumCover(modelId, columId)
 	doc, err := goquery.NewDocument(conf.Host + "/a/" + strconv.Itoa(columId))
 	if err != nil {
 		//return -1
@@ -191,7 +198,7 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 			//	println("saveColumInfo,Success" + strconv.Itoa(colum))
 			//}
 			if conf.DownloadImages {
-				_ = os.MkdirAll(conf.FSRoot+"/meituri_"+end+"/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
+				_ = os.MkdirAll(conf.FSRoot+"/meituri_"+download.END+"/"+strconv.Itoa(modelId)+"/"+strconv.Itoa(columId), os.ModePerm)
 				if conf.AsyTaskDownload {
 					for i := 1; true; i++ {
 						durl := conf.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + strconv.Itoa(i) + ".jpg"
@@ -202,31 +209,10 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 						//	return -2
 						//}
 						filename := strconv.Itoa(i) + ".jpg"
-						path := conf.FSRoot + "/meituri_" + end + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
-						//downloadFile(durl,path,filename)
-						e, _ := util.PathExists(path + filename)
-						if e {
-							//fmt.Println("download file faild" + path + "/" + filename + "exist")
-							continue
-						}
-						//filename := path.Base(uri.Path)
-						req, err := http.NewRequest("GET", durl, nil)
-						if err != nil {
-							//fmt.Println("request create faild: " + err.Error())
-							break
-						}
-						http.DefaultClient.Timeout = 20 * time.Second
-						resp, err := http.DefaultClient.Do(req)
-						if err != nil {
-							//fmt.Println("request error: " + err.Error())
-							break
-						}
-						if resp.StatusCode != http.StatusOK {
-							//fmt.Println("response status: " + strconv.Itoa(resp.StatusCode))
-							break
-						}
-						wg.Add(1)
-						go downloadImage(resp, path, filename)
+						path := conf.FSRoot + "/meituri_" + download.END + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
+
+						download.WG.Add(1)
+						go download.DownloadImage(durl, path, filename)
 					}
 				} else {
 					//for i := 1; i < 100; i++ {
@@ -263,60 +249,6 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 	return 0
 }
 
-func downloadColumCover(modelId int, columId int) {
-	filename := "0.jpg"
-	durl := conf.OldHost + "/a/1/" + strconv.Itoa(columId) + "/" + filename
-	//resp, err := url.ParseRequestURI(durl)
-	//if err != nil {
-	//	//panic("url err")
-	//	println(err.Error())
-	//	return -2
-	//}
-	path := conf.FSRoot + "/meituri_" + end + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
-	//downloadFile(durl,path,filename)
-	e, _ := util.PathExists(path + filename)
-	if e {
-		fmt.Println("download file faild" + path + "/" + filename + "exist")
-		return
-	}
-	//filename := path.Base(uri.Path)
-	req, err := http.NewRequest("GET", durl, nil)
-	if err != nil {
-		//fmt.Println("request create faild: " + err.Error())
-		return
-	}
-	http.DefaultClient.Timeout = 20 * time.Second
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		//fmt.Println("request error: " + err.Error())
-		return
-	}
-	if resp.StatusCode != http.StatusOK {
-		//fmt.Println("response status: " + strconv.Itoa(resp.StatusCode))
-		return
-	}
-	wg.Add(1)
-	go downloadImage(resp, path, filename)
-}
-
-// 下载图片
-func downloadImage(resp *http.Response, path string, fileName string) {
-	//fileName := getNameFromUrl(url)
-	defer func() {
-		resp.Body.Close()
-		if r := recover(); r != nil {
-			//fmt.Println(r)
-		}
-		wg.Done()
-	}()
-
-	_ = os.MkdirAll(path, 0777)
-	localFile, _ := os.OpenFile(path+fileName, os.O_CREATE|os.O_RDWR, 0777)
-	if _, err := io.Copy(localFile, resp.Body); err != nil {
-	} else {
-		//fmt.Println("download file" + path + "/" + fileName + " success")
-	}
-}
 func PathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {

@@ -4,6 +4,7 @@ import (
 	"../cache"
 	api_restful "./api"
 	"github.com/gin-gonic/gin"
+	"github.com/unrolled/secure"
 	"io"
 	"os"
 )
@@ -31,6 +32,10 @@ func main() {
 	//
 	//ok, rdsKey := redis.PutJSON("", "user", rdsVal, 1800*time.Second)
 	r := gin.Default()
+//https
+	//r.Use(TLSHandler())
+	//r.RunTLS(":8080", "ssl.pem", "ssl.key")
+
 	// 默认启动方式，包含 Logger、Recovery 中间件
 	//无中间件启动
 	//r := gin.New()
@@ -74,6 +79,10 @@ func main() {
 
 	m := api.Group("/m")
 	{
+		apps:=m.Group("/apps")
+		{
+			apps.GET("",api_restful.GetUserApps)
+		}
 		tabs := m.Group("/tabs")
 		{
 			tabs.GET("", api_restful.GetTandomHotTab)
@@ -98,10 +107,10 @@ func main() {
 			model.GET("/list", api_restful.GetModelList)
 			model.GET("", api_restful.GetModelHomePage)
 		}
-		colum := api.Group("/album")
+		album := api.Group("/album")
 		{
-			colum.GET("/list", api_restful.GetAlbumsList)
-			colum.GET("", api_restful.GetAlbumDetail)
+			album.GET("/list", api_restful.GetAlbumsList)
+			album.GET("", api_restful.GetAlbumDetail)
 		}
 
 		tag := api.Group("/tag")
@@ -144,6 +153,20 @@ func main() {
 	//}
 	//initLogger()
 	r.Run()
+}
+
+func TLSHandler() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		secureMiddleware:=secure.New(secure.Options{
+			SSLRedirect:true,
+			SSLHost:"localhost:8080",
+		})
+		err:=secureMiddleware.Process(c.Writer,c.Request)
+		if err!=nil{
+			return
+		}
+		c.Next()
+	}
 }
 
 func initLogger() {

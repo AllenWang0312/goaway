@@ -1,6 +1,8 @@
 package gorm
 
 import (
+	"../download"
+	"../../../../util"
 	"../../../../conf"
 	model "../../../model/meituri"
 	"fmt"
@@ -59,7 +61,20 @@ func SaveTagInfo(id int, name string) {
 	tag.Name = name
 	SaveTag(tag)
 }
+func DownloadCoverForModel(pageNo int, pageSize int) {
+	var models []model.Model
+	db.Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&models)
+	for _, m := range models {
+		var durl=m.Cover
+		println(durl)
 
+		filename:=util.GetNameFromUri(durl)
+		path := conf.FSRoot + "/muri/cover/"
+		//downloadFile(durl,path,filename)
+		download.WG.Add(1)
+		download.DownloadImage(durl, path, filename)
+	}
+}
 func CreateHistryForAlbum(pageNo int, pageSize int) {
 	var albums []model.Album
 	db.Order("time desc").Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&albums)
@@ -121,7 +136,7 @@ func CreateSplashForColum(modelid int, albumid int, src string) {
 	}
 }
 
-func CreateTableForModels(offset int,count int) {
+func CreateTableForModels(offset int, count int) {
 	var models = [] model.Model{}
 	db.Offset(offset).Limit(count).Find(&models)
 	for i, m := range models {

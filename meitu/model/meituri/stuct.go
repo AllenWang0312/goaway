@@ -2,6 +2,7 @@ package meituri
 
 type Home struct {
 	Banners  []Banner  `json:"banners"`
+	Apps []App `json:"apps"`
 	Companys []Company `json:"companys"`
 	Models   []Model   `json:"models"`
 	//Colums   []Album   `json:"colums"`
