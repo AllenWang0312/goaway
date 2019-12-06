@@ -37,7 +37,7 @@ func GetTandomHotTab(c *gin.Context) {
 				g.Type = conf.Group
 				tabs = append(tabs, g.Tab)
 			}
-			db.Table("models_cn").Select("id,name,hot").Order("hot desc").Offset((pageNo - 1) * 5).Limit(5).Find(&models)
+			db.Table("models").Select("id,name,hot").Order("hot desc").Offset((pageNo - 1) * 5).Limit(5).Find(&models)
 			for _, m := range models {
 				m.Type = conf.Model
 				tabs = append(tabs, m.Tab)
@@ -70,13 +70,13 @@ func FollowTabs(c *gin.Context) {
 						Alias:    t.Alias,
 						Relation: strconv.Itoa(user_id) + "_" + strconv.Itoa(t.Type) + "_" + strconv.Itoa(t.ID),
 					}
-					var new = db.NewRecord(&follow)
-					if new {
+					//var new = db.NewRecord(&follow)
+					//if new {
 						db.Create(&follow)
-					} else {
-						db.Model(&follow).Where("id = ?", follow.ID).Update("alias", follow.Alias)
-						//db.Model(&follow).UpdateColumn("alias", follow.Alias)
-					}
+					//} else {
+					//	db.Model(&follow).Where("id = ?", follow.ID).Update("alias", follow.Alias)
+					//	db.Model(&follow).UpdateColumn("alias", follow.Alias)
+					//}
 				}
 				c.JSON(200, gin.H{"toast": "关注成功"})
 			}

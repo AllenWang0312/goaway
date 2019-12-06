@@ -3,7 +3,7 @@ package conf
 
 const Env = Pre
 const proto = "http://"
-const GormDebug=false
+const GormDebug=true
 const FSHost="127.0.0.1"
 
 //release

@@ -17,7 +17,11 @@ func GetHomeData(c *gin.Context) {
 
 		db.Where("state = ?", 1).Find(&banners)
 		db.Order("hot desc").Limit(10).Find(&companies)
-		db.Table("models_" + cn).Order("hot desc").Limit(10).Find(&models)
+		var modeltable="models"
+		if len(cn)>0 {
+			modeltable=modeltable+"_"+cn
+		}
+		db.Table(modeltable).Order("hot desc").Limit(10).Find(&models)
 		db.Find(&apps)
 
 		var home = model.Home{

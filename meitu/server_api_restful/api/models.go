@@ -3,7 +3,7 @@ package api
 import (
 	"../../../conf"
 	model "../../model/meituri"
-	"../../util"
+	"../../../util"
 
 	"github.com/gin-gonic/gin"
 	"strconv"
