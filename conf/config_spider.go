@@ -9,7 +9,7 @@ const (
 	SaveUserInfo             = true
 	//SaveColumInfo            = true
 
-	DownloadImages  = false
+	DownloadImages  = true
 	AsyTaskDownload = true
 
 	CompanysColumsPageMaxSize = 20

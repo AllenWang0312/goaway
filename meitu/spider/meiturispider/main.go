@@ -20,8 +20,6 @@ import (
 
 var client *http.Client
 
-
-
 func main() {
 	gorm.InitDB()
 	client = http.DefaultClient
@@ -46,8 +44,12 @@ func main() {
 				gorm.CreateHistryForAlbum(id1, id2)
 			} else { //main jp 1234
 				if err1 == nil {
-					download.END = os.Args[1]
-					getModelColums(id2)
+					if strings.EqualFold(os.Args[1], "company") {
+						getCompanysColums(id2)
+					} else {
+						download.END = os.Args[1]
+						getModelColums(id2)
+					}
 				}
 			}
 		} else if len(os.Args) == 4 {
@@ -55,9 +57,9 @@ func main() {
 			id1, err := strconv.Atoi(os.Args[2])
 			id2, err1 := strconv.Atoi(os.Args[3])
 			if err == nil && err1 == nil {
-				if strings.EqualFold(str1, "cover") {//4281
+				if strings.EqualFold(str1, "cover") {
 					gorm.DownloadCoverForModel(id1, id2)
-				}else if strings.EqualFold(str1, "range") { //main range 1 1000 //step 1
+				} else if strings.EqualFold(str1, "range") { //main range 1 1000 //step 1
 					downloadModelColumsRange(id1, id2) //下载 from to
 				} else if strings.EqualFold(str1, "hot") {
 					gorm.UpDateHot(id1, id2)
@@ -145,7 +147,6 @@ func getCompanysColums(compId int) int {
 	}
 	return conf.Success
 }
-
 
 func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 	download.DownloadAlbumCover(modelId, columId)
@@ -378,7 +379,7 @@ func AnalyzeCompanyHomePageHtml(client *http.Client, url string, companyId int, 
 			}
 			group.ID = id
 			group.Name = name
-			gorm.SaveGroupInfo(group)
+			gorm.SaveGroupInfo(&group)
 			//fmt.Print()
 		})
 	}

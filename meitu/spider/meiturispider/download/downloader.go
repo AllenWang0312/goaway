@@ -29,6 +29,7 @@ func DownloadAlbumCover(modelId int, columId int) {
 }
 // 下载图片
 func DownloadImage(durl string,path string,fileName string){
+	defer 	WG.Done()
 	//downloadFile(durl,path,filename)
 	e, _ := util.PathExists(path + fileName)
 	if e {
@@ -60,7 +61,7 @@ func DownloadImageFromResp(resp *http.Response, path string, fileName string) {
 		if r := recover(); r != nil {
 			//fmt.Println(r)
 		}
-		WG.Done()
+
 	}()
 
 	_ = os.MkdirAll(path, 0777)

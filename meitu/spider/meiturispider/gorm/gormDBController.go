@@ -31,11 +31,11 @@ func SaveColum(userId int, c *model.Album) {
 	}
 }
 
-func SaveGroupInfo(groups model.Group) int {
+func SaveGroupInfo(groups *model.Group) int {
 	if !db.HasTable("groups") {
 		db.CreateTable(model.Group{})
 	}
-	if err := db.Create(groups).Error; err != nil {
+	if err := db.Create(&groups).Error; err != nil {
 		//return -3
 		println(err.Error())
 	} else {
@@ -61,9 +61,9 @@ func SaveTagInfo(id int, name string) {
 	tag.Name = name
 	SaveTag(tag)
 }
-func DownloadCoverForModel(pageNo int, pageSize int) {
+func DownloadCoverForModel(id int, pageSize int) {
 	var models []model.Model
-	db.Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&models)
+	db.Where("id > ?",id).Limit(pageSize).Find(&models)
 	for _, m := range models {
 		var durl=m.Cover
 		println(durl)

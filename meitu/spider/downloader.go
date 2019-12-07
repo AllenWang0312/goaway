@@ -1,7 +1,7 @@
 package spider
 
 import (
-	"../util"
+	"../../util"
 	"bufio"
 	"io"
 	"log"

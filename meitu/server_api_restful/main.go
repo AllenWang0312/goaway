@@ -4,9 +4,6 @@ import (
 	"../cache"
 	api_restful "./api"
 	"github.com/gin-gonic/gin"
-	"github.com/unrolled/secure"
-	"io"
-	"os"
 )
 
 //var Pool redis.Pool
@@ -155,26 +152,26 @@ func main() {
 	r.Run()
 }
 
-func TLSHandler() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		secureMiddleware:=secure.New(secure.Options{
-			SSLRedirect:true,
-			SSLHost:"localhost:8080",
-		})
-		err:=secureMiddleware.Process(c.Writer,c.Request)
-		if err!=nil{
-			return
-		}
-		c.Next()
-	}
-}
-
-func initLogger() {
-	// 禁用控制台颜色
-	gin.DisableConsoleColor()
-	// 创建记录日志的文件
-	f, _ := os.Create("gin.log")
-	gin.DefaultWriter = io.MultiWriter(f)
-	// 如果需要将日志同时写入文件和控制台，请使用以下代码
-	// gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
-}
+//func TLSHandler() gin.HandlerFunc {
+//	return func(c *gin.Context) {
+//		secureMiddleware:=secure.New(secure.Options{
+//			SSLRedirect:true,
+//			SSLHost:"localhost:8080",
+//		})
+//		err:=secureMiddleware.Process(c.Writer,c.Request)
+//		if err!=nil{
+//			return
+//		}
+//		c.Next()
+//	}
+//}
+//
+//func initLogger() {
+//	// 禁用控制台颜色
+//	gin.DisableConsoleColor()
+//	// 创建记录日志的文件
+//	f, _ := os.Create("gin.log")
+//	gin.DefaultWriter = io.MultiWriter(f)
+//	// 如果需要将日志同时写入文件和控制台，请使用以下代码
+//	// gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+//}
