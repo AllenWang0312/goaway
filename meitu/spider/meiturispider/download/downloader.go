@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 )
+
 var END = "cn"
 var WG sync.WaitGroup
 
@@ -24,44 +25,46 @@ func DownloadAlbumCover(modelId int, columId int) {
 	//	return -2
 	//}
 	path := conf.FSRoot + "/meituri_" + END + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
-	WG.Add(1)
-	go DownloadImage(durl, path, filename)
+
+	DownloadImage(durl, path, filename)
 }
+
 // 下载图片
-func DownloadImage(durl string,path string,fileName string){
-	defer 	WG.Done()
+func DownloadImage(durl string, path string, fileName string) int {
 	//downloadFile(durl,path,filename)
 	e, _ := util.PathExists(path + fileName)
 	if e {
 		fmt.Println("download file faild" + path + "/" + fileName + "exist")
-		return
+		return -1
 	}
 	//filename := path.Base(uri.Path)
 	req, err := http.NewRequest("GET", durl, nil)
 	if err != nil {
 		fmt.Println("request create faild: " + err.Error())
-		return
+		return -2
 	}
 	http.DefaultClient.Timeout = 20 * time.Second
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		fmt.Println("request error: " + err.Error())
-		return
+		return -2
 	}
 	if resp.StatusCode != http.StatusOK {
 		fmt.Println("response status: " + strconv.Itoa(resp.StatusCode))
-		return
+		return -2
 	}
-	DownloadImageFromResp(resp,path,fileName)
+	WG.Add(1)
+	go DownloadImageFromResp(resp, path, fileName)
+	return 0
 }
 func DownloadImageFromResp(resp *http.Response, path string, fileName string) {
 	//fileName := getNameFromUrl(url)
 	defer func() {
 		resp.Body.Close()
-		if r := recover(); r != nil {
+		//if r := recover(); r != nil {
 			//fmt.Println(r)
-		}
-
+		//}
+		WG.Done()
 	}()
 
 	_ = os.MkdirAll(path, 0777)

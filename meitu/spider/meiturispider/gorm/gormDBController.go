@@ -1,10 +1,10 @@
 package gorm
 
 import (
-	"../download"
-	"../../../../util"
 	"../../../../conf"
+	"../../../../util"
 	model "../../../model/meituri"
+	"../download"
 	"fmt"
 	"github.com/jinzhu/gorm"
 	"strconv"
@@ -63,35 +63,32 @@ func SaveTagInfo(id int, name string) {
 }
 func DownloadCoverForModel(id int, pageSize int) {
 	var models []model.Model
-	db.Where("id > ?",id).Limit(pageSize).Find(&models)
+	db.Where("id > ?", id).Limit(pageSize).Find(&models)
 	for _, m := range models {
-		var durl=m.Cover
+		var durl = m.Cover
 		println(durl)
 
-		filename:=util.GetNameFromUri(durl)
+		filename := util.GetNameFromUri(durl)
 		path := conf.FSRoot + "/muri/cover/"
 		//downloadFile(durl,path,filename)
-		download.WG.Add(1)
+		//download.WG.Add(1)
 		download.DownloadImage(durl, path, filename)
 	}
 }
 func CreateHistryForAlbum(pageNo int, pageSize int) {
 	var albums []model.Album
 	db.Order("time desc").Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&albums)
-	var timeCache string
 	var tablename string
 	for _, a := range albums {
 		var zone = model.Zone{}
 		var time = strings.Trim(a.Time, " ")
 		tablename = "zones"
-		if time != timeCache {
-			if len(time) > 0 {
-				var chars = strings.Split(time, ".")
-				if len(chars) == 3 {
-					tablename = "zones" + chars[0] + "_" + chars[1]
-				}
+
+		if len(time) > 0 {
+			var chars = strings.Split(time, ".")
+			if len(chars) == 3 {
+				tablename = "zones" + chars[0] + "_" + chars[1]
 			}
-			timeCache = time
 		}
 		if !db.HasTable(tablename) {
 			db.Table(tablename).CreateTable(model.Zone{})
@@ -105,12 +102,12 @@ func CreateHistryForAlbum(pageNo int, pageSize int) {
 		//INSERT INTO `meitu`.`zone2019_08` (`id`, `type`, `userid`, `companyid`, `groupid`, `modelid`, `albumid`, `content`, `time`, `address`, `lat`, `long`) VALUES ('1', '4', '0', '0', '58', '3156', '30212', '', '2019.08.30', '', '0', '0');
 		//db.Exec("INSERT INTO `meitu`.`" + tablename + "` (`type`, `groupid`, `modelid`, `albumid`, `time`)" +
 		//	" VALUES ('"+conf.Album+"', '?', '?', '?', '?');",a.Groupid,a.Modelid,a.ID,time)
-		new := db.Table(tablename).NewRecord(&zone)
-		if (new) {
-			db.Table(tablename).Create(&zone)
-		} else {
-			println("record exist")
-		}
+		//new := db.Table(tablename).NewRecord(&zone)
+		//if (new) {
+		db.Table(tablename).Save(&zone)
+		//} else {
+		//	println("record exist")
+		//}
 	}
 }
 func UpDateHot(id int, hot int) {

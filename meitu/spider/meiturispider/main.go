@@ -211,9 +211,10 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 						//}
 						filename := strconv.Itoa(i) + ".jpg"
 						path := conf.FSRoot + "/meituri_" + download.END + "/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(columId) + "/"
-
-						download.WG.Add(1)
-						go download.DownloadImage(durl, path, filename)
+						var result=download.DownloadImage(durl, path, filename)
+						if(result==-2){
+							break
+						}
 					}
 				} else {
 					//for i := 1; i < 100; i++ {

@@ -136,8 +136,11 @@ func hasThisDeviceBinded(userid int, platform string, device string) bool {
 }
 
 func getFirstTabFollowID(userid int) int {
-	var frecord = model.FollowTab{}
-	db.Where("userid = ", userid).First(&frecord)
+	var frecord = model.FollowTab{
+		Userid:userid,
+	}
+	db.First(&frecord)
+	println(frecord.ID)
 	return frecord.ID
 }
 

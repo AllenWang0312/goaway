@@ -5,17 +5,22 @@ import (
 	model "../../model/meituri"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"strings"
 )
 
 func GetHomeData(c *gin.Context) {
 	if tokenEnable(c) {
 		var cn = c.Query("contry")
+		//var t = c.Query("type")
+
 		var banners [] model.Banner
 		var companies [] model.Company
+
 		var models []model.Model
+
 		var apps []model.App
 
-		db.Where("state = ?", 1).Find(&banners)
+		db.Where("type = ?", 2).Find(&banners)
 		db.Order("hot desc").Limit(10).Find(&companies)
 		var modeltable="models"
 		if len(cn)>0 {
@@ -47,13 +52,23 @@ func GetZoneHistroy(c *gin.Context) {
 				db = db.Or("modelid = ?", f.Resid)
 			}
 			var zones []model.Zone
-			var tablename = "zones" + year + "_" + month
-			if !db.HasTable(tablename) {
-				//tablename = "zone"
-				c.JSON(200, gin.H{"toast": "没有这个月份的数据哦"})
-				return
+			if(strings.EqualFold(month,"00")){
+				var tablename = "zones"
+				if !db.HasTable(tablename) {
+					//tablename = "zone"
+					c.JSON(200, gin.H{"toast": "没有这个月份的数据哦"})
+					return
+				}
+				db.Table(tablename).Where("time like ?",year).Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Model").Preload("Album").Find(&zones)
+			}else {
+				var tablename = "zones" + year + "_" + month
+				if !db.HasTable(tablename) {
+					//tablename = "zone"
+					c.JSON(200, gin.H{"toast": "没有这个月份的数据哦"})
+					return
+				}
+				db.Table(tablename).Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Model").Preload("Album").Find(&zones)
 			}
-			db.Table(tablename).Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Model").Preload("Album").Find(&zones)
 
 			c.JSON(200, gin.H{"data": zones})
 		} else {
