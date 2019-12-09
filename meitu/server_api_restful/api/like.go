@@ -93,13 +93,14 @@ func likeColum(user_id int, model_id int, album_id int, c *gin.Context) {
 	db.Table(tableNmae).Where("relation = ?", like.Relation).First(&like)
 	newrec := db.Table(tableNmae).NewRecord(&like)
 	var m = model.Model{}
-	m.ID= model_id
+	m.ID = model_id
 
-	db.Table("models_cn").First(&m)
+	db.First(&m)
 	var album = model.Album{
 		ID: album_id,
 	}
 	db.First(&album)
+
 	if newrec {
 		db.Table(tableNmae).Save(&like)
 		m.Hot += like_album_hot
@@ -128,7 +129,7 @@ func followModel(user_id int, model_id int, c *gin.Context) {
 	db.Where("relation = ?", like.Relation).First(&like)
 	newrec := db.NewRecord(&like)
 	var model = model.Model{}
-	model.ID=model_id
+	model.ID = model_id
 
 	db.Table("models_cn").First(&model)
 	if newrec {

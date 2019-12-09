@@ -26,6 +26,13 @@ type User struct {
 	Token        string `gorm:"-" json:"token"`
 	//Type     int    `gorm:"type:Integer(10)" json:"type"`
 }
+type UserCenter struct {
+	User User `json:"user"`
+	Cycle int `json:"cycle"`
+	Follow int `json:"follow"`
+	Followed int `json:"followed"`
+	Roles []RoleRecord
+}
 
 func (u *User) Info() string {
 	return "id = " + strconv.Itoa(int(u.ID)) + "account = " + u.Account

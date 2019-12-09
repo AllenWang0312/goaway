@@ -22,16 +22,16 @@ func GetHomeData(c *gin.Context) {
 
 		db.Where("type = ?", 2).Find(&banners)
 		db.Order("hot desc").Limit(10).Find(&companies)
-		var modeltable="models"
-		if len(cn)>0 {
-			modeltable=modeltable+"_"+cn
+		var modeltable = "models"
+		if len(cn) > 0 {
+			modeltable = modeltable + "_" + cn
 		}
 		db.Table(modeltable).Order("hot desc").Limit(10).Find(&models)
 		db.Find(&apps)
 
 		var home = model.Home{
 			Banners:  banners,
-			Apps:apps,
+			Apps:     apps,
 			Companys: companies,
 			Models:   models,
 		}
@@ -41,26 +41,29 @@ func GetHomeData(c *gin.Context) {
 func GetZoneHistroy(c *gin.Context) {
 	var user_id = getUserIdWithToken(c)
 	if user_id > 0 {
+		scope := c.Query("scope")
 		year := c.Query("year")
 		month := c.Query("month")
 		pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 		pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 		if err1 == nil && err2 == nil {
-			var tabs []model.FollowTab
-			db.Where("userid = ? And type = 2", user_id).Find(&tabs)
-			for _, f := range tabs {
-				db = db.Or("modelid = ?", f.Resid)
+			if strings.EqualFold(scope, "follow") {
+				var tabs []model.FollowTab
+				db.Where("userid = ? And type = 2", user_id).Find(&tabs)
+				for _, f := range tabs {
+					db = db.Or("modelid = ?", f.Resid)
+				}
 			}
 			var zones []model.Zone
-			if(strings.EqualFold(month,"00")){
+			if (strings.EqualFold(month, "00")) {
 				var tablename = "zones"
 				if !db.HasTable(tablename) {
 					//tablename = "zone"
 					c.JSON(200, gin.H{"toast": "没有这个月份的数据哦"})
 					return
 				}
-				db.Table(tablename).Where("time like ?",year).Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Model").Preload("Album").Find(&zones)
-			}else {
+				db.Table(tablename).Where("time like ?", year).Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Model").Preload("Album").Find(&zones)
+			} else {
 				var tablename = "zones" + year + "_" + month
 				if !db.HasTable(tablename) {
 					//tablename = "zone"

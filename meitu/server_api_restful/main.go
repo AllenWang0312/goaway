@@ -129,8 +129,6 @@ func main() {
 			like.POST("/models", api_restful.LikeModelList)
 			like.POST("/albums", api_restful.LikeAlbumList)
 		}
-
-
 		feedback := api.Group("/feedback")
 		{
 			feedback.GET("/list", api_restful.GetCommits)

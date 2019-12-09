@@ -1,7 +1,9 @@
 package meituri
 
 import (
+	"../../../conf"
 	"encoding/json"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -39,7 +41,23 @@ type Album struct {
 	Hot  int    `gorm:"type:int(16)" json:"hot"`
 
 	Images []string `gorm:"-" json:"images"`
+	//Cover  string   `gorm:"-" json:"cover"`
+	Cover ImageInfo `gorm:"-" json:"cover"`
 	//Html    string `gorm:"type:varchar(255);index:html" json:"html"`
+}
+type ImageInfo struct {
+	Url    string  `json:"url"`
+	Scale  float64 `json:"scale"`
+	Width  int     `json:"width"`
+	Height int     `json:"height"`
+}
+
+func GetAlbumCover(a *Album, net bool) string {
+	if (net) {
+		return conf.FILE_SERVER + "/muri/" + strconv.Itoa(a.Modelid) + "/" + strconv.Itoa(a.ID) + "/0.jpg"
+	} else {
+		return conf.FSRoot + conf.Muri + "/" + strconv.Itoa(a.Modelid) + "/" + strconv.Itoa(a.ID) + "/0.jpg"
+	}
 }
 
 type Tag struct {
@@ -76,15 +94,25 @@ type Banner struct {
 	ID     int    `gorm:"primary_key;index:id" json:"id"`
 	Type   int    `gorm:"index:type" json:"type"`
 	Enable bool   `gorm:"enable" json:"enable"`
-	Start   Time `gorm:"index:start" json:"start"`
-	End     Time `gorm:"index:end" json:"end"`
+	Start  Time   `gorm:"index:start" json:"start"`
+	End    Time   `gorm:"index:end" json:"end"`
 	Src    string `gorm:"src" json:"src"`
 	Link   string `gorm:"link" json:"link"`
 }
 
 type Role struct {
-	Rolename string `json:"role_name"`
-	Roleid   int    `gorm:"index:id" json:"role_id"`
+	ID       string `gorm:"primary_key;index:id" json:"id"`
+	Rolename string `gorm:"varchar(20);index:rolename" json:"role_name"`
+	des      string `gorm:"varchar(255);index:id" json:"des"`
+}
+type RoleRecord struct {
+	ID       int    `gorm:"primary_key;index:id" json:"id"`
+	Userid   int    `gorm:"int(11);index:userid" json:"user_id"`
+	Nick     string `gorm:"varchar(20);index:nick" json:"nick"`
+	Des      string `gorm:"varchar(255);index:des" json:"des"`
+	Type     int    `gorm:"int(11);index:type" json:"type"`
+	Roleid   int    `gorm:"int(11);index:roleid" json:"role_id"`
+	Relation int    `gorm:"varchar(255);index:relation" json:"relation"`
 }
 type UserRole struct {
 	Role

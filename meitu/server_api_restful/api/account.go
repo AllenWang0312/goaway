@@ -245,7 +245,13 @@ func GetUserInfo(c *gin.Context) {
 	if user_id > 0 {
 		var user = model.User{}
 		db.Where("id = ?", user_id).First(&user)
-		c.JSON(200, gin.H{"data": user})
+		var roles []model.RoleRecord
+		db.Table("user_role"+strconv.Itoa(user_id/1000)).Where("userid = ?",user_id).Find(&roles)
+		var usercenter=model.UserCenter{
+			User:user,
+			Roles:roles,
+		}
+		c.JSON(200, gin.H{"data": usercenter})
 	} else {
 		c.JSON(200, gin.H{"code": -1, "toast": "用户不存在"})
 	}
