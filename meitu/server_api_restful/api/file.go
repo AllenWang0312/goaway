@@ -3,7 +3,10 @@ package api
 import (
 	"../../../conf"
 	"github.com/gin-gonic/gin"
+	"io"
+	"log"
 	"os"
+	"strconv"
 )
 
 func UploadFile(c *gin.Context) {
@@ -38,6 +41,65 @@ func UploadFile(c *gin.Context) {
 		}
 	} else {
 		c.JSON(400, gin.H{"msg": "path 不能为空"})
+	}
+}
+func uploadFile(c *gin.Context) {
+	file, header, err := c.Request.FormFile("file")
+	if err == nil {
+		filename := header.Filename
+		out, err := os.Create("static/res/uploadFile/excel/" + filename)
+		if err == nil {
+			defer out.Close()
+			_, err = io.Copy(out, file)
+			if err == nil {
+				log.Println("上传表格成功")
+				res := map[string]interface{}{
+					"filePath": "/res/uploadFile/excel/" + filename,
+					"fileName": filename,
+				}
+				c.JSON(200, gin.H{"toast": "上传表格成功", "data": res})
+			} else {
+				c.JSON(200, gin.H{"toast": "复制文件出错"})
+			}
+		} else {
+			c.JSON(200, gin.H{"toast": "创建文件出错"})
+		}
+	} else {
+		c.JSON(200, gin.H{"toast": "接收表格出错"})
+	}
+}
+func UploadFiles(c *gin.Context) {
+	var id = getUserIdWithToken(c)
+	if (id > 0) {
+		form, _ := c.MultipartForm()
+		files := form.File["files[]"]
+		var result []string
+		for _, file := range files {
+			//log.Println(file.Filename)
+			out, err := os.Create(conf.FSRoot + "/file/" + strconv.Itoa(id) + "/feedback" + file.Filename)
+			filereader, err1 := file.Open()
+			if err == nil && err1 == nil {
+				defer out.Close()
+				_, err = io.Copy(out, filereader)
+				if err == nil {
+					log.Println("上传表格成功")
+					var url = "/res/uploadFile/excel/" + file.Filename
+					res := map[string]interface{}{
+						"filePath": url,
+						"fileName": file.Filename,
+					}
+					result = append(result, url)
+					println(res)
+				} else {
+					c.JSON(200, gin.H{"toast": "复制文件出错"})
+				}
+			} else {
+				c.JSON(200, gin.H{"toast": "创建文件出错"})
+			}
+		}
+		c.JSON(200, gin.H{"toast": "上传成功", "data": result})
+	} else {
+		c.JSON(200, gin.H{"toast": "没有权限,请先登录"})
 	}
 
 }

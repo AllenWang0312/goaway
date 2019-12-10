@@ -7,10 +7,17 @@ import (
 	"io"
 )
 
-func md5Encode(str string) string {
+func MD5Encode(str string) string {
 	h := md5.New()
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
+}
+func MD5Decode(str string) string {
+	decode, err := hex.DecodeString(str)
+	if nil == err {
+		return string(decode)
+	}
+	return ""
 }
 func md5EncodeV2(str string) string {
 	data := []byte(str)

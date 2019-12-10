@@ -18,7 +18,7 @@ func GetAlbumDetail(c *gin.Context) {
 		albumIdStr := c.Query("album_id")
 		albumId, _ := strconv.Atoi(albumIdStr)
 		album := model.Album{}
-		db.Where("id = ?", albumIdStr).First(&album)
+		db.Where("id = ?", albumIdStr).Preload("Model").First(&album)
 		if album.ID > 0 {
 			//downloadFile(durl,path,filename)
 			var now = time.Now().Format("2006-01-02")

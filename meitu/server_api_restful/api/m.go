@@ -26,7 +26,9 @@ func GetTandomHotTab(c *gin.Context) {
 		var tags []model.Tag
 		var tabs [] model.Tab
 
-		if gender == "" || gender == "man" {
+		if gender == "woman" {
+			c.JSON(200, gin.H{"toast":"参数暂不支持" })
+		}else{
 			db.Select("id,name,hot").Order("hot desc").Offset((pageNo - 1) * 5).Limit(5).Find(&companies)
 			for _, c := range companies {
 				c.Type = conf.Company
@@ -47,8 +49,10 @@ func GetTandomHotTab(c *gin.Context) {
 				t.Type = conf.Tag
 				tabs = append(tabs, t.Tab)
 			}
+			c.JSON(200, gin.H{"data": tabs})
 		}
-		c.JSON(200, gin.H{"data": tabs})
+	}else{
+		c.JSON(200, gin.H{"toast": err.Error()})
 	}
 }
 

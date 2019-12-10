@@ -73,7 +73,7 @@ func main() {
 		account.POST("/login", api_restful.Login)
 	}
 	api.POST("/file", api_restful.UploadFile)
-
+	api.POST("/files", api_restful.UploadFiles)
 	m := api.Group("/m")
 	{
 		apps:=m.Group("/apps")

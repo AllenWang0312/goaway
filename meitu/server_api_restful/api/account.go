@@ -15,7 +15,7 @@ import (
 func tokenEnable(c *gin.Context) bool {
 	token := c.GetHeader("token")
 	if !checkTokenEnable(token) {
-		c.JSON(401, gin.H{"status": -1, "msg": "token已失效"})
+		c.JSON(401, gin.H{"toast": "token已失效"})
 		return false
 	} else {
 		return true
@@ -137,7 +137,7 @@ func hasThisDeviceBinded(userid int, platform string, device string) bool {
 
 func getFirstTabFollowID(userid int) int {
 	var frecord = model.FollowTab{
-		Userid:userid,
+		Userid: userid,
 	}
 	db.First(&frecord)
 	println(frecord.ID)
@@ -204,12 +204,25 @@ func Regist(c *gin.Context) {
 	if len(account) > 0 && len(pwd) > 0 {
 		var user = model.User{}
 		if util.IsMobile(account) {
-
 			user = model.User{
 				Account: account,
 				Pwd:     pwd,
 				Tel:     account,
 			}
+			if new := db.NewRecord(&user); new {
+				db.Create(&user)
+			} else {
+				c.JSON(200, gin.H{"toast": "用户已存在"})
+				return
+			}
+			println(user.ID)
+			var str = encrypt.MD5Encode(user.Account + "_" + strconv.Itoa(user.ID))
+			println(str)
+			var code = encrypt.AesCBCDecrypt(str, encrypt.Key)
+			println(code)
+			db.Where("id = ", user.ID).Update("invitatecode", code)
+			c.JSON(200, gin.H{"toast": "创建成功",
+				"data": user})
 		} else {
 			c.JSON(200, gin.H{"toast": "暂时只支持手机号注册哦"})
 			return
@@ -224,16 +237,12 @@ func Regist(c *gin.Context) {
 
 		//new := db.NewRecord(&user)
 		//if new {
-		db.Create(&user)
-		println(user.ID)
-		var code = encrypt.AesCBCDecrypt(strconv.Itoa(user.ID), encrypt.Key)
-		user.InvitateCode = code
-		db.Where("id = ", user.ID).Update("invitatecode", code)
-		c.JSON(200, gin.H{"toast": "创建成功",
-			"data": user})
+
 		//} else {
 		//	c.JSON(200, gin.H{"toast": "用户已存在"})
 		//}
+	} else {
+		c.JSON(200, gin.H{"toast": "参数异常"})
 	}
 }
 func GetUser(c *gin.Context) {
@@ -246,10 +255,10 @@ func GetUserInfo(c *gin.Context) {
 		var user = model.User{}
 		db.Where("id = ?", user_id).First(&user)
 		var roles []model.RoleRecord
-		db.Table("user_role"+strconv.Itoa(user_id/1000)).Where("userid = ?",user_id).Find(&roles)
-		var usercenter=model.UserCenter{
-			User:user,
-			Roles:roles,
+		db.Table("user_role"+strconv.Itoa(user_id/1000)).Where("userid = ?", user_id).Find(&roles)
+		var usercenter = model.UserCenter{
+			User:  user,
+			Roles: roles,
 		}
 		c.JSON(200, gin.H{"data": usercenter})
 	} else {

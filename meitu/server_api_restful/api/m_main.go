@@ -41,19 +41,19 @@ func GetHomeData(c *gin.Context) {
 func GetZoneHistroy(c *gin.Context) {
 	var user_id = getUserIdWithToken(c)
 	if user_id > 0 {
-		scope := c.Query("scope")
+		//scope := c.Query("scope")
 		year := c.Query("year")
 		month := c.Query("month")
 		pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 		pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 		if err1 == nil && err2 == nil {
-			if strings.EqualFold(scope, "follow") {
-				var tabs []model.FollowTab
-				db.Where("userid = ? And type = 2", user_id).Find(&tabs)
-				for _, f := range tabs {
-					db = db.Or("modelid = ?", f.Resid)
-				}
-			}
+			//if strings.EqualFold(scope, "follow") {
+			//	var tabs []model.FollowTab
+			//	db.Where("userid = ? And type = 2", user_id).Find(&tabs)
+			//	for _, f := range tabs {
+			//		db = db.Or("modelid = ?", f.Resid)
+			//	}
+			//}
 			var zones []model.Zone
 			if (strings.EqualFold(month, "00")) {
 				var tablename = "zones"

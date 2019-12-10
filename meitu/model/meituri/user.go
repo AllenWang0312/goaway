@@ -14,24 +14,27 @@ type App struct {
 	Gif       string `gorm:"type:varchar(255)" json:"gif"`
 }
 type User struct {
-	ID           int    `gorm:"primary_key" json:"id"`
-	Account      string `gorm:"type:varchar(50)" json:"account"`
-	Name         string `gorm:"type:varchar(20)" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
-	Portarit     string `gorm:"type:varchar(255)" json:"portarit"`
-	Email        string `gorm:"type:varchar(30)" json:"email"`
-	Pwd          string `gorm:"type:varchar(20)" json:"pwd"`
-	Tel          string `gorm:"type:varchar(20)" json:"tel"`
-	Birthday     string `gorm:"type:varchar(20)" json:"birthday"`
-	InvitateCode string `gorm:"type:varchar(100);index:invitatecode" json:"invitate_code"`
-	Token        string `gorm:"-" json:"token"`
+	ID           int     `gorm:"primary_key" json:"id"`
+	Nick         string  `gorm:"type:varchar(20)" json:"nick"`
+	Account      string  `gorm:"type:varchar(50)" json:"account"`
+	Name         string  `gorm:"type:varchar(20)" json:"name"` //由于在mysql的users表中name没有设置为NOT NULL,所以name可能为null,在查询过程中会返回nil，如果是string类型则无法接收nil,但string则可以接收nil值
+	Portarit     string  `gorm:"type:varchar(255)" json:"portarit"`
+	Email        string  `gorm:"type:varchar(30)" json:"email"`
+	Pwd          string  `gorm:"type:varchar(20)" json:"pwd"`
+	Tel          string  `gorm:"type:varchar(20)" json:"tel"`
+	Birthday     string  `gorm:"type:varchar(20)" json:"birthday"`
+	Invitatecode string  `gorm:"type:varchar(255);index:invitatecode" json:"invitate_code"`
+	Token        string  `gorm:"-" json:"token"`
+	Parentid     string  `gorm:"type:int(11)" json:"parent_id"`
+	Roles        [] Role `gorm:"type:blob(255)" json:"roles"`
 	//Type     int    `gorm:"type:Integer(10)" json:"type"`
 }
 type UserCenter struct {
-	User User `json:"user"`
-	Cycle int `json:"cycle"`
-	Follow int `json:"follow"`
-	Followed int `json:"followed"`
-	Roles []RoleRecord
+	User     User `json:"user"`
+	Cycle    int  `json:"cycle"`
+	Follow   int  `json:"follow"`
+	Followed int  `json:"followed"`
+	Roles    []RoleRecord
 }
 
 func (u *User) Info() string {

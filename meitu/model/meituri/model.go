@@ -28,6 +28,7 @@ type Model struct {
 type Album struct {
 	ID      int `gorm:"primary_key;index:id" json:"id"`
 	Modelid int `gorm:"type:int(11)" json:"model_id"`
+	Model Model `gorm:"FOREIGNKEY:ID;ASSOCIATION_FOREIGNKEY:Modelid" json:"model"`
 	Groupid int `gorm:"type:int(11)" json:"group_id"`
 
 	Title string `gorm:"type:varchar(100);index:title" json:"title"`

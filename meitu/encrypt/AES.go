@@ -5,26 +5,10 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
-	"fmt"
 )
 
-const Key  ="qunsi003"
-func main() {
-	//x:=[]byte("世界上最邪恶最专制的现代奴隶制国家--朝鲜")
-	//key:=[]byte("hgfedcba87654321")
-	//x1:=encryptAES(x,key)
-	//fmt.Print(string(x1))
-	//x2:=decryptAES(x1,key)
-	//fmt.Print(string(x2))
+const Key  ="hgfedcba87654321"
 
-	orig := "hello world"
-
-	fmt.Println("原文：", orig)
-	encryptCode := AesCBCEncrypt(orig, Key)
-	fmt.Println("密文：", encryptCode)
-	decryptCode := AesCBCDecrypt(encryptCode, Key)
-	fmt.Println("解密结果：", decryptCode)
-}
 func AesCBCEncrypt(orig string, key string) string {
 	// 转成字节数组
 	origData := []byte(orig)
