@@ -4,7 +4,7 @@ const Debug = 0   //at home
 const Pre = 1     //at company
 const Release = 2 // online
 
-const VisitHistroy  ="visit_hsitroies"
+const VisitHistroy  ="visit_histroies"
 
 const Min = 60
 const Hour = 60 * Min

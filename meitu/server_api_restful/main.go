@@ -91,6 +91,7 @@ func main() {
 			home.GET("", api_restful.GetHomeData)
 			home.GET("/zone", api_restful.GetZoneHistroy)
 			home.GET("/histroy",api_restful.GetVisitHistroy)
+			home.GET("/histroy/record",api_restful.RecordVisitHistroy)
 			home.GET("/histroy/clean",api_restful.CleanVisitHistroy)
 		}
 		mine:=m.Group("/mine")

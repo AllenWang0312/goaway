@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func GetHomeData(c *gin.Context) {
@@ -81,6 +82,37 @@ func GetZoneHistroy(c *gin.Context) {
 
 	}
 }
+func RecordVisitHistroy(c *gin.Context){
+	useridstr := getUserIdStrWithToken(c)
+	userid, err := strconv.Atoi(useridstr)
+	if err == nil && userid > 0 {
+		//modelIdStr := c.Query("model_id")
+		albumIdStr := c.Query("album_id")
+		albumId, _ := strconv.Atoi(albumIdStr)
+		album := model.Album{}
+		db.Where("id = ?", albumIdStr).Preload("Model").First(&album)
+		if album.ID > 0 {
+			var now = time.Now().Format("2006-01-02")
+			var record = model.VisitHistroy{
+				Albumid:  albumId,
+				Userid:   userid,
+				Date:     now,
+				Relation: albumIdStr + "_" + useridstr + "_" + now,
+			}
+			var tableName = conf.VisitHistroy + strconv.Itoa(userid/1000)
+			if !db.HasTable(tableName) {
+				db.Table(tableName).Create(model.VisitHistroy{})
+			}
+			db.Table(tableName).Create(&record)
+			c.JSON(200,gin.H{"msg":"record success"})
+		}else{
+			c.JSON(200,gin.H{"toast":"album id 不存在"})
+		}
+	}else {
+		c.JSON(200,gin.H{"toast":"获取用户信息失败"})
+	}
+
+}
 func GetVisitHistroy(c *gin.Context) {
 	var pageNo, err0 = strconv.Atoi(c.Query("pageNo"))
 	var pageSize, err1 = strconv.Atoi(c.Query("pageSize"))
@@ -91,7 +123,7 @@ func GetVisitHistroy(c *gin.Context) {
 			var records []model.VisitHistroy
 			tableName := conf.VisitHistroy + strconv.Itoa(userId/1000)
 			if db.HasTable(tableName) {
-				db.Table(tableName).Where("userid = ?", userId).Order("date desc").Offset((pageNo - 1) * pageSize).Limit(pageSize).Preload("Album").Find(&records)
+				db.Table(tableName).Preload("Album").Where("userid = ?", userId).Order("date desc").Offset((pageNo - 1) * pageSize).Limit(pageSize).Find(&records)
 				c.JSON(200, gin.H{"data": records})
 			} else {
 				c.JSON(200, gin.H{"toast": "没有记录"})

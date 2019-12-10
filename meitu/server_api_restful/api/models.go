@@ -24,21 +24,21 @@ func GetModelList(c *gin.Context) {
 		//}
 		if len(contry)>0 {
 			if strings.EqualFold(contry,"cn") {
-				db.Table("models_cn").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
+				db.Where("address not like ?","日本").Or("address not like ?","香港").Or("address not like ?","澳门").Or("address not like ?","台湾").Or("address not like ?","韩国").Or("address not like ?","泰国").Or("address not like ?","美国").Order("hot desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
 			}else if strings.EqualFold(contry,"jp") {
-				db.Where("address like ?", "日本").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
+				db.Where("address like ?", "日本").Order("hot desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
 			}else if strings.EqualFold(contry,"cn_hk"){
-				db.Where("address like ?", "香港").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
+				db.Where("address like ?", "香港").Order("hot desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
 			}else if strings.EqualFold(contry,"cn_mo"){
-				db.Where("address like ?", "澳门").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
+				db.Where("address like ?", "澳门").Order("hot desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
 			}else if strings.EqualFold(contry,"cn_tw"){
-				db.Where("address like ?", "台湾").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
+				db.Where("address like ?", "台湾").Order("hot desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
 			}else if strings.EqualFold(contry,"kr"){
-				db.Where("address like ?", "韩国").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
+				db.Where("address like ?", "韩国").Order("hot desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
 			}else if strings.EqualFold(contry,"tha"){
-				db.Where("address like ?", "泰国").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
+				db.Where("address like ?", "泰国").Order("hot desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
 			}else if strings.EqualFold(contry,"usa"){
-				db.Where("address like ?", "美国").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
+				db.Where("address like ?", "美国").Order("hot desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&models)
 			}
 
 		}else{
@@ -70,7 +70,7 @@ func GetModelHomePage(c *gin.Context) {
 		db.First(&m)
 	}
 	var albums []model.Album
-	db.Where("modelid = ?", id).Find(&albums)
+	db.Where("modelid = ?", id).Order("time desc").Find(&albums)
 	c.JSON(200, gin.H{"data": ModelDetail{
 		Info:   m,
 		Albums: albums,

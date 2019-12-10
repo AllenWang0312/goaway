@@ -76,14 +76,16 @@ func UploadFiles(c *gin.Context) {
 		var result []string
 		for _, file := range files {
 			//log.Println(file.Filename)
-			out, err := os.Create(conf.FSRoot + "/file/" + strconv.Itoa(id) + "/feedback" + file.Filename)
+			var path="/file/" + strconv.Itoa(id) + "/feedback/"
+			_ = os.MkdirAll(conf.FSRoot + path, 0777)
+			out, err := os.Create(conf.FSRoot + path + file.Filename)
 			filereader, err1 := file.Open()
 			if err == nil && err1 == nil {
 				defer out.Close()
 				_, err = io.Copy(out, filereader)
 				if err == nil {
 					log.Println("上传表格成功")
-					var url = "/res/uploadFile/excel/" + file.Filename
+					var url = conf.FILE_SERVER+path + file.Filename
 					res := map[string]interface{}{
 						"filePath": url,
 						"fileName": file.Filename,

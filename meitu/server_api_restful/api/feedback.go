@@ -26,6 +26,7 @@ func Commit(c *gin.Context) {
 		return
 	} else if user_id > 0 {
 		content := c.PostForm("content")
+		tel:= c.PostForm("tel")
 		//content=mahonia.NewDecoder("utf-8").ConvertString(content)
 		println(content)
 		//images :=[]string{}
@@ -34,6 +35,7 @@ func Commit(c *gin.Context) {
 		images := []byte(c.PostForm("images"))
 		now := time.Now()
 		var feedback = model.Feedback{
+			Tel:tel,
 			Userid:     user_id,
 			Content:    content,
 			Images:     images,

@@ -155,6 +155,7 @@ type Feedback struct {
 	Images     StringArray `gorm:"type:varchar(255);index:images" json:"images"`
 	Likes      int         `gorm:"type:int(20);index:likes" json:"likes"`
 	State      int         `gorm:"type:int(5);index:state" json:"state"`
+	Tel string  `gorm:"type:varchar(30);index:tel" json:"tel"`
 	Createtime time.Time   `gorm:"type:varchar(50);index:createtime" json:"createtime"`
 }
 

@@ -35,7 +35,9 @@ func main() {
 	//	changdir(model.ID)
 	//}
 	if len(os.Args) > 1 {
-		if len(os.Args) == 2 { //main cover pageNo pageSize
+		if len(os.Args) == 2 {
+			var contry = os.Args[1]
+			getContryColums(contry)
 
 		} else if len(os.Args) == 3 {
 			id1, err := strconv.Atoi(os.Args[1])
@@ -124,7 +126,23 @@ func getModelColums(modelId int) int {
 	}
 	return 0
 }
-
+func getContryColums(contry string) int {
+	for i := 1; i < conf.UserColumsPageMaxSize; i++ {
+		url := ""
+		if i > 1 {
+			url = conf.Host + "/"+contry+"/" + strconv.Itoa(i) + ".html"
+		} else {
+			url = conf.Host + "/"+contry
+		}
+		err := AnalyzeContryHomePageHtml(client, url, i)
+		if err == conf.AnalysisHtmlFaild {
+			continue
+		} else if err == conf.UrlInvalid {
+			break
+		}
+	}
+	return 0
+}
 func getModelInfo(modelId int) {
 	url := conf.Host + "/t/" + strconv.Itoa(modelId) + "/"
 	AnalyzeModelInfoHtml(client, url, modelId)
@@ -283,6 +301,24 @@ func AnalyzeModelHomePageHtml(client *http.Client, url string, modelId int, i in
 	}
 	return AnalyzeModelColumPage(modelId, doc)
 }
+func AnalyzeContryHomePageHtml(client *http.Client, url string, i int) int {
+	resp, err := client.Get(url)
+	fmt.Println(url)
+
+	if err != nil {
+		fmt.Println("analysis html faild")
+		return conf.AnalysisHtmlFaild
+	}
+	if resp.StatusCode > 400 {
+		fmt.Println("resp.StatusCode > 400")
+		return conf.UrlInvalid
+	}
+	defer resp.Body.Close()
+	doc, err := goquery.NewDocument(url)
+
+	return AnalyzeContryColumPage( doc)
+}
+
 func AnalyzeModelInfoHtml(client *http.Client, url string, modelId int) {
 	resp, err := client.Get(url)
 	fmt.Println(url)
@@ -452,6 +488,64 @@ func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
 			}
 			//gorm.SaveColum(c)
 			err := downloadSingleColum(modelId, columId, &c)
+			if err < 0 {
+				//continue
+			}
+		})
+	} else {
+		return conf.AnalysisHtmlFaild
+	}
+	return conf.Success
+}
+
+func AnalyzeContryColumPage(doc *goquery.Document) int {
+	//println(doc.Url.String())
+	hezi := doc.Find("div.hezi")
+	if hezi != nil {
+		hezi.Find("ul").Find("li").Each(func(i int, s *goquery.Selection) {
+			a := s.Find("a")
+			path, _ := a.Attr("href")
+			var groupId int
+			var group string
+			var model_id int
+			var tags string
+			s.Find("p").Each(func(i int, s1 *goquery.Selection) {
+				if strings.Contains(s1.Text(), "机构") {
+					p1a := s1.Find("a")
+					href, _ := p1a.Attr("href")
+					groupId = util.GetIdFromUri(href)
+					group = a.Text()
+				}else if strings.Contains(s1.Text(),"模特"){
+					s1.Find("a").Each(func(i int, s2 *goquery.Selection) {
+						href, _ := s2.Attr("href")
+						model_id = util.GetIdFromUri(href)
+					})
+				} else if strings.Contains(s1.Text(), "标签") {
+					s1.Find("a").Each(func(i int, s2 *goquery.Selection) {
+						href, _ := s2.Attr("href")
+						tags += s2.Text() + "(" + strconv.Itoa(util.GetIdFromUri(href)) + ")"
+					})
+				}
+			})
+			//cover, _ := a.Find("img").Attr("src")
+			nums := s.Find("span").Text()
+			num, _ := strconv.Atoi(nums[0 : len(nums)-1])
+
+			paths := strings.Split(path, "/")
+			columId, _ := strconv.Atoi(paths[len(paths)-2])
+			//println(path + " " + strconv.Itoa(len(path)) + strconv.Itoa(columId))
+			//if(!util.PathExists(strconv.Itoa(colum))){
+			//
+			//}
+			c := model.Album{
+				Nums:    num,
+				Modelid: model_id,
+				Groupid: groupId,
+				Group:   group,
+				Tags:    tags,
+			}
+			//gorm.SaveColum(c)
+			err := downloadSingleColum(model_id, columId, &c)
 			if err < 0 {
 				//continue
 			}
