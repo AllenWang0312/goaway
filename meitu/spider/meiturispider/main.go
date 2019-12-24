@@ -38,7 +38,6 @@ func main() {
 		if len(os.Args) == 2 {
 			var contry = os.Args[1]
 			getContryColums(contry)
-
 		} else if len(os.Args) == 3 {
 			id1, err := strconv.Atoi(os.Args[1])
 			id2, err1 := strconv.Atoi(os.Args[2])
