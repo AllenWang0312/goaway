@@ -1,4 +1,4 @@
-package mzituspider
+package mzitu
 
 import (
 	"path/filepath"

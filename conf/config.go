@@ -9,6 +9,7 @@ const GormDebug=true
 const FSHost="122.51.205.29"
 const RediaHost = "127.0.0.1"
 const DBHost = "127.0.0.1"
+
 const Muri="/muri"
 var FSRoot = "/home/wpc/products/netimg"
 var ProjectRoot = "/home/wpc/products/netimg"
