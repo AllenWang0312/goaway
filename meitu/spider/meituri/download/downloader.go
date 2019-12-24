@@ -57,6 +57,7 @@ func DownloadImage(durl string, path string, fileName string) int {
 	go DownloadImageFromResp(resp, path, fileName)
 	return 0
 }
+
 func DownloadImageFromResp(resp *http.Response, path string, fileName string) {
 	//fileName := getNameFromUrl(url)
 	defer func() {
