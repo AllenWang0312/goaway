@@ -64,12 +64,17 @@ func GetRouteFromUri(url string) string {
 	index := strings.LastIndex(url, "/")
 	return url[paths+4 : index]
 }
-// 型如 https://meituri.com/x/1/1096.html 获取1096
-
+// 型如 https://meituri.com/x/1/1096_3.html 获取1096
 func GetNameIDFromUri(url string) string {
 	paths := strings.LastIndex(url, "/")
 	index := strings.LastIndex(url, ".")
-	return url[paths+1 : index]
+	fg:=strings.LastIndex(url,"_")
+	if fg>0 {
+		return url[paths+1 : fg]
+	}else{
+		return url[paths+1 : index]
+	}
+
 }
 
 //const (
