@@ -21,7 +21,7 @@ import (
 var client *http.Client
 
 func main() {
-	//gorm.InitDB()
+	gorm.InitDB()
 	client = http.DefaultClient
 	client.Timeout = 20 * time.Second
 
@@ -131,7 +131,7 @@ func downloadImage(orc_url string,dir string,filename string) {
 	println(orc_url)
 	//var route = util.GetRouteFromUri(orc_url)
 	//var name = util.GetNameFromUri(orc_url)
-	DownloadImage(orc_url, "F:/fengniao/"+dir+"/", filename)
+	DownloadImage(orc_url, "Z:/photos/fengniao/"+dir+"/", filename)
 }
 
 //func AnalyzeFromM(center int) {
@@ -233,7 +233,7 @@ func AnalyzeAlbumHtml(albumId int,dir string) int {
 		img = util.GetPathFromUri(img)
 		var name = util.GetNameFromUri(img)
 		println(img, dir, name)
-		DownloadImage(img, "F:/fengniao/"+dir+"/", name)
+		DownloadImage(img, "Z:/photos/fengniao/"+dir+"/", name)
 	}
 	return 0
 }
