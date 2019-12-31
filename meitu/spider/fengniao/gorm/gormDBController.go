@@ -4,6 +4,7 @@ import (
 	"../../../../conf"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	model "../../../model/fengniao"
 )
 
 var db *gorm.DB
@@ -17,4 +18,7 @@ func InitDB() {
 	db.DB().SetMaxIdleConns(10)
 	db.DB().SetMaxOpenConns(100)
 	db.LogMode(conf.GormDebug)
+}
+func SaveAlbum(album *model.Album){
+	db.Table("fengniao_album").Save(album)
 }

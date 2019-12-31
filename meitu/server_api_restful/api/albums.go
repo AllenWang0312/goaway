@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -67,49 +68,52 @@ func appendImagesForAlbum(modelIdStr string, albumIdStr string, album *model.Alb
 
 }
 func GetAlbumsList(c *gin.Context) {
-	tag:= c.Query("tag")
-	search:=c.Query("search")
-	println(tag,search)
-
+	plat := c.Query("platform")
+	tag := c.Query("tag")
+	search := c.Query("search")
+	println(tag, search)
 	pageNo, err1 := strconv.Atoi(c.Query("pageNo"))
 	pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
 	var albums []model.Album
-	if nil == err1 && nil == err2 {
-		if len(tag)>0 {
-			db.Where("tags like ?", tag).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&albums) //.Order("created_at desc")
-			//c.String(200,)
-			//for _, a := range albums {
-			//	if reader, err := os.Open(model.GetAlbumCover(&a, false)); err != nil {
-			//		defer reader.Close()
-			//		im, _, err := image.DecodeConfig(reader)
-			//		if err != nil {
-			//			fmt.Fprintf(os.Stderr, "%v\n", err)
-			//			continue
-			//		}
-			//		var cover = model.ImageInfo{
-			//			Url:    model.GetAlbumCover(&a, true),
-			//			Width:  im.Width,
-			//			Height: im.Height,
-			//			Scale:  float64(im.Width) / float64(im.Height),
-			//		}
-			//		a.Cover=cover
-			//		fmt.Printf("%d %d\n", im.Width, im.Height)
-			//	} else {
-			//		fmt.Println("Impossible to open the file")
-			//	}
-			//}
-			c.JSON(200, gin.H{"data": &albums})
-		}else if len(search)>0 {
-			db.Where("title like ?", search).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&albums)
-			c.JSON(200, gin.H{"data": &albums})
+	if (strings.EqualFold(plat, "fengniao")) {
+		db.Table("fengniao_album").Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&albums) //.Order("created_at desc")
+		c.JSON(200, gin.H{"data": &albums})
+	}else{
+		if nil == err1 && nil == err2 {
+			if len(tag) > 0 {
+				db.Where("tags like ?", tag).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&albums) //.Order("created_at desc")
+				//c.String(200,)
+				//for _, a := range albums {
+				//	if reader, err := os.Open(model.GetAlbumCover(&a, false)); err != nil {
+				//		defer reader.Close()
+				//		im, _, err := image.DecodeConfig(reader)
+				//		if err != nil {
+				//			fmt.Fprintf(os.Stderr, "%v\n", err)
+				//			continue
+				//		}
+				//		var cover = model.ImageInfo{
+				//			Url:    model.GetAlbumCover(&a, true),
+				//			Width:  im.Width,
+				//			Height: im.Height,
+				//			Scale:  float64(im.Width) / float64(im.Height),
+				//		}
+				//		a.Cover=cover
+				//		fmt.Printf("%d %d\n", im.Width, im.Height)
+				//	} else {
+				//		fmt.Println("Impossible to open the file")
+				//	}
+				//}
+				c.JSON(200, gin.H{"data": &albums})
+			} else if len(search) > 0 {
+				db.Where("title like ?", search).Order("id desc").Limit(pageSize).Offset((pageNo - 1) * pageSize).Find(&albums)
+				c.JSON(200, gin.H{"data": &albums})
+			} else {
+				db.Limit(pageSize).Offset((pageNo - 1) * pageSize).Order("id desc").Find(&albums) //.Order("created_at desc")
+				c.JSON(200, gin.H{"data": &albums})
+			}
+
 		} else {
-			db.Limit(pageSize).Offset((pageNo - 1) * pageSize).Order("id desc").Find(&albums) //.Order("created_at desc")
-			c.JSON(200, gin.H{"data": &albums})
+			c.JSON(404, gin.H{"status": 0, "msg": "缺少参数"})
 		}
-
-	} else {
-		c.JSON(404, gin.H{"status": 0, "msg": "缺少参数"})
 	}
-
-
 }

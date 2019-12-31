@@ -3,6 +3,8 @@ package main
 import (
 	"../../../conf"
 	"../../../util"
+	model "../../model/fengniao"
+	"./gorm"
 	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -30,12 +32,12 @@ func main() {
 	//AnalyzeColumHomePageHtml(client, url)
 	//AnalyzeFromM(5359571)
 	//downloadModelColumsRange(10000,20000)
-	var url = "http://travel.fengniao.com/slide/535/5359628_1.html"
-	var dir=util.GetNameIDFromUri(url)
-	AnalyzeFrom(url,dir)
+	var url = "http://travel.fengniao.com/slide/535/5359673_1.html"
+	var dir = util.GetNameIDFromUri(url)
+	AnalyzeFrom(url, dir)
 	WG.Wait()
 }
-func AnalyzeFrom(url string,dir string) int {
+func AnalyzeFrom(url string, dir string) int {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		println("request create faild: " + err.Error())
@@ -55,6 +57,10 @@ func AnalyzeFrom(url string,dir string) int {
 	}
 
 	docs, err := ioutil.ReadAll(resp.Body)
+	var titleDoc = doc.Find("div.title")
+	var title = titleDoc.Find("h4").Text()
+	var totalStr = titleDoc.Find("span.mark-num").Find("span.total-num").Text()
+	total, _ := strconv.Atoi(totalStr)
 	if err != nil {
 		println(err.Error())
 	} else {
@@ -66,24 +72,33 @@ func AnalyzeFrom(url string,dir string) int {
 		r, _ = regexp.Compile("pic_url\":\"(.+?)\"")
 		var urls = r.FindAllStringSubmatch(jsons, -1)
 		println(len(urls))
+
+
+
+		var desc = doc.Find("p.describe-text").Text()
+
+		id, _ := strconv.Atoi(dir)
+		//var docDoc=util.G2U(doc.Text())
+		println(util.G2U(title), totalStr)
+
+		var album = model.Album{
+			Title: title,
+			Subs:  desc,
+			Nums:  total,
+			ID:    id,
+		}
+		gorm.SaveAlbum(&album)
 		for i, kv := range urls {
-			downloadImage(strings.Replace(kv[1], "\\", "", -1),dir,strconv.Itoa(i+1)+".jpg")
+			downloadImage(strings.Replace(kv[1], "\\", "", -1), dir, strconv.Itoa(i+1)+".jpg")
 		}
 		next, e := doc.Find("div.next-last").Find("a").Attr("href")
 		if (e) {
-			var dir=util.GetNameIDFromUri(next)
-			AnalyzeFrom(next,dir)
+			var dir = util.GetNameIDFromUri(next)
+			AnalyzeFrom(next, dir)
 		}
 		//fmt.Println(urls)
 		return 0
 	}
-
-	var titleDoc = doc.Find("div.title")
-	var title = titleDoc.Find("h4").Text()
-	var totalStr = titleDoc.Find("span.mark-num").Find("span.total-num").Text()
-	total, err := strconv.Atoi(totalStr)
-	//var docDoc=util.G2U(doc.Text())
-	println(util.G2U(title), totalStr)
 
 	if (err == nil) {
 		var bigImgBox = doc.Find("div.big-img-box")
@@ -93,19 +108,19 @@ func AnalyzeFrom(url string,dir string) int {
 		var img = picbox.Find("img")
 		var orc_url, _ = img.Attr("orc_url")
 		//println(img.Text(),orc_url)
-		downloadImage(orc_url,dir,"1.jpg")
+		downloadImage(orc_url, dir, "1.jpg")
 		for i := 2; i <= total; i++ {
-			AnalyzeImage(url + "#p=" + strconv.Itoa(i),dir,strconv.Itoa(i)+".jpg")
+			AnalyzeImage(url+"#p="+strconv.Itoa(i), dir, strconv.Itoa(i)+".jpg")
 		}
 	}
 	next, e := doc.Find("div.next-last").Find("a").Attr("href")
 	if (e) {
-		var dir=util.GetNameIDFromUri(next)
-		AnalyzeFrom(next,dir)
+		var dir = util.GetNameIDFromUri(next)
+		AnalyzeFrom(next, dir)
 	}
 	return 0
 }
-func AnalyzeImage(url string,dir string,saveName string) int {
+func AnalyzeImage(url string, dir string, saveName string) int {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		println("request create faild: " + err.Error())
@@ -123,11 +138,11 @@ func AnalyzeImage(url string,dir string,saveName string) int {
 	var img = doc.Find("div.pic-box").Find("img")
 	var orc_url, _ = img.Attr("orc_url")
 	println(img.Text(), orc_url)
-	downloadImage(orc_url,dir,saveName)
+	downloadImage(orc_url, dir, saveName)
 	return 0
 }
 
-func downloadImage(orc_url string,dir string,filename string) {
+func downloadImage(orc_url string, dir string, filename string) {
 	println(orc_url)
 	//var route = util.GetRouteFromUri(orc_url)
 	//var name = util.GetNameFromUri(orc_url)
@@ -151,7 +166,7 @@ func downloadImage(orc_url string,dir string,filename string) {
 
 var count = 10
 
-func getAlbumCount(albumId int,dir string) int {
+func getAlbumCount(albumId int, dir string) int {
 	var url = "https://m.fengniao.com/slide/" + strconv.Itoa(albumId) + ".html"
 	println(url)
 	req, err := http.NewRequest("GET", url, nil)
@@ -176,7 +191,7 @@ func getAlbumCount(albumId int,dir string) int {
 	var totalStr = doc.Find("div.swiper-pagination").Find("span.swiper-pagination-total").Text()
 	count, _ = strconv.Atoi(totalStr)
 	for i := 1; i <= count; i++ {
-		AnalyzeAlbumHtml(albumId,dir)
+		AnalyzeAlbumHtml(albumId, dir)
 	}
 	return 0
 }
@@ -203,7 +218,7 @@ func addHeaders(req *http.Request, m bool) {
 	req.Header.Add("User-Agent", "Mozilla/5.0 (Linux; Android 9; ONEPLUS A5000) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Mobile Safari/537.36")
 }
 
-func AnalyzeAlbumHtml(albumId int,dir string) int {
+func AnalyzeAlbumHtml(albumId int, dir string) int {
 	var url = "https://m.fengniao.com/slide/" + strconv.Itoa(albumId) + ".html"
 	println(url)
 	req, err := http.NewRequest("GET", url, nil)
