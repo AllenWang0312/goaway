@@ -87,9 +87,12 @@ func AnalyzeFrom(url string, dir string) int {
 			Nums:  total,
 			ID:    id,
 		}
+
 		gorm.SaveAlbum(&album)
-		for i, kv := range urls {
-			downloadImage(strings.Replace(kv[1], "\\", "", -1), dir, strconv.Itoa(i+1)+".jpg")
+		if(conf.DownloadImages){
+			for i, kv := range urls {
+				downloadImage(strings.Replace(kv[1], "\\", "", -1), dir, strconv.Itoa(i+1)+".jpg")
+			}
 		}
 		next, e := doc.Find("div.next-last").Find("a").Attr("href")
 		if (e) {
@@ -146,7 +149,7 @@ func downloadImage(orc_url string, dir string, filename string) {
 	println(orc_url)
 	//var route = util.GetRouteFromUri(orc_url)
 	//var name = util.GetNameFromUri(orc_url)
-	DownloadImage(orc_url, "Z:/photos/fengniao/"+dir+"/", filename)
+	DownloadImage(orc_url, conf.FSRoot+"/fengniao/"+dir+"/", filename)
 }
 
 //func AnalyzeFromM(center int) {
@@ -248,7 +251,7 @@ func AnalyzeAlbumHtml(albumId int, dir string) int {
 		img = util.GetPathFromUri(img)
 		var name = util.GetNameFromUri(img)
 		println(img, dir, name)
-		DownloadImage(img, "Z:/photos/fengniao/"+dir+"/", name)
+		DownloadImage(img, conf.FSRoot+"/fengniao/"+dir+"/", name)
 	}
 	return 0
 }

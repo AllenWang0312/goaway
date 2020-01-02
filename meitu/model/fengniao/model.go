@@ -12,7 +12,7 @@ type Album struct {
 	//Group string `gorm:"type:varchar(100);index:group" json:"org"`
 	//No    string `gorm:"type:varchar(20);index:no" json:"no"`
 
-	Nums int    `gorm:"type:int(11)" json:"nums"`
+	Nums int    `gorm:"type:int(11);index:nums" json:"nums"`
 	Time string `gorm:"type:varchar(30);index:time" json:"time"`
 	//Hot  int    `gorm:"type:int(16)" json:"hot"`
 

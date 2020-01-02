@@ -20,5 +20,11 @@ func InitDB() {
 	db.LogMode(conf.GormDebug)
 }
 func SaveAlbum(album *model.Album){
-	db.Table("fengniao_album").Save(album)
+	new :=db.Table("fengniao_album").NewRecord(album)
+	if new {
+		db.Table("fengniao_album").Create(album)
+	}else{
+		db.Table("fengniao_album").Save(album)
+	}
+
 }
