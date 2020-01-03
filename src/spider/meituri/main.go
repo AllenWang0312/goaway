@@ -1,8 +1,8 @@
 package main
 
 import (
-	"../../../conf"
-	"../../../util"
+	"../../conf"
+	"../../util"
 	model "../../model/meituri"
 	"./download"
 	"./gorm"

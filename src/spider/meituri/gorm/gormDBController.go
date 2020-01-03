@@ -1,8 +1,8 @@
 package gorm
 
 import (
-	"../../../../conf"
-	"../../../../util"
+	"../../../conf"
+	"../../../util"
 	model "../../../model/meituri"
 	"../download"
 	"fmt"

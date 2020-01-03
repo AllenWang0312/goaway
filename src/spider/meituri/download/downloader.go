@@ -1,8 +1,8 @@
 package download
 
 import (
-	"../../../../conf"
-	"../../../../util"
+	"../../../conf"
+	"../../../util"
 	"fmt"
 	"io"
 	"net/http"
