@@ -478,23 +478,33 @@ func AnalyzeModelColumPage(modelId int, doc *goquery.Document) int {
 			//if(!util.PathExists(strconv.Itoa(colum))){
 			//
 			//}
-			c := model.Album{
-				Nums:    num,
-				Modelid: modelId,
-				Groupid: groupId,
-				Group:   group,
-				Tags:    tags,
+			exit,err:=albumExits(modelId,columId)
+			if(nil==err&&exit){
+				fmt.Print("album exit"+strconv.Itoa(modelId)+" "+strconv.Itoa(columId))
+			}else{
+				c := model.Album{
+					Nums:    num,
+					Modelid: modelId,
+					Groupid: groupId,
+					Group:   group,
+					Tags:    tags,
+				}
+				//gorm.SaveColum(c)
+				err := downloadSingleColum(modelId, columId, &c)
+				if err < 0 {
+					//continue
+				}
 			}
-			//gorm.SaveColum(c)
-			err := downloadSingleColum(modelId, columId, &c)
-			if err < 0 {
-				//continue
-			}
+
 		})
 	} else {
 		return conf.AnalysisHtmlFaild
 	}
 	return conf.Success
+}
+func albumExits(modelId int, albumId int) (bool,error) {
+	path:=conf.FSRoot+"/meituri/" + strconv.Itoa(modelId) + "/" + strconv.Itoa(albumId) + "/"
+	return util.PathExists(path)
 }
 
 func AnalyzeContryColumPage(doc *goquery.Document) int {

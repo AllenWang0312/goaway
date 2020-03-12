@@ -13,3 +13,4 @@
  * 部分接口graphQL化
  * 使用python替换部分爬虫
  * 结合tensorflow 训练爬取到的数据集
+ * 导出模型 移植到android端 实现相机识人的功能

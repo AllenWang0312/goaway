@@ -15,20 +15,20 @@ const GormDebug=true
 // var ProjectRoot = "/home/wpc/products/netimg"
 
 //work
-const FSHost="127.0.0.1"
-const RediaHost = "122.51.205.29"
-const DBHost = "122.51.205.29"
-var Muri="/muri"
-var FSRoot = "F:/work"
-var ProjectRoot = FSRoot + "/goaway"
-//home
 //const FSHost="127.0.0.1"
 //const RediaHost = "122.51.205.29"
 //const DBHost = "122.51.205.29"
+//var Muri="/muri"
+//var FSRoot = "F:/work"
+//var ProjectRoot = FSRoot + "/goaway"
+//home
+const FSHost="127.0.0.1"
+const RediaHost = "122.51.205.29"
+const DBHost = "122.51.205.29"
 //const Muri="/meituri_cn_like"
-////const Muri="/muri"
-//var FSRoot = "Z:/photos"
-//var ProjectRoot ="E:/work/goaway"
+const Muri="/meituri"
+var FSRoot = "Z:/photos"
+var ProjectRoot ="E:/work/goaway"
 
 
 const RediaPass  ="qunsi003"
