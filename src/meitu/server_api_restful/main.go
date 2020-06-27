@@ -29,6 +29,7 @@ func main() {
 	//
 	//ok, rdsKey := redis.PutJSON("", "user", rdsVal, 1800*time.Second)
 	r := gin.Default()
+
 //https
 	//r.Use(TLSHandler())
 	//r.RunTLS(":8080", "ssl.pem", "ssl.key")
@@ -148,7 +149,7 @@ func main() {
 	//	v2.POST("/read", readEndpoint)
 	//}
 	//initLogger()
-	r.Run()
+	r.Run("localhost:9090")
 }
 
 //func TLSHandler() gin.HandlerFunc {
