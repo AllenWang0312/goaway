@@ -27,9 +27,15 @@ const RediaHost = "122.51.205.29"
 const DBHost = "122.51.205.29"
 //const Muri="/meituri_cn_like"
 const Muri="/meituri"
-var FSRoot = "Z:/photos"
-var ProjectRoot ="E:/work/goaway"
 
+// var FSRoot = "Z:/photos"
+
+
+// var FSRoot ="//FWDBZSYBZ/share/photos"
+// var ProjectRoot ="~/Documents/goaway"
+
+var FSRoot ="/samba/photos"
+var ProjectRoot ="~/Documents/goaway"
 
 const RediaPass  ="qunsi003"
 const MysqlPass  ="qunsi003"
