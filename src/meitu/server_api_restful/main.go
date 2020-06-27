@@ -149,7 +149,7 @@ func main() {
 	//	v2.POST("/read", readEndpoint)
 	//}
 	//initLogger()
-	r.Run("localhost:9090")
+	r.Run(":9090")
 }
 
 //func TLSHandler() gin.HandlerFunc {
