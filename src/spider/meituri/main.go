@@ -169,8 +169,8 @@ func downloadSingleColum(modelId int, columId int, colum *model.Album) int {
 	download.DownloadAlbumCover(modelId, columId)
 	doc, err := goquery.NewDocument(conf.Host + "/a/" + strconv.Itoa(columId))
 	if err != nil {
-		//return -1
-		println(err.Error())
+		println("get document faild"+err.Error())
+		return -1
 	}
 	tuji := doc.Find("div.tuji")
 	var no string

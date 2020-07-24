@@ -29,6 +29,7 @@ func main() {
 	//
 	//ok, rdsKey := redis.PutJSON("", "user", rdsVal, 1800*time.Second)
 	r := gin.Default()
+
 //https
 	//r.Use(TLSHandler())
 	//r.RunTLS(":8080", "ssl.pem", "ssl.key")
@@ -62,18 +63,6 @@ func main() {
 	v1 := r.Group("/v1")
 	api := v1.Group("/api")
 	//todo account
-	account := api.Group("/account")
-	{
-		account.POST("/register", api_restful.Regist)
-		//account.PUT("/", api_restful.RegistAccount)
-		//account.POST("/user/info", api_restful.GetUser)
-		//account.POST("/user",api)
-		account.POST("/info", api_restful.GetUser)
-		account.POST("/tokenlogin", api_restful.TokenLogin)
-		account.POST("/login", api_restful.Login)
-	}
-	api.POST("/file", api_restful.UploadFile)
-	api.POST("/files", api_restful.UploadFiles)
 	m := api.Group("/m")
 	{
 		apps:=m.Group("/apps")
@@ -99,6 +88,18 @@ func main() {
 			mine.POST("/info", api_restful.GetUserInfo)
 		}
 	}
+	account := api.Group("/account")
+	{
+		account.POST("/register", api_restful.Regist)
+		//account.PUT("/", api_restful.RegistAccount)
+		//account.POST("/user/info", api_restful.GetUser)
+		//account.POST("/user",api)
+		account.POST("/info", api_restful.GetUser)
+		account.POST("/tokenlogin", api_restful.TokenLogin)
+		account.POST("/login", api_restful.Login)
+	}
+	api.POST("/file", api_restful.UploadFile)
+	api.POST("/files", api_restful.UploadFiles)
 	{
 		model := api.Group("/model")
 		{ //todo resources
@@ -148,7 +149,7 @@ func main() {
 	//	v2.POST("/read", readEndpoint)
 	//}
 	//initLogger()
-	r.Run()
+	r.Run(":9090")
 }
 
 //func TLSHandler() gin.HandlerFunc {
