@@ -2,8 +2,9 @@ package conf
 
 const (
 	//Host    = "https://www.mzitu.com"
-	Host    = "https://www.meituri.com"
-	OldHost = "https://ii.hywly.com"
+	//Host    = "https://www.meituri.com"
+	Host    = "https://www.tujigu.com"
+	OldHost = "https://lns.hywly.com/"
 
 	SaveCompanyGroupRatation = true
 	SaveUserInfo             = true
